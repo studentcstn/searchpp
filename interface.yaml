@@ -4,105 +4,149 @@
 # - Google OAuth 2.0
 # - Amazon
 # - Ebay
-# - ???
+# - [???]
 #
 # Übersicht:
 # ==========
 # 
-# /user                            GET             Auslieferung einer HTML-Seite mit Redirect zu Google OAuth2 
-# /user/token                      GET             Rückgabe von OAuth2 speichern und Login
-# /user/watchedProducts/<id>       GET,PUT,DELETE  Informationen zu einem überwachten Produkt 
-# /user/watchedProducts            GET,POST,DELETE Alle überwachten Produkte
-# /products                        GET             Nach Produkten suchen
-# /products/<id>                   GET             Informationen zu einem Produkt
-# /product/<id>/ratings            GET             Bewertungen der Proudkte abfragen
+# /user                          GET             Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0 
+# /user/token                    GET             Rückgabe von OAuth 2.0 speichern und Login
+# /user/watchedProducts/<id> [S] GET,PUT,DELETE  Informationen zu einem überwachten Produkt 
+# /user/watchedProducts      [S] GET,POST,DELETE Alle überwachten Produkte
+# /products                      GET             Nach Produkten suchen
+# /products/<id>                 GET             Informationen zu einem Produkt
+# /product/<id>/ratings          GET             Bewertungen der Proudkte abfragen
 #
 # NOTE Fehlen noch Pfade? 
 # TODO Anfrage Parameter vervollständigen
 #
-# Details:
-# ========
+# Details (Pseudo RAML-Code):
+# ===========================
+traits:
+  secured:
+    headers:
+        access_token:
+          description: Access Token
+          type: string
+          required: true
+
 /user:
-    /{uid}:
-        /watchedProducts
-            /{id}:
-                get:
-                    description: Daten für Preisverlauf (und Zeitraum)
-                    responses:
-                        200:
-                            description: Anfrage war erfolgreich
-                            body:
-                                application/json:
-                        201:
-                            description: Anfrage Erfolgreich, aber keine Daten  
-                            body:
-                                application/json:
-                        404:
-                            description: Produkt oder 
-                            body:
-                                application/json:
-                    queryParameters:
-                        access_token:
-                            type: string
-                put:
-                    description: Zeitraum ändern
-                    queryParameters:
-                        access_token:
-                            type: string
-                        date_from:
-                            displayName: Zeitraum Beginn
-                            type: date-only
-                            description: Zeitraum Überwachung beginn
-                            required: true
-                        date_to:
-                            displayName: Zeitraum Ende
-                            type: date-only
-                            description: Zeitraum Überwachung beginn
-                            required: true
-                delete:
-                    description: Produkt nicht mehr beobachten (Wird aus Datenbank gelöscht)
-                    queryParameters:
-                        access_token:
-                            type: string
+    get:
+        description: Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0 
+
+    /token:
+        description: Rückgabe von OAuth 2.0 speichern und Login (evtl. Neuen Benutzer anlegen)
+
+    /watchedProducts:
+        is: [secured]
+
+        get:
+            description: Liste der beobachteten Produkte
+            responses:
+                200: { description: Erfolgreich }
+                201: { description: Erfolgreich, es waren keine Daten zum Löschen vorhanden }
+                401: { description: Zugriff verweigert }
+                500: { description: Interner Fehler }
+
+        post:
+            description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
+            queryParameters:
+                date_from:
+                    displayName: Zeitraum Beginn
+                    type: date-only
+                    description: Zeitraum Überwachung beginn
+                    required: true
+                date_to:
+                    displayName: Zeitraum Ende
+                    type: date-only
+                    description: Zeitraum Überwachung beginn
+                    required: true
+                platform:
+                    displayName: Platform
+                    type: string
+                    description: Auswahl der Platform (Ebay oder Amazon)
+                    required: true
+                product_id:
+                    displayName: Produkt ID
+                    type: string
+                    description: ID der jeweiligen Plattform
+                    required: true
+            responses:
+                200: { description: Erfolgreich }
+                401: { description: Zugriff verweigert }
+                500: { description: Interner Fehler }
+
+        delete:
+            description: Liste löschen
+            responses:
+                200: { description: Erfolgreich }
+                201: { description: Erfolgreich, es waren keine Daten zum Löschen vorhanden }
+                401: { description: Zugriff verweigert }
+                500: { description: Interner Fehler }
+
+        /{id}:
+            is: [secured]
+
             get:
-                description: Liste der beobachteten Produkte
-            post:
-                description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
+                description: Daten für Preisverlauf (und Zeitraum)
+                responses:
+                    200: { description: Anfrage war erfolgreich }
+                    201: { description: Anfrage Erfolgreich, aber keine Daten }
+                    404: { description: Produkt nicht gefunden }
+                    500: { description: Interner Fehler }
+
+            put:
+                description: Zeitraum ändern
+                queryParameters:
+                    date_from:
+                        displayName: Zeitraum Beginn
+                        type: date-only
+                        description: Zeitraum Überwachung beginn
+                        required: true
+                    date_to:
+                        displayName: Zeitraum Ende
+                        type: date-only
+                        description: Zeitraum Überwachung beginn
+                        required: true
+
             delete:
-                description: Liste löschen
-    post:
-        queryParameters:
-            username:
-                displayName: Benutzername
-                type: string
-            password:
-                displayName: Passwort
-                type: string
-        responses:
-            200:
-            500:
+                description: Produkt nicht mehr beobachten (Wird aus Datenbank gelöscht)
 
 /products:
-    /{id}:
-        /ratings:
-            get:
-                description: Bewertungen für das Produkt abrufen
-                queryParameters:
-                responses:
-                    200:
-                    404:
-                    500:
-        get:
-            description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
-            queryParameters:
-            responses:
-                200:
-                404:
-                500:
     get:
         description: Nach Produkten für Suchbegriff suchen (und Preisspanne), Auswahl gebraucht / neu
         queryParameters:
+            search_text:
+                displayName: Suchtext
+                type: string
+                required: true
+            price_min:
+                displayName: Preisspanne Start
+                type: number
+            price_max:
+                displayName: Preisspanne Ende
+                type: number
+            used:
+                displayName: Gebraucht
+                type: boolean
         responses:
-            200:
-            404:
-            500:
+            200: { description: Anfrage war erfolgreich }
+            201: { description: Anfrage Erfolgreich, aber keine Daten }
+            500: { description: Interner Fehler }
+
+    /{id}:
+        get:
+            description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
+            responses:
+                200: { description: Anfrage war erfolgreich }
+                201: { description: Anfrage Erfolgreich, aber keine Daten }
+                404: { description: Produkt nicht gefunden }
+                500: { description: Interner Fehler }
+        /ratings:
+            get:
+                description: Bewertungen für das Produkt abrufen
+                responses:
+                    200: { description: Anfrage war erfolgreich }
+                    201: { description: Anfrage Erfolgreich, aber keine Daten }
+                    404: { description: Produkt nicht gefunden }
+                    500: { description: Interner Fehler }
