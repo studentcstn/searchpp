@@ -1,0 +1,108 @@
+# Verwendete Dienste:
+# ===================
+#
+# - Google OAuth 2.0
+# - Amazon
+# - Ebay
+# - ???
+#
+# Übersicht:
+# ==========
+# 
+# /user                            GET             Auslieferung einer HTML-Seite mit Redirect zu Google OAuth2 
+# /user/token                      GET             Rückgabe von OAuth2 speichern und Login
+# /user/watchedProducts/<id>       GET,PUT,DELETE  Informationen zu einem überwachten Produkt 
+# /user/watchedProducts            GET,POST,DELETE Alle überwachten Produkte
+# /products                        GET             Nach Produkten suchen
+# /products/<id>                   GET             Informationen zu einem Produkt
+# /product/<id>/ratings            GET             Bewertungen der Proudkte abfragen
+#
+# NOTE Fehlen noch Pfade? 
+# TODO Anfrage Parameter vervollständigen
+#
+# Details:
+# ========
+/user:
+    /{uid}:
+        /watchedProducts
+            /{id}:
+                get:
+                    description: Daten für Preisverlauf (und Zeitraum)
+                    responses:
+                        200:
+                            description: Anfrage war erfolgreich
+                            body:
+                                application/json:
+                        201:
+                            description: Anfrage Erfolgreich, aber keine Daten  
+                            body:
+                                application/json:
+                        404:
+                            description: Produkt oder 
+                            body:
+                                application/json:
+                    queryParameters:
+                        access_token:
+                            type: string
+                put:
+                    description: Zeitraum ändern
+                    queryParameters:
+                        access_token:
+                            type: string
+                        date_from:
+                            displayName: Zeitraum Beginn
+                            type: date-only
+                            description: Zeitraum Überwachung beginn
+                            required: true
+                        date_to:
+                            displayName: Zeitraum Ende
+                            type: date-only
+                            description: Zeitraum Überwachung beginn
+                            required: true
+                delete:
+                    description: Produkt nicht mehr beobachten (Wird aus Datenbank gelöscht)
+                    queryParameters:
+                        access_token:
+                            type: string
+            get:
+                description: Liste der beobachteten Produkte
+            post:
+                description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
+            delete:
+                description: Liste löschen
+    post:
+        queryParameters:
+            username:
+                displayName: Benutzername
+                type: string
+            password:
+                displayName: Passwort
+                type: string
+        responses:
+            200:
+            500:
+
+/products:
+    /{id}:
+        /ratings:
+            get:
+                description: Bewertungen für das Produkt abrufen
+                queryParameters:
+                responses:
+                    200:
+                    404:
+                    500:
+        get:
+            description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
+            queryParameters:
+            responses:
+                200:
+                404:
+                500:
+    get:
+        description: Nach Produkten für Suchbegriff suchen (und Preisspanne), Auswahl gebraucht / neu
+        queryParameters:
+        responses:
+            200:
+            404:
+            500:
