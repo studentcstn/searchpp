@@ -1,0 +1,251 @@
+#%RAML 1.0
+# Verwendete Dienste:
+# ===================
+#
+# - Google OAuth 2.0
+# - Amazon
+# - Ebay
+# - [???]
+#
+# Übersicht:
+# ==========
+#
+# /user                          GET             Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0
+# /user/token                    GET             Rückgabe von OAuth 2.0 speichern und Login
+# /user/watchedProducts/<id> [S] GET,PUT,DELETE  Informationen zu einem überwachten Produkt
+# /user/watchedProducts      [S] GET,POST,DELETE Alle überwachten Produkte
+# /products                      GET             Nach Produkten suchen
+# /products/<id>                 GET             Informationen zu einem Produkt
+# /product/<id>/ratings          GET             Bewertungen der Proudkte abfragen
+#
+# NOTE Fehlen noch Pfade?
+# TODO Anfrage Parameter vervollständigen
+#
+# Details (Pseudo RAML-Code):
+# ===========================
+title: search++
+version: v1
+baseUri:
+traits:
+  secured:
+    headers:
+        access_token:
+          description: Access Token
+          type: string
+          required: true
+
+securitySchemes:
+  OAuth 2.0:
+    type: OAuth 2.0
+    description: Google OAuth 2.0
+
+/user:
+  get:
+    description: Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0
+
+  /token:
+    description: Rückgabe von OAuth 2.0 speichern und Login (evtl. Neuen Benutzer anlegen)
+
+  /watchedProducts:
+    description: Produktliste mit beobachteten Produkten
+    is: secured
+    securedBy: OAuth 2.0
+    get:
+      description: Liste der beobachteten Produkte
+      responses:
+        200:
+          description: Erfolgreich
+          body:
+            application/json:
+              example:
+                elements: 2,
+                data:
+                  [
+                    {
+                      product_id: 12345,
+                      name: Produktname1,
+                      price: "1,23"
+                    },
+                    {
+                      product_id: 67890,
+                      name: Produktname2,
+                      price: "23,45"
+                    }
+                  ]
+        401:
+          description: Zugriff verweigert
+        500:
+          description: Interner Fehler
+
+    post: #? statt platform und produckt-id, eine produkt-id mit itegrieder platform
+      description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
+      queryParameters:
+        date_from:
+          displayName: Zeitraum Beginn
+          type: date-only
+          description: Zeitraum Überwachung beginn
+          required: true
+        date_to:
+          displayName: Zeitraum Ende
+          type: date-only
+          description: Zeitraum Überwachung beginn
+          required: true
+        platform:
+          displayName: Platform
+          type: string
+          description: Auswahl der Platform (Ebay oder Amazon)
+          required: true
+        product_id:
+          displayName: Produkt ID
+          type: string
+          description: ID der jeweiligen Plattform
+          required: true
+      responses:
+        200:
+          description: Erfolgreich
+        401:
+          description: Zugriff verweigert
+        500:
+          description: Interner Fehler
+
+    delete:
+      description: Liste leeren (Wird aus Datenbank gelöscht)
+      responses:
+        200:
+          description: Erfolgreich
+        201:
+          description: Erfolgreich, es waren keine Daten zum Löschen vorhanden
+        401:
+          description: Zugriff verweigert
+        500:
+          description: Interner Fehler
+
+    /{productId}:
+      is: [ secured ]
+      securedBy: OAuth 2.0
+      get:
+        description: Daten für Preisverlauf (und Zeitraum)
+        responses:
+          200:
+            description: Anfrage war erfolgreich
+            body:
+              application/json:
+                example:
+                  product_id: 12345
+                  name: product name
+                  product_description: product description
+                  price: 1,23
+                  preisverlauf:
+                    01012017: 1,00
+                    02012017: 1,13
+                    31012017: 1,09
+                    05022017: 1,20
+          201:
+            description: Anfrage Erfolgreich, aber keine Daten
+          404:
+            description: Produkt nicht gefunden
+          500:
+            description: Interner Fehler
+
+      put:
+        description: Zeitraum ändern
+        queryParameters:
+          date_from:
+            displayName: Zeitraum Beginn
+            type: date-only
+            description: Zeitraum Überwachung beginn
+            required: true
+          date_to:
+            displayName: Zeitraum Ende
+            type: date-only
+            description: Zeitraum Überwachung beginn
+            required: true
+        responses:
+          200:
+            description: Erfolgreich
+          401:
+            description: Zugriff verweigert
+          500:
+            description: Interner Fehler
+
+      delete:
+        description: Produkt nicht mehr beobachten (Wird aus Datenbank gelöscht)
+        responses:
+          200:
+            description: Erfolgreich
+          401:
+            description: Zugriff verweigert
+          500:
+            description: Interner Fehler
+
+/products:
+  get:
+    description: Nach Produkten für Suchbegriff suchen (und Preisspanne), Auswahl gebraucht / neu
+    queryParameters:
+      search_text:
+        displayName: Suchtext
+        type: string
+        required: true
+      price_min:
+        displayName: Preisspanne Start
+        type: number
+      price_max:
+        displayName: Preisspanne Ende
+        type: number
+      used:
+        displayName: Gebraucht
+        type: boolean
+    responses:
+      200:
+        description: Anfrage war erfolgreich
+      201:
+        description: Anfrage Erfolgreich, aber keine Daten
+      500:
+        description: Interner Fehler
+
+  /{productId}:
+    get:
+      description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
+      responses:
+        200:
+          description: Anfrage war erfolgreich
+          body:
+            application/json:
+              example:
+                product_id: 12345
+                name: product name
+                product_description: product description
+                price: 1,23
+        201:
+          description: Anfrage Erfolgreich, aber keine Daten
+        404:
+          description: Produkt nicht gefunden
+        500:
+          description: Interner Fehler
+    /ratings:
+      get:
+        description: Bewertungen für das Produkt abrufen
+        responses:
+          200:
+            description: Anfrage war erfolgreich
+            body:
+              application/json:
+                example:
+                  elements: 2
+                  data:
+                    [
+                      {
+                        rating: 4,
+                        text: rating text
+                      },
+                      {
+                        rating: 1,
+                        text: rating text
+                      }
+                    ]
+          201:
+            description: Anfrage Erfolgreich, aber keine Daten
+          404:
+            description: Produkt nicht gefunden
+          500:
+            description: Interner Fehler
