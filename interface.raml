@@ -18,10 +18,6 @@
 # /products/<id>                 GET             Informationen zu einem Produkt
 # /product/<id>/ratings          GET             Bewertungen der Proudkte abfragen
 #
-# NOTE Fehlen noch Pfade?
-# TODO Anfrage Parameter vervollständigen
-#
-# Details (Pseudo RAML-Code):
 # ===========================
 title: search++
 version: v1
@@ -35,7 +31,7 @@ traits:
           required: true
 
 securitySchemes:
-  OAuth 2.0:
+  OAuth2.0:
     type: OAuth 2.0
     description: Google OAuth 2.0
 
@@ -48,8 +44,8 @@ securitySchemes:
 
   /watchedProducts:
     description: Produktliste mit beobachteten Produkten
-    is: secured
-    securedBy: OAuth 2.0
+    is: [ secured ]
+    securedBy: OAuth2.0
     get:
       description: Liste der beobachteten Produkte
       responses:
@@ -57,52 +53,60 @@ securitySchemes:
           description: Erfolgreich
           body:
             application/json:
-              example:
-                elements: 2,
-                data:
-                  [
-                    {
-                      product_id: 12345,
-                      name: Produktname1,
-                      price: "1,23"
-                    },
-                    {
-                      product_id: 67890,
-                      name: Produktname2,
-                      price: "23,45"
-                    }
-                  ]
+              examples:
+                Elements_in_list:
+                  elements: 2,
+                  data:
+                    [
+                      {
+                        product_id: 12345,
+                        name: Produktname1,
+                        price_min: "1,23",
+                        price_max: "2,35",
+                        rating: "3,2",
+                        img: www.example.com/example,
+                        type: new
+                      },
+                      {
+                        product_id: 67890,
+                        name: Produktname2,
+                        price_min: "23,45",
+                        price_max: "50.99",
+                        rating: "4,8",
+                        img: www.example.com/example,
+                        type: used
+                      }
+                    ]
+                List_is_empty:
+                  elements: 0
         401:
           description: Zugriff verweigert
         500:
           description: Interner Fehler
 
-    post: #? statt platform und produckt-id, eine produkt-id mit itegrieder platform
+    post:
       description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
       queryParameters:
         date_from:
           displayName: Zeitraum Beginn
           type: date-only
           description: Zeitraum Überwachung beginn
-          required: true
+          required: false
         date_to:
           displayName: Zeitraum Ende
           type: date-only
           description: Zeitraum Überwachung beginn
           required: true
-        platform:
-          displayName: Platform
-          type: string
-          description: Auswahl der Platform (Ebay oder Amazon)
-          required: true
         product_id:
           displayName: Produkt ID
           type: string
-          description: ID der jeweiligen Plattform
+          description: ID des Produkts / der Produktsammlung
           required: true
       responses:
         200:
           description: Erfolgreich
+        400:
+          description: Query Fehler
         401:
           description: Zugriff verweigert
         500:
@@ -113,8 +117,6 @@ securitySchemes:
       responses:
         200:
           description: Erfolgreich
-        201:
-          description: Erfolgreich, es waren keine Daten zum Löschen vorhanden
         401:
           description: Zugriff verweigert
         500:
@@ -122,7 +124,7 @@ securitySchemes:
 
     /{productId}:
       is: [ secured ]
-      securedBy: OAuth 2.0
+      securedBy: OAuth2.0
       get:
         description: Daten für Preisverlauf (und Zeitraum)
         responses:
@@ -133,17 +135,28 @@ securitySchemes:
                 example:
                   product_id: 12345
                   name: product name
-                  product_description: product description
-                  price: 1,23
-                  preisverlauf:
-                    01012017: 1,00
-                    02012017: 1,13
-                    31012017: 1,09
-                    05022017: 1,20
-          201:
-            description: Anfrage Erfolgreich, aber keine Daten
-          404:
-            description: Produkt nicht gefunden
+                  elements: 1
+                  data:
+                    [
+                      {
+                        origin_url: www.example.com,
+                        product_description: product description,
+                        price: "1,23",
+                        preisverlauf:
+                          {
+                            01012017: "1,00",
+                            02012017: "1,13",
+                            31012017: "1,09",
+                            05022017: "1,20",
+                          },
+                        rating: "4,1",
+                        type: new | used
+                      }
+                    ]
+          400:
+            description: Produkt nicht in Liste
+          #404:
+            #description: Produkt nicht gefunden
           500:
             description: Interner Fehler
 
@@ -154,7 +167,7 @@ securitySchemes:
             displayName: Zeitraum Beginn
             type: date-only
             description: Zeitraum Überwachung beginn
-            required: true
+            required: false
           date_to:
             displayName: Zeitraum Ende
             type: date-only
@@ -163,6 +176,8 @@ securitySchemes:
         responses:
           200:
             description: Erfolgreich
+          400:
+            description: Query Fehler
           401:
             description: Zugriff verweigert
           500:
@@ -189,17 +204,44 @@ securitySchemes:
       price_min:
         displayName: Preisspanne Start
         type: number
+        required: false
       price_max:
         displayName: Preisspanne Ende
         type: number
+        required: false
       used:
         displayName: Gebraucht
         type: boolean
+        required: false
     responses:
       200:
         description: Anfrage war erfolgreich
-      201:
-        description: Anfrage Erfolgreich, aber keine Daten
+        body:
+          application/json:
+            examples:
+              products_found:
+                elements: 1
+                data:
+                  [
+                    {
+                      product_id: 123456,
+                      elements: 1,
+                      data:
+                        [
+                          {
+                            origin_url: www.example.com,
+                            name: Produktname1,
+                            price: "1,23",
+                            rating: "4,3",
+                            img: www.example.com/example,
+                            type: new | used
+                          }
+                        ]
+                    }
+                  ]
+              no_products_found:
+                elements: 0
+                description: why not found
       500:
         description: Interner Fehler
 
@@ -213,11 +255,12 @@ securitySchemes:
             application/json:
               example:
                 product_id: 12345
+                origin_url: www.example.com
                 name: product name
                 product_description: product description
                 price: 1,23
-        201:
-          description: Anfrage Erfolgreich, aber keine Daten
+                rating: 3,9
+                type: new | used
         404:
           description: Produkt nicht gefunden
         500:
@@ -230,21 +273,14 @@ securitySchemes:
             description: Anfrage war erfolgreich
             body:
               application/json:
-                example:
-                  elements: 2
-                  data:
-                    [
-                      {
-                        rating: 4,
-                        text: rating text
-                      },
-                      {
-                        rating: 1,
-                        text: rating text
-                      }
-                    ]
-          201:
-            description: Anfrage Erfolgreich, aber keine Daten
+                examples:
+                  ratings_available:
+                    elements: 2
+                    data:
+                      [{ rating: 4, text: rating text },
+                       { rating: 1, text: rating text }]
+                  no_ratings_available:
+                    elements: 0
           404:
             description: Produkt nicht gefunden
           500:
