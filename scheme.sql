@@ -2,33 +2,50 @@ DROP DATABASE IF EXISTS searchpp;
 CREATE DATABASE searchpp;
 USE searchpp;
 
-CREATE TABLE usr (
+#list of all register users
+CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-    email VARCHAR(255) NOT NULL
+    email VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE product (
+#list of product id's
+CREATE TABLE products (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
 );
 
-CREATE TABLE product_to_site (
+#list of site id's / platform
+CREATE TABLE sites (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    product_id INT UNSIGNED
-);
-
-CREATE TABLE product_site (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    site_id VARCHAR(255) NOT NULL,
+    site_id VARCHAR(255) UNIQUE NOT NULL,
     platform ENUM('amazon', 'ebay') NOT NULL
 );
 
-CREATE TABLE product_site_price_history (
-    product_site_id INT NOT NULL,
-    price DECIMAL(7,2),
-    date DATETIME
-);
+#product id - side id mapping
+CREATE TABLE product_to_site (
+    product_id INT UNSIGNED,
+    side_id INT UNSIGNED,
 
-CREATE TABLE usr_product_watch (
-    usr_id INT UNSIGNED NOT NULL ,
-    product_id INT UNSIGNED NOT NULL
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (side_id) REFERENCES sites(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+ALTER TABLE product_to_site ADD UNIQUE (product_id, side_id);
+
+#price history for side id's
+CREATE TABLE site_price_history (
+    site_id INT UNSIGNED NOT NULL,
+    price DECIMAL(7,2) NOT NULL,
+    date DATETIME NOT NULL,
+
+    FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE site_price_history ADD UNIQUE (site_id, date);
+
+#watched products from users
+CREATE TABLE usr_product_watch (
+    user_id INT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+ALTER TABLE usr_product_watch ADD UNIQUE (user_id, product_id);
