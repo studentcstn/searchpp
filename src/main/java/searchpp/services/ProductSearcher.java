@@ -1,8 +1,11 @@
 package searchpp.services;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import searchpp.model.products.AmazonProduct;
+import searchpp.model.products.Condition;
 import searchpp.model.products.EbayProduct;
 import searchpp.utils.AmazonSignedRequestsHelper;
 
@@ -18,7 +21,7 @@ import java.util.Map;
  */
 public class ProductSearcher
 {
-    static List<AmazonProduct> searchAmazonProduct(String searchString)
+    public static List<AmazonProduct> searchAmazonProduct(String searchString)
     {
         AmazonSignedRequestsHelper helper;
         try
@@ -30,9 +33,9 @@ public class ProductSearcher
             return null;
         }
 
-        String requestUrl = null;
+        String requestUrl;
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("Service", "AWSECommerceService");
         params.put("AssociateTag" , "!!!!!AssocTag!!!!!");
         params.put("Operation", "ItemSearch");
@@ -54,7 +57,51 @@ public class ProductSearcher
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(requestUrl);
-            //TODO Irgendwie parsen....
+
+            NodeList itemList = doc.getElementsByTagName("Item");
+
+            for(int i = 0; i < itemList.getLength(); i++)
+            {
+                AmazonProduct product = new AmazonProduct();
+                Node item = itemList.item(i);
+
+                Element eElement = (Element) item;
+                String asin = getTagValue(eElement, "ASIN");
+                String title = getTagValue(eElement, "Title");
+                //Todo Condition
+                Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
+                Double price = Double.parseDouble(getTagValue(ePrice, "Amount"))/100;
+
+                //Todo bessere Lösung wenn kein SalesRank angegeben
+                String rank = getTagValue(eElement, "SalesRank");
+                int salesRank  = 99999;
+                if(!rank.equals(""))
+                    salesRank = Integer.parseInt(rank);
+
+                int ean = Integer.parseInt(getTagValue(eElement, "EAN"));
+                String manufacturer = getTagValue(eElement, "Manufacturer");
+                String model = getTagValue(eElement, "Model");
+                //Todo Rating
+
+                product.setProductId(asin);
+                product.setTitle(title);
+                //Todo product.setCondition();
+                product.setPrice(price);
+                product.setEan(ean);
+                product.setManufacturer(manufacturer);
+                product.setModel(model);
+                product.setSalesRank(salesRank);
+                //Todo product.setRating();
+
+                /*System.out.println("ASIN: " +asin);
+                System.out.println("EAN: " + ean);
+                System.out.println("SalesRank: " + salesRank);
+                System.out.println("Manufacturer: " + manufacturer);
+                System.out.println("Model: " + model);
+                System.out.println("Title: " + title);
+                System.out.println("Price: " + price);
+                System.out.println("------------");*/
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -62,8 +109,16 @@ public class ProductSearcher
         return products;
     }
 
+    private static String getTagValue(Element eElement, String tag)
+    {
+        String ret = "";
+        if(eElement.getElementsByTagName(tag).item(0) != null)
+            ret = eElement.getElementsByTagName(tag).item(0).getTextContent();
+        return ret;
+    }
 
-    static List<EbayProduct> searchEbayProduct(String searchString)
+
+    public static List<EbayProduct> searchEbayProduct(String searchString)
     {
         List<EbayProduct> products = new ArrayList<>();
 
