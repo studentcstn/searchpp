@@ -4,10 +4,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import searchpp.model.config.Api;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.Condition;
 import searchpp.model.products.EbayProduct;
 import searchpp.utils.AmazonSignedRequestsHelper;
+import searchpp.utils.ConfigLoader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,7 +28,7 @@ public class ProductSearcher
         AmazonSignedRequestsHelper helper;
         try
         {
-            helper = AmazonSignedRequestsHelper.getInstance("ecs.amazonaws.de", "!!!!!AWS_ACCESS_KEY_ID!!!!!", "!!!!!AWS_SECRET_KEY!!!!!");
+            helper = AmazonSignedRequestsHelper.getInstance("ecs.amazonaws.de", ConfigLoader.getConfig("amazon", Api.accessKey), ConfigLoader.getConfig("amazon", Api.secretKey));
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -37,7 +39,7 @@ public class ProductSearcher
 
         Map<String, String> params = new HashMap<>();
         params.put("Service", "AWSECommerceService");
-        params.put("AssociateTag" , "!!!!!AssocTag!!!!!");
+        params.put("AssociateTag" , ConfigLoader.getConfig("amazon", Api.clientID));
         params.put("Operation", "ItemSearch");
         params.put("SearchIndex", "All");
         params.put("ResponseGroup", "ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
@@ -78,7 +80,11 @@ public class ProductSearcher
                 if(!rank.equals(""))
                     salesRank = Integer.parseInt(rank);
 
-                int ean = Integer.parseInt(getTagValue(eElement, "EAN"));
+                /* nicht überall ist ein ean angegeben */
+                String eanElement = getTagValue(eElement, "EAN");
+                long ean = -1;
+                if (eanElement.matches("[0-9]+"))
+                    ean = Long.parseLong(eanElement);
                 String manufacturer = getTagValue(eElement, "Manufacturer");
                 String model = getTagValue(eElement, "Model");
                 //Todo Rating

@@ -6,7 +6,7 @@ package searchpp.model.products;
 public class AmazonProduct extends Product
 {
     private int _salesRank;
-    private int _ean;
+    private long _ean;
     private String _manufacturer;
     private String _model;
     private double _rating;
@@ -16,7 +16,7 @@ public class AmazonProduct extends Product
         _salesRank = salesRank;
     }
 
-    public void setEan(int ean)
+    public void setEan(long ean)
     {
         _ean = ean;
     }
