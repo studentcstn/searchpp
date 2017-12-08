@@ -5,5 +5,10 @@ package searchpp.model.products;
  */
 public class EbayProduct extends Product
 {
-    ListingType _listingType;
+    private ListingType _listingType;
+
+    public void setListingType(ListingType listingType)
+    {
+        _listingType = listingType;
+    }
 }

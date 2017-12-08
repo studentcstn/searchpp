@@ -5,8 +5,28 @@ package searchpp.model.products;
  */
 public abstract class Product
 {
-    String _productId;
-    String _title;
-    Condition _condition;
-    double _price;
+    private String _productId;
+    private String _title;
+    private Condition _condition;
+    private double _price;
+
+    public void setProductId(String productId)
+    {
+        _productId = productId;
+    }
+
+    public void setTitle(String title)
+    {
+        _title = title;
+    }
+
+    public void setCondition(Condition condition)
+    {
+        _condition = condition;
+    }
+
+    public void setPrice(double price)
+    {
+        _price = price;
+    }
 }
