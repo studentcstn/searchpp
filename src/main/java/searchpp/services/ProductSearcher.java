@@ -6,10 +6,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import searchpp.model.config.Api;
 import searchpp.model.products.AmazonProduct;
-import searchpp.model.products.Condition;
 import searchpp.model.products.EbayProduct;
 import searchpp.utils.AmazonSignedRequestsHelper;
 import searchpp.utils.ConfigLoader;
+import searchpp.utils.EbayRequestsHelper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,10 +48,10 @@ public class ProductSearcher
         requestUrl = helper.sign(params);
 
 
-        return parseRequest(requestUrl);
+        return parseAmazonRequest(requestUrl);
     }
 
-    private static List<AmazonProduct> parseRequest(String requestUrl)
+    private static List<AmazonProduct> parseAmazonRequest(String requestUrl)
     {
         List<AmazonProduct> products = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class ProductSearcher
 
                 //Todo bessere Lösung wenn kein SalesRank angegeben
                 String rank = getTagValue(eElement, "SalesRank");
-                int salesRank  = 99999;
+                int salesRank  = -1;
                 if(!rank.equals(""))
                     salesRank = Integer.parseInt(rank);
 
@@ -99,14 +99,89 @@ public class ProductSearcher
                 product.setSalesRank(salesRank);
                 //Todo product.setRating();
 
-                /*System.out.println("ASIN: " +asin);
+                products.add(product);
+
+                System.out.println("ASIN: " +asin);
                 System.out.println("EAN: " + ean);
                 System.out.println("SalesRank: " + salesRank);
                 System.out.println("Manufacturer: " + manufacturer);
                 System.out.println("Model: " + model);
                 System.out.println("Title: " + title);
                 System.out.println("Price: " + price);
-                System.out.println("------------");*/
+                System.out.println("------------");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return products;
+    }
+
+    public static List<EbayProduct> searchEbayProduct(String searchString)
+    {
+        EbayRequestsHelper helper;
+        try
+        {
+            helper = EbayRequestsHelper.getInstance("svcs.ebay.com");
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+        String requestUrl;
+
+        Map<String, String> params = new HashMap<>();
+        params.put("SECURITY-APPNAME", ConfigLoader.getConfig("ebay", Api.clientID));
+        params.put("OPERATION-NAME" , "findItemsAdvanced");
+        params.put("SERVICE-VERSION", "1.0.0");
+        params.put("RESPONSE-DATA-FORMAT", "XML");
+        params.put("REST-PAYLOAD", "true");
+        params.put("GLOBAL-ID", "EBAY-DE");
+        params.put("keywords", searchString);
+
+        requestUrl = helper.signEbay(params);
+
+        System.out.println(requestUrl);
+        return parseEbayRequest(requestUrl);
+    }
+
+    private static List<EbayProduct> parseEbayRequest(String requestUrl)
+    {
+        List<EbayProduct> products = new ArrayList<>();
+
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(requestUrl);
+
+            NodeList itemList = doc.getElementsByTagName("item");
+
+            for(int i = 0; i < itemList.getLength(); i++)
+            {
+                EbayProduct product = new EbayProduct();
+                Node item = itemList.item(i);
+
+                Element eElement = (Element) item;
+                String itemId = getTagValue(eElement, "itemId");
+                String title = getTagValue(eElement, "title");
+                //Todo Condition
+                Element ePrice = (Element) eElement.getElementsByTagName("sellingStatus").item(0);
+                Double price = Double.parseDouble(getTagValue(ePrice, "currentPrice"));
+                //Todo ListingType
+
+                product.setProductId(itemId);
+                product.setTitle(title);
+                //Todo product.setCondition();
+                product.setPrice(price);
+                //Todo product.setListingType();
+
+                products.add(product);
+
+                System.out.println("ItemId: " + itemId);
+                System.out.println("Title: " + title);
+                System.out.println("Price: " + price);
+                System.out.println("------------");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -121,13 +196,5 @@ public class ProductSearcher
         if(eElement.getElementsByTagName(tag).item(0) != null)
             ret = eElement.getElementsByTagName(tag).item(0).getTextContent();
         return ret;
-    }
-
-
-    public static List<EbayProduct> searchEbayProduct(String searchString)
-    {
-        List<EbayProduct> products = new ArrayList<>();
-
-        return products;
     }
 }

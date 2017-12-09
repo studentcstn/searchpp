@@ -10,4 +10,9 @@ public class ProductSearcher_test {
     public void searchAmazonProduct() {
         ProductSearcher.searchAmazonProduct("Raspberry pi");
     }
+
+    @Test
+    public void searchEbayProduct() {
+        ProductSearcher.searchEbayProduct("Raspberry pi");
+    }
 }
