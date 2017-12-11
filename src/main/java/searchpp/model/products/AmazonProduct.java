@@ -15,24 +15,42 @@ public class AmazonProduct extends Product
     {
         _salesRank = salesRank;
     }
+    public int get_salesRank() {
+        return _salesRank;
+    }
+
 
     public void setEan(long ean)
     {
         _ean = ean;
     }
+    public long get_ean() {
+        return _ean;
+    }
+
 
     public void setManufacturer(String manufacturer)
     {
         _manufacturer = manufacturer;
     }
+    public String get_manufacturer() {
+        return _manufacturer;
+    }
+
 
     public void setModel(String model)
     {
         _model = model;
     }
+    public String get_model() {
+        return _model;
+    }
 
     public void setRating(double rating)
     {
         _rating = rating;
+    }
+    public double get_rating() {
+        return _rating;
     }
 }
