@@ -5,6 +5,7 @@ package searchpp.model.products;
  */
 public abstract class Product
 {
+    private int _globalId;
     /**
      * Product id
      */
@@ -25,13 +26,20 @@ public abstract class Product
      */
     private double _price; //todo default price
 
-    public Product() {}
-    public Product(String productId) {
-        this._productId = productId;
+    public Product()
+    {}
+
+    public int getGlobalId()
+    {
+        return _globalId;
+    }
+    public void setGlobalId(int globalId)
+    {
+        _globalId = globalId;
     }
 
     public void setProductId(String productId) {
-        this._productId = productId;
+        _productId = productId;
     }
     public String getProductId() {
         return _productId;
@@ -40,7 +48,7 @@ public abstract class Product
 
     public void setTitle(String title)
     {
-        this._title = title;
+        _title = title;
     }
     public String getTitle() {
         return _title;
@@ -49,7 +57,7 @@ public abstract class Product
 
     public void setCondition(Condition condition)
     {
-        this._condition = condition;
+        _condition = condition;
     }
     public Condition getCondition() {
         return _condition;
@@ -58,7 +66,7 @@ public abstract class Product
 
     public void setPrice(double price)
     {
-       this._price = price;
+       _price = price;
     }
     public double getPrice() {
         return _price;

@@ -38,12 +38,24 @@ public class ProductSearcher_test {
     @Test
     public void searchAmazonProduct() {
         loadTestConfig();
-        ProductSearcher.searchAmazonProduct("Raspberry pi");
+        ProductSearcher.searchAmazonProduct("B01CD5VC92");
+    }
+
+    @Test
+    public void searchAmazonProductList() {
+        loadTestConfig();
+        ProductSearcher.searchAmazonProductList("Raspberry pi");
     }
 
     @Test
     public void searchEbayProduct() {
         loadTestConfig();
-        ProductSearcher.searchEbayProduct("Raspberry pi");
+        ProductSearcher.searchEbayProduct("122129721207");
+    }
+
+    @Test
+    public void searchEbayProductList() {
+        loadTestConfig();
+        ProductSearcher.searchEbayProductList("Raspberry pi");
     }
 }

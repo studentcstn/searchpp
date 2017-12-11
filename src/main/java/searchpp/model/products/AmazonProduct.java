@@ -11,6 +11,12 @@ public class AmazonProduct extends Product
     private String _model;
     private double _rating;
 
+    public AmazonProduct()
+    {}
+
+    public AmazonProduct(String productId)
+    {}
+
     public void setSalesRank(int salesRank)
     {
         _salesRank = salesRank;

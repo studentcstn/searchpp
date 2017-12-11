@@ -17,13 +17,13 @@ public class EbayRequestsHelper extends RequestsHelper
     public EbayRequestsHelper(String endpoint)
     {
         _endpoint = endpoint.toLowerCase();
-        _clientId = ConfigLoader.getConfig("ebay", Api.clientID);
+        //_clientId = ConfigLoader.getConfig("ebay", Api.clientID);
     }
 
     @Override
     public String generateRequest(Map<String, String> params, String requestUri)
     {
-        params.put("SECURITY-APPNAME", _clientId);
+        //params.put("SECURITY-APPNAME", _clientId);
         SortedMap<String, String> sortedParamMap = new TreeMap<>(params);
 
         String request = canonicalize(sortedParamMap);

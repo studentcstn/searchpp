@@ -10,6 +10,12 @@ public class EbayProduct extends Product
      */
     private ListingType _listingType;
 
+    public EbayProduct()
+    {}
+
+    public EbayProduct(String productId)
+    {}
+
     public void setListingType(ListingType listingType) {
         _listingType = listingType;
     }

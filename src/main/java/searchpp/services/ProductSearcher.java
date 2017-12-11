@@ -25,8 +25,9 @@ public class ProductSearcher
 {
     private static AmazonRequestsHelper _amazonRequestsHelper = new AmazonRequestsHelper("ecs.amazonaws.de");
     private static EbayRequestsHelper _ebayRequestsHelper = new EbayRequestsHelper("svcs.ebay.com");
+    private static EbayRequestsHelper _ebayRequestsHelper2 = new EbayRequestsHelper("open.api.ebay.com");
 
-    public static List<AmazonProduct> searchAmazonProduct(String searchString)
+    public static List<AmazonProduct> searchAmazonProductList(String searchString)
     {
         String requestUrl;
 
@@ -39,8 +40,25 @@ public class ProductSearcher
 
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 
-        //System.out.println(requestUrl);
+        System.out.println(requestUrl);
         return parseAmazonRequest(requestUrl);
+    }
+
+    public static AmazonProduct searchAmazonProduct(String productId)
+    {
+        String requestUrl;
+
+        Map<String, String> params = new HashMap<>();
+        params.put("Service", "AWSECommerceService");
+        params.put("Operation", "ItemLookup");
+        params.put("IdType", "ASIN");
+        params.put("ResponseGroup", "ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
+        params.put("ItemId", productId);
+
+        requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
+
+        System.out.println(requestUrl);
+        return parseAmazonRequest(requestUrl).get(0);
     }
 
     private static List<AmazonProduct> parseAmazonRequest(String requestUrl)
@@ -109,11 +127,12 @@ public class ProductSearcher
         return products;
     }
 
-    public static List<EbayProduct> searchEbayProduct(String searchString)
+    public static List<EbayProduct> searchEbayProductList(String searchString)
     {
         String requestUrl;
 
         Map<String, String> params = new HashMap<>();
+        params.put("SECURITY-APPNAME", ConfigLoader.getConfig("ebay", Api.clientID));
         params.put("OPERATION-NAME" , "findItemsAdvanced");
         params.put("SERVICE-VERSION", "1.0.0");
         params.put("RESPONSE-DATA-FORMAT", "XML");
@@ -123,8 +142,27 @@ public class ProductSearcher
 
         requestUrl = _ebayRequestsHelper.generateRequest(params, "/services/search/FindingService/v1");
 
-        //System.out.println(requestUrl);
+        System.out.println(requestUrl);
         return parseEbayRequest(requestUrl);
+    }
+
+    public static EbayProduct searchEbayProduct(String productId)
+    {
+        String requestUrl;
+
+        Map<String, String> params = new HashMap<>();
+        params.put("appid" , ConfigLoader.getConfig("ebay", Api.clientID));
+        params.put("callname" , "GetSingleItem");
+        params.put("responseencoding", "XML");
+        params.put("siteid", "77");
+        params.put("version", "967");
+        params.put("ItemID", productId);
+
+        requestUrl = _ebayRequestsHelper2.generateRequest(params, "/shopping");
+
+        System.out.println(requestUrl);
+        //return parseEbayRequest(requestUrl);
+        return null;
     }
 
     private static List<EbayProduct> parseEbayRequest(String requestUrl)
