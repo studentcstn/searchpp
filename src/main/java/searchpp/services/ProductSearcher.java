@@ -24,8 +24,8 @@ import java.util.Map;
 public class ProductSearcher
 {
     private static AmazonRequestsHelper _amazonRequestsHelper = new AmazonRequestsHelper("ecs.amazonaws.de");
-    private static EbayRequestsHelper _ebayRequestsHelper = new EbayRequestsHelper("svcs.ebay.com");
-    private static EbayRequestsHelper _ebayRequestsHelper2 = new EbayRequestsHelper("open.api.ebay.com");
+    private static EbayRequestsHelper _ebayRequestsHelperSvcs = new EbayRequestsHelper("svcs.ebay.com");
+    private static EbayRequestsHelper _ebayRequestsHelperOpenApi = new EbayRequestsHelper("open.api.ebay.com");
 
     public static List<AmazonProduct> searchAmazonProductList(String searchString)
     {
@@ -44,7 +44,7 @@ public class ProductSearcher
         return parseAmazonRequest(requestUrl);
     }
 
-    public static AmazonProduct searchAmazonProduct(String productId)
+    public static AmazonProduct searchAmazonProduct(AmazonProduct product)
     {
         String requestUrl;
 
@@ -53,7 +53,7 @@ public class ProductSearcher
         params.put("Operation", "ItemLookup");
         params.put("IdType", "ASIN");
         params.put("ResponseGroup", "ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
-        params.put("ItemId", productId);
+        params.put("ItemId", product.getProductId());
 
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 
@@ -140,32 +140,13 @@ public class ProductSearcher
         params.put("GLOBAL-ID", "EBAY-DE");
         params.put("keywords", searchString);
 
-        requestUrl = _ebayRequestsHelper.generateRequest(params, "/services/search/FindingService/v1");
+        requestUrl = _ebayRequestsHelperSvcs.generateRequest(params, "/services/search/FindingService/v1");
 
         System.out.println(requestUrl);
-        return parseEbayRequest(requestUrl);
+        return parseEbayProductList(requestUrl);
     }
 
-    public static EbayProduct searchEbayProduct(String productId)
-    {
-        String requestUrl;
-
-        Map<String, String> params = new HashMap<>();
-        params.put("appid" , ConfigLoader.getConfig("ebay", Api.clientID));
-        params.put("callname" , "GetSingleItem");
-        params.put("responseencoding", "XML");
-        params.put("siteid", "77");
-        params.put("version", "967");
-        params.put("ItemID", productId);
-
-        requestUrl = _ebayRequestsHelper2.generateRequest(params, "/shopping");
-
-        System.out.println(requestUrl);
-        //return parseEbayRequest(requestUrl);
-        return null;
-    }
-
-    private static List<EbayProduct> parseEbayRequest(String requestUrl)
+    private static List<EbayProduct> parseEbayProductList(String requestUrl)
     {
         List<EbayProduct> products = new ArrayList<>();
 
@@ -208,6 +189,65 @@ public class ProductSearcher
 
         return products;
     }
+
+    public static EbayProduct searchEbayProduct(EbayProduct product)
+    {
+        String requestUrl;
+
+        Map<String, String> params = new HashMap<>();
+        params.put("appid" , ConfigLoader.getConfig("ebay", Api.clientID));
+        params.put("callname" , "GetSingleItem");
+        params.put("responseencoding", "XML");
+        params.put("siteid", "77");
+        params.put("version", "967");
+        params.put("ItemID", product.getProductId());
+
+        requestUrl = _ebayRequestsHelperOpenApi.generateRequest(params, "/shopping");
+
+        System.out.println(requestUrl);
+        return parseEbayProduct(requestUrl);
+    }
+
+    private static EbayProduct parseEbayProduct(String requestUrl)
+    {
+         EbayProduct product = new EbayProduct();
+
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(requestUrl);
+
+            NodeList itemList = doc.getElementsByTagName("Item");
+
+            for(int i = 0; i < itemList.getLength(); i++)
+            {
+                Node item = itemList.item(i);
+
+                Element eElement = (Element) item;
+                String itemId = getTagValue(eElement, "ItemID");
+                String title = getTagValue(eElement, "Title");
+                //Todo Condition
+                Double price = Double.parseDouble(getTagValue(eElement, "ConvertedCurrentPrice"));
+                //Todo ListingType
+
+                product.setTitle(itemId);
+                product.setTitle(title);
+                //Todo product.setCondition();
+                product.setPrice(price);
+                //Todo product.setListingType();
+
+                System.out.println("ItemId: " + itemId);
+                System.out.println("Title: " + title);
+                System.out.println("Price: " + price);
+                System.out.println("------------");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return product;
+    }
+
 
     private static String getTagValue(Element eElement, String tag)
     {

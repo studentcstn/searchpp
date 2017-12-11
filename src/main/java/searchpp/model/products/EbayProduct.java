@@ -13,13 +13,10 @@ public class EbayProduct extends Product
     public EbayProduct()
     {}
 
-    public EbayProduct(String productId)
-    {}
-
     public void setListingType(ListingType listingType) {
         _listingType = listingType;
     }
-    public ListingType get_listingType() {
+    public ListingType getListingType() {
         return _listingType;
     }
 }

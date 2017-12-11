@@ -14,14 +14,11 @@ public class AmazonProduct extends Product
     public AmazonProduct()
     {}
 
-    public AmazonProduct(String productId)
-    {}
-
     public void setSalesRank(int salesRank)
     {
         _salesRank = salesRank;
     }
-    public int get_salesRank() {
+    public int getSalesRank() {
         return _salesRank;
     }
 
@@ -30,7 +27,7 @@ public class AmazonProduct extends Product
     {
         _ean = ean;
     }
-    public long get_ean() {
+    public long getEan() {
         return _ean;
     }
 
@@ -39,7 +36,7 @@ public class AmazonProduct extends Product
     {
         _manufacturer = manufacturer;
     }
-    public String get_manufacturer() {
+    public String getManufacturer() {
         return _manufacturer;
     }
 
@@ -48,7 +45,7 @@ public class AmazonProduct extends Product
     {
         _model = model;
     }
-    public String get_model() {
+    public String getModel() {
         return _model;
     }
 
@@ -56,7 +53,7 @@ public class AmazonProduct extends Product
     {
         _rating = rating;
     }
-    public double get_rating() {
+    public double getRating() {
         return _rating;
     }
 }
