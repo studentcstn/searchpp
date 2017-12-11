@@ -7,7 +7,7 @@ import org.w3c.dom.NodeList;
 import searchpp.model.config.Api;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.EbayProduct;
-import searchpp.utils.AmazonSignedRequestsHelper;
+import searchpp.utils.AmazonRequestsHelper;
 import searchpp.utils.ConfigLoader;
 import searchpp.utils.EbayRequestsHelper;
 
@@ -23,31 +23,23 @@ import java.util.Map;
  */
 public class ProductSearcher
 {
+    private static AmazonRequestsHelper _amazonRequestsHelper = new AmazonRequestsHelper("ecs.amazonaws.de");
+    private static EbayRequestsHelper _ebayRequestsHelper = new EbayRequestsHelper("svcs.ebay.com");
+
     public static List<AmazonProduct> searchAmazonProduct(String searchString)
     {
-        AmazonSignedRequestsHelper helper;
-        try
-        {
-            helper = AmazonSignedRequestsHelper.getInstance("ecs.amazonaws.de", ConfigLoader.getConfig("amazon", Api.accessKey), ConfigLoader.getConfig("amazon", Api.secretKey));
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-
         String requestUrl;
 
         Map<String, String> params = new HashMap<>();
         params.put("Service", "AWSECommerceService");
-        params.put("AssociateTag" , ConfigLoader.getConfig("amazon", Api.clientID));
         params.put("Operation", "ItemSearch");
         params.put("SearchIndex", "All");
         params.put("ResponseGroup", "ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
         params.put("Keywords", searchString);
 
-        requestUrl = helper.sign(params);
+        requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 
-
+        //System.out.println(requestUrl);
         return parseAmazonRequest(requestUrl);
     }
 
@@ -119,20 +111,9 @@ public class ProductSearcher
 
     public static List<EbayProduct> searchEbayProduct(String searchString)
     {
-        EbayRequestsHelper helper;
-        try
-        {
-            helper = EbayRequestsHelper.getInstance("svcs.ebay.com");
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-
         String requestUrl;
 
         Map<String, String> params = new HashMap<>();
-        params.put("SECURITY-APPNAME", ConfigLoader.getConfig("ebay", Api.clientID));
         params.put("OPERATION-NAME" , "findItemsAdvanced");
         params.put("SERVICE-VERSION", "1.0.0");
         params.put("RESPONSE-DATA-FORMAT", "XML");
@@ -140,9 +121,9 @@ public class ProductSearcher
         params.put("GLOBAL-ID", "EBAY-DE");
         params.put("keywords", searchString);
 
-        requestUrl = helper.signEbay(params);
+        requestUrl = _ebayRequestsHelper.generateRequest(params, "/services/search/FindingService/v1");
 
-        System.out.println(requestUrl);
+        //System.out.println(requestUrl);
         return parseEbayRequest(requestUrl);
     }
 
