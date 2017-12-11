@@ -30,8 +30,8 @@ public class Main {
 
     /**
      * Main method.
-     * @param args
-     * @throws IOException
+     * @param args program arguments
+     * @throws IOException if there is a problem with the server
      */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
