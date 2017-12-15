@@ -1,6 +1,8 @@
 package searchpp.services;
 
 import org.junit.Test;
+import searchpp.model.products.AmazonProduct;
+import searchpp.model.products.EbayProduct;
 import searchpp.utils.ConfigLoader;
 
 import java.io.File;
@@ -38,7 +40,9 @@ public class ProductSearcher_test {
     @Test
     public void searchAmazonProduct() {
         loadTestConfig();
-        ProductSearcher.searchAmazonProduct("B01CD5VC92");
+        AmazonProduct testProduct = new AmazonProduct();
+        testProduct.setProductId("B01CD5VC92");
+        ProductSearcher.searchAmazonProduct(testProduct);
     }
 
     @Test
@@ -50,7 +54,9 @@ public class ProductSearcher_test {
     @Test
     public void searchEbayProduct() {
         loadTestConfig();
-        ProductSearcher.searchEbayProduct("122129721207");
+        EbayProduct testProduct = new EbayProduct();
+        testProduct.setProductId("122129721207");
+        ProductSearcher.searchEbayProduct(testProduct);
     }
 
     @Test

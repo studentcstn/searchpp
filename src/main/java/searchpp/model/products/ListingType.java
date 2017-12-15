@@ -12,4 +12,5 @@ public enum ListingType
     CLASSIFIED, //Classified Advertisement Listing (sale outside ebay)
     FIXEDPRICE, //Listing with fixed price
     STOREINVENTORY  //Listings with fixed price, that appear after other listings
+
 }
