@@ -6,7 +6,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import searchpp.model.config.Api;
 import searchpp.model.products.AmazonProduct;
+import searchpp.model.products.Condition;
 import searchpp.model.products.EbayProduct;
+import searchpp.model.products.ListingType;
 import searchpp.utils.AmazonRequestsHelper;
 import searchpp.utils.ConfigLoader;
 import searchpp.utils.EbayRequestsHelper;
@@ -80,11 +82,13 @@ public class ProductSearcher
                 Element eElement = (Element) item;
                 String asin = getTagValue(eElement, "ASIN");
                 String title = getTagValue(eElement, "Title");
-                //Todo Condition
+
+                Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
+                Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
+
                 Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
                 Double price = Double.parseDouble(getTagValue(ePrice, "Amount"))/100;
 
-                //Todo bessere Lösung wenn kein SalesRank angegeben
                 String rank = getTagValue(eElement, "SalesRank");
                 int salesRank  = -1;
                 if(!rank.equals(""))
@@ -101,7 +105,7 @@ public class ProductSearcher
 
                 product.setProductId(asin);
                 product.setTitle(title);
-                //Todo product.setCondition();
+                product.setCondition(condition);
                 product.setPrice(price);
                 product.setEan(ean);
                 product.setManufacturer(manufacturer);
@@ -117,6 +121,7 @@ public class ProductSearcher
                 System.out.println("Manufacturer: " + manufacturer);
                 System.out.println("Model: " + model);
                 System.out.println("Title: " + title);
+                System.out.println("Condition: " + condition);
                 System.out.println("Price: " + price);
                 System.out.println("------------");
             }
@@ -165,22 +170,29 @@ public class ProductSearcher
                 Element eElement = (Element) item;
                 String itemId = getTagValue(eElement, "itemId");
                 String title = getTagValue(eElement, "title");
-                //Todo Condition
+
+                Element eCondition = (Element) eElement.getElementsByTagName("condition").item(0);
+                Condition condition = Condition.getProductCondition(getTagValue(eCondition, "conditionId"));
+
                 Element ePrice = (Element) eElement.getElementsByTagName("sellingStatus").item(0);
                 Double price = Double.parseDouble(getTagValue(ePrice, "currentPrice"));
-                //Todo ListingType
+
+                Element eListingType = (Element) eElement.getElementsByTagName("listingInfo").item(0);
+                ListingType listingType = ListingType.getType(getTagValue(eListingType, "listingType"));
 
                 product.setProductId(itemId);
                 product.setTitle(title);
-                //Todo product.setCondition();
+                product.setCondition(condition);
                 product.setPrice(price);
-                //Todo product.setListingType();
+                product.setListingType(listingType);
 
                 products.add(product);
 
                 System.out.println("ItemId: " + itemId);
                 System.out.println("Title: " + title);
                 System.out.println("Price: " + price);
+                System.out.println("Condition: " + condition);
+                System.out.println("ListingType: " + listingType);
                 System.out.println("------------");
             }
         } catch (Exception e) {
