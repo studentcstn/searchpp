@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import searchpp.model.config.Api;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.Condition;
@@ -15,6 +16,8 @@ import searchpp.utils.EbayRequestsHelper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,66 +70,72 @@ public class ProductSearcher
     {
         List<AmazonProduct> products = new ArrayList<>();
 
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(requestUrl);
-
-            NodeList itemList = doc.getElementsByTagName("Item");
-
-            for(int i = 0; i < itemList.getLength(); i++)
+        for(int n = 0; n < 5; n++)
+        {
+            try
             {
-                AmazonProduct product = new AmazonProduct();
-                Node item = itemList.item(i);
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(requestUrl);
 
-                Element eElement = (Element) item;
-                String asin = getTagValue(eElement, "ASIN");
-                String title = getTagValue(eElement, "Title");
+                NodeList itemList = doc.getElementsByTagName("Item");
 
-                Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
-                Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
+                for (int i = 0; i < itemList.getLength(); i++)
+                {
+                    AmazonProduct product = new AmazonProduct();
+                    Node item = itemList.item(i);
 
-                Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
-                Double price = Double.parseDouble(getTagValue(ePrice, "Amount"))/100;
+                    Element eElement = (Element) item;
+                    String asin = getTagValue(eElement, "ASIN");
+                    String title = getTagValue(eElement, "Title");
 
-                String rank = getTagValue(eElement, "SalesRank");
-                int salesRank  = -1;
-                if(!rank.equals(""))
-                    salesRank = Integer.parseInt(rank);
+                    Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
+                    Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
 
-                /* nicht überall ist ein ean angegeben */
-                String eanElement = getTagValue(eElement, "EAN");
-                long ean = -1;
-                if (eanElement.matches("[0-9]+"))
-                    ean = Long.parseLong(eanElement);
-                String manufacturer = getTagValue(eElement, "Manufacturer");
-                String model = getTagValue(eElement, "Model");
-                //Todo Rating
+                    Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
+                    Double price = Double.parseDouble(getTagValue(ePrice, "Amount")) / 100;
 
-                product.setProductId(asin);
-                product.setTitle(title);
-                product.setCondition(condition);
-                product.setPrice(price);
-                product.setEan(ean);
-                product.setManufacturer(manufacturer);
-                product.setModel(model);
-                product.setSalesRank(salesRank);
-                //Todo product.setRating();
+                    String rank = getTagValue(eElement, "SalesRank");
+                    int salesRank = -1;
+                    if (!rank.equals(""))
+                        salesRank = Integer.parseInt(rank);
 
-                products.add(product);
+                    /* nicht überall ist ein ean angegeben */
+                    String eanElement = getTagValue(eElement, "EAN");
+                    long ean = -1;
+                    if (eanElement.matches("[0-9]+"))
+                        ean = Long.parseLong(eanElement);
+                    String manufacturer = getTagValue(eElement, "Manufacturer");
+                    String model = getTagValue(eElement, "Model");
+                    //Todo Rating
 
-                System.out.println("ASIN: " +asin);
-                System.out.println("EAN: " + ean);
-                System.out.println("SalesRank: " + salesRank);
-                System.out.println("Manufacturer: " + manufacturer);
-                System.out.println("Model: " + model);
-                System.out.println("Title: " + title);
-                System.out.println("Condition: " + condition);
-                System.out.println("Price: " + price);
-                System.out.println("------------");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                    product.setProductId(asin);
+                    product.setTitle(title);
+                    product.setCondition(condition);
+                    product.setPrice(price);
+                    product.setEan(ean);
+                    product.setManufacturer(manufacturer);
+                    product.setModel(model);
+                    product.setSalesRank(salesRank);
+                    //Todo product.setRating();
+
+                    products.add(product);
+
+                    System.out.println("ASIN: " + asin);
+                    System.out.println("EAN: " + ean);
+                    System.out.println("SalesRank: " + salesRank);
+                    System.out.println("Manufacturer: " + manufacturer);
+                    System.out.println("Model: " + model);
+                    System.out.println("Title: " + title);
+                    System.out.println("Condition: " + condition);
+                    System.out.println("Price: " + price);
+                    System.out.println("------------");
+                }
+
+                return products;
+
+            } catch (Exception e)
+            {}
         }
 
         return products;
