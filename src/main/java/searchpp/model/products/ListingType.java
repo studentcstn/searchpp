@@ -11,6 +11,37 @@ public enum ListingType
     AUCTIONWITHBIN, //Auction Listing with buy it now option
     CLASSIFIED, //Classified Advertisement Listing (sale outside ebay)
     FIXEDPRICE, //Listing with fixed price
-    STOREINVENTORY  //Listings with fixed price, that appear after other listings
+    STOREINVENTORY,  //Listings with fixed price, that appear after other listings
+    OTHER;
 
+    public static ListingType getType(String listing)
+    {
+        ListingType listingType;
+        switch(listing)
+        {
+            case "AdFormat":
+                listingType = ADFORMAT;
+                break;
+            case "Auction":
+                listingType = AUCTION;
+                break;
+            case "AuctionWithBIN":
+                listingType = AUCTIONWITHBIN;
+                break;
+            case "Classified":
+                listingType = CLASSIFIED;
+                break;
+            case "FixedPrice":
+                listingType = FIXEDPRICE;
+                break;
+            case "StoreInventory":
+                listingType = STOREINVENTORY;
+                break;
+            default:
+                listingType = OTHER;
+                break;
+
+        }
+        return  listingType;
+    }
 }

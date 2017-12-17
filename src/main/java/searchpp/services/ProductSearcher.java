@@ -4,15 +4,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import searchpp.model.config.Api;
 import searchpp.model.products.AmazonProduct;
+import searchpp.model.products.Condition;
 import searchpp.model.products.EbayProduct;
+import searchpp.model.products.ListingType;
 import searchpp.utils.AmazonRequestsHelper;
 import searchpp.utils.ConfigLoader;
 import searchpp.utils.EbayRequestsHelper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,63 +70,72 @@ public class ProductSearcher
     {
         List<AmazonProduct> products = new ArrayList<>();
 
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(requestUrl);
-
-            NodeList itemList = doc.getElementsByTagName("Item");
-
-            for(int i = 0; i < itemList.getLength(); i++)
+        for(int n = 0; n < 5; n++)
+        {
+            try
             {
-                AmazonProduct product = new AmazonProduct();
-                Node item = itemList.item(i);
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(requestUrl);
 
-                Element eElement = (Element) item;
-                String asin = getTagValue(eElement, "ASIN");
-                String title = getTagValue(eElement, "Title");
-                //Todo Condition
-                Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
-                Double price = Double.parseDouble(getTagValue(ePrice, "Amount"))/100;
+                NodeList itemList = doc.getElementsByTagName("Item");
 
-                //Todo bessere Lösung wenn kein SalesRank angegeben
-                String rank = getTagValue(eElement, "SalesRank");
-                int salesRank  = -1;
-                if(!rank.equals(""))
-                    salesRank = Integer.parseInt(rank);
+                for (int i = 0; i < itemList.getLength(); i++)
+                {
+                    AmazonProduct product = new AmazonProduct();
+                    Node item = itemList.item(i);
 
-                /* nicht überall ist ein ean angegeben */
-                String eanElement = getTagValue(eElement, "EAN");
-                long ean = -1;
-                if (eanElement.matches("[0-9]+"))
-                    ean = Long.parseLong(eanElement);
-                String manufacturer = getTagValue(eElement, "Manufacturer");
-                String model = getTagValue(eElement, "Model");
-                //Todo Rating
+                    Element eElement = (Element) item;
+                    String asin = getTagValue(eElement, "ASIN");
+                    String title = getTagValue(eElement, "Title");
 
-                product.setProductId(asin);
-                product.setTitle(title);
-                //Todo product.setCondition();
-                product.setPrice(price);
-                product.setEan(ean);
-                product.setManufacturer(manufacturer);
-                product.setModel(model);
-                product.setSalesRank(salesRank);
-                //Todo product.setRating();
+                    Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
+                    Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
 
-                products.add(product);
+                    Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
+                    Double price = Double.parseDouble(getTagValue(ePrice, "Amount")) / 100;
 
-                System.out.println("ASIN: " +asin);
-                System.out.println("EAN: " + ean);
-                System.out.println("SalesRank: " + salesRank);
-                System.out.println("Manufacturer: " + manufacturer);
-                System.out.println("Model: " + model);
-                System.out.println("Title: " + title);
-                System.out.println("Price: " + price);
-                System.out.println("------------");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                    String rank = getTagValue(eElement, "SalesRank");
+                    int salesRank = -1;
+                    if (!rank.equals(""))
+                        salesRank = Integer.parseInt(rank);
+
+                    /* nicht überall ist ein ean angegeben */
+                    String eanElement = getTagValue(eElement, "EAN");
+                    long ean = -1;
+                    if (eanElement.matches("[0-9]+"))
+                        ean = Long.parseLong(eanElement);
+                    String manufacturer = getTagValue(eElement, "Manufacturer");
+                    String model = getTagValue(eElement, "Model");
+                    //Todo Rating
+
+                    product.setProductId(asin);
+                    product.setTitle(title);
+                    product.setCondition(condition);
+                    product.setPrice(price);
+                    product.setEan(ean);
+                    product.setManufacturer(manufacturer);
+                    product.setModel(model);
+                    product.setSalesRank(salesRank);
+                    //Todo product.setRating();
+
+                    products.add(product);
+
+                    System.out.println("ASIN: " + asin);
+                    System.out.println("EAN: " + ean);
+                    System.out.println("SalesRank: " + salesRank);
+                    System.out.println("Manufacturer: " + manufacturer);
+                    System.out.println("Model: " + model);
+                    System.out.println("Title: " + title);
+                    System.out.println("Condition: " + condition);
+                    System.out.println("Price: " + price);
+                    System.out.println("------------");
+                }
+
+                return products;
+
+            } catch (Exception e)
+            {}
         }
 
         return products;
@@ -165,22 +179,29 @@ public class ProductSearcher
                 Element eElement = (Element) item;
                 String itemId = getTagValue(eElement, "itemId");
                 String title = getTagValue(eElement, "title");
-                //Todo Condition
+
+                Element eCondition = (Element) eElement.getElementsByTagName("condition").item(0);
+                Condition condition = Condition.getProductCondition(getTagValue(eCondition, "conditionId"));
+
                 Element ePrice = (Element) eElement.getElementsByTagName("sellingStatus").item(0);
                 Double price = Double.parseDouble(getTagValue(ePrice, "currentPrice"));
-                //Todo ListingType
+
+                Element eListingType = (Element) eElement.getElementsByTagName("listingInfo").item(0);
+                ListingType listingType = ListingType.getType(getTagValue(eListingType, "listingType"));
 
                 product.setProductId(itemId);
                 product.setTitle(title);
-                //Todo product.setCondition();
+                product.setCondition(condition);
                 product.setPrice(price);
-                //Todo product.setListingType();
+                product.setListingType(listingType);
 
                 products.add(product);
 
                 System.out.println("ItemId: " + itemId);
                 System.out.println("Title: " + title);
                 System.out.println("Price: " + price);
+                System.out.println("Condition: " + condition);
+                System.out.println("ListingType: " + listingType);
                 System.out.println("------------");
             }
         } catch (Exception e) {
