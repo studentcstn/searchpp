@@ -4,7 +4,7 @@ USE searchpp;
 
 #list of all register users
 CREATE TABLE users (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL
 );
 
@@ -13,30 +13,22 @@ CREATE TABLE products (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
 );
 
-#list of site id's / platform
-CREATE TABLE sites (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    site_id VARCHAR(255) UNIQUE NOT NULL,
-    platform ENUM('amazon', 'ebay') NOT NULL
-);
-
 #product id - side id mapping
 CREATE TABLE product_to_site (
     product_id INT UNSIGNED,
-    side_id INT UNSIGNED,
-
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (side_id) REFERENCES sites(id) ON DELETE CASCADE ON UPDATE CASCADE
+    site_id VARCHAR(255) UNIQUE NOT NULL,
+    platform ENUM('amazon', 'ebay') NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-ALTER TABLE product_to_site ADD UNIQUE (product_id, side_id);
+ALTER TABLE product_to_site ADD UNIQUE (product_id, site_id);
 
 #price history for side id's
 CREATE TABLE site_price_history (
-    site_id INT UNSIGNED NOT NULL,
+    site_id VARCHAR(255) NOT NULL,
     price DECIMAL(7,2) NOT NULL,
     date DATETIME NOT NULL,
 
-    FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (site_id) REFERENCES product_to_site(site_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 ALTER TABLE site_price_history ADD UNIQUE (site_id, date);
 
