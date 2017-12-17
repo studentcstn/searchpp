@@ -5,7 +5,7 @@ package searchpp.model.products;
  */
 public enum ListingType
 {
-    //ListingType from ebay (https://developer.ebay.com/devzone/finding/callref/types/ListingInfo.html)
+    //ListingType from ebay (https://developer.ebay.com/devzone/finding/callref/types/ListingInfo.html and http://developer.ebay.com/devzone/shopping/docs/callref/types/ListingTypeCodeType.html)
     ADFORMAT,   //Advertisement Product Listing
     AUCTION,    //Auction Listing
     AUCTIONWITHBIN, //Auction Listing with buy it now option
@@ -20,6 +20,7 @@ public enum ListingType
         switch(listing)
         {
             case "AdFormat":
+            case "AdType":
                 listingType = ADFORMAT;
                 break;
             case "Auction":
@@ -32,6 +33,7 @@ public enum ListingType
                 listingType = CLASSIFIED;
                 break;
             case "FixedPrice":
+            case "FixedPriceItem":
                 listingType = FIXEDPRICE;
                 break;
             case "StoreInventory":

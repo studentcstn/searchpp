@@ -121,14 +121,14 @@ public class ProductSearcher
 
                     products.add(product);
 
-                    System.out.println("ASIN: " + asin);
-                    System.out.println("EAN: " + ean);
-                    System.out.println("SalesRank: " + salesRank);
-                    System.out.println("Manufacturer: " + manufacturer);
-                    System.out.println("Model: " + model);
-                    System.out.println("Title: " + title);
-                    System.out.println("Condition: " + condition);
-                    System.out.println("Price: " + price);
+                    System.out.println("ASIN: " + product.getProductId());
+                    System.out.println("EAN: " + product.getEan());
+                    System.out.println("SalesRank: " + product.getSalesRank());
+                    System.out.println("Manufacturer: " + product.getManufacturer());
+                    System.out.println("Model: " + product.getModel());
+                    System.out.println("Title: " + product.getTitle());
+                    System.out.println("Condition: " + product.getCondition());
+                    System.out.println("Price: " + product.getPrice());
                     System.out.println("------------");
                 }
 
@@ -195,13 +195,11 @@ public class ProductSearcher
                 product.setPrice(price);
                 product.setListingType(listingType);
 
-                products.add(product);
-
-                System.out.println("ItemId: " + itemId);
-                System.out.println("Title: " + title);
-                System.out.println("Price: " + price);
-                System.out.println("Condition: " + condition);
-                System.out.println("ListingType: " + listingType);
+                System.out.println("ItemId: " + product.getProductId());
+                System.out.println("Title: " + product.getTitle());
+                System.out.println("Price: " + product.getPrice());
+                System.out.println("Condition: " + product.getCondition());
+                System.out.println("ListingType: " + product.getListingType());
                 System.out.println("------------");
             }
         } catch (Exception e) {
@@ -247,19 +245,22 @@ public class ProductSearcher
                 Element eElement = (Element) item;
                 String itemId = getTagValue(eElement, "ItemID");
                 String title = getTagValue(eElement, "Title");
-                //Todo Condition
+
+                Condition condition = Condition.getProductCondition(getTagValue(eElement, "ConditionID"));
                 Double price = Double.parseDouble(getTagValue(eElement, "ConvertedCurrentPrice"));
-                //Todo ListingType
+                ListingType listingType = ListingType.getType(getTagValue(eElement, "ListingType"));
 
-                product.setTitle(itemId);
+                product.setProductId(itemId);
                 product.setTitle(title);
-                //Todo product.setCondition();
+                product.setCondition(condition);
                 product.setPrice(price);
-                //Todo product.setListingType();
+                product.setListingType(listingType);
 
-                System.out.println("ItemId: " + itemId);
-                System.out.println("Title: " + title);
-                System.out.println("Price: " + price);
+                System.out.println("ItemId: " + product.getProductId());
+                System.out.println("Title: " + product.getTitle());
+                System.out.println("Price: " + product.getPrice());
+                System.out.println("Condition: " + product.getCondition());
+                System.out.println("ListingType: " + product.getListingType());
                 System.out.println("------------");
             }
         } catch (Exception e) {
