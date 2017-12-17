@@ -7,6 +7,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import java.io.IOException;
 import java.net.URI;
 
+import searchpp.model.config.Api;
+import searchpp.utils.ConfigLoader;
+
 /**
  * Main class.
  */

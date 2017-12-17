@@ -5,3 +5,6 @@ amazon_secretKey=
 ebay_clientID=
 ebay_accessKey=
 ebay_secretKey=
+
+google_clientID=
+google_secretKey=

@@ -77,6 +77,8 @@ public class ConfigLoader {
         if (!file.exists())
             return;
 
+        System.out.println("Config loaction: " + file.getAbsolutePath());
+
         configs = new ArrayList<>();
 
         String name = null;
@@ -117,8 +119,11 @@ public class ConfigLoader {
                 }
 
 
-                if (clientID != null && accessKey != null && secretKey != null) {
+                if (clientID != null && secretKey != null) {
+                    System.out.println("Read config for " + name);
+
                     configs.add(new Config(name, clientID, accessKey, secretKey));
+
                     name = null;
                     clientID = null;
                     accessKey = null;
