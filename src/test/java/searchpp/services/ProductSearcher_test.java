@@ -1,16 +1,12 @@
 package searchpp.services;
 
 import org.junit.Test;
+import searchpp.databse.DbProductTest;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.EbayProduct;
 import searchpp.utils.ConfigLoader;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import static org.junit.Assert.*;
 
 public class ProductSearcher_test {
 
@@ -22,19 +18,7 @@ public class ProductSearcher_test {
             return;
 
         //change file and load new
-        try {
-            Class c = configLoader.getClass();
-            Field field = c.getDeclaredField("file");
-            field.setAccessible(true);
-            field.set(configLoader, testConfig);
-
-            Method method = c.getDeclaredMethod("loadConfig");
-            method.setAccessible(true);
-            method.invoke(configLoader);
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-            assertTrue(false);
-        }
+        DbProductTest.loadTestConfig(configLoader, testConfig);
     }
 
     @Test

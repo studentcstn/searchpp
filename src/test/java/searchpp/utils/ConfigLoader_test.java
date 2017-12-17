@@ -36,6 +36,8 @@ public class ConfigLoader_test {
             assertTrue(false);
         }
 
+        System.out.println(configLoader.toString());
+
         assertNotNull(ConfigLoader.getInstance().getConfig("amazon"));
 
         assertNotNull(ConfigLoader.getConfig("amazon", Api.clientID));

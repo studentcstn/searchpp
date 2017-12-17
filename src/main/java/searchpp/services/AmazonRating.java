@@ -23,15 +23,23 @@ public class AmazonRating {
             Document document = Jsoup.connect(requestUrl).header("User-Agent", userAgent).get();
 
             Elements elements = document.getElementsByClass("a-link-normal");
-            //10 elements
 
-            apr = new AmazonProductRating();
+            apr = new AmazonProductRating(product);
 
             for(int i = 0; i < elements.size(); i+=2) {
                 Element element = elements.get(i);
 
-                apr.addRating(element.attr("title"), element.attr("href"));
+                apr.addUrl(element.attr("title"), element.attr("href"));
             }
+
+            elements = document.getElementsByClass("a-size-small");
+            for (int i = 1; i < elements.size(); i+=2) {
+                Element elementStar = elements.get(i - 1);
+                Element elementPercent = elements.get(i);
+
+                apr.addRating(elementStar.text(), elementPercent.text());
+            }
+
 
             elements = document.getElementsByClass("a-size-base a-color-secondary");
             Element element = elements.get(0);

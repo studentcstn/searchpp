@@ -29,6 +29,10 @@ public class DbProductTest
             return;
 
         //change file and load new
+        loadTestConfig(configLoader, testConfig);
+    }
+
+    public static void loadTestConfig(ConfigLoader configLoader, File testConfig) {
         try
         {
             Class c = configLoader.getClass();
