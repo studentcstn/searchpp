@@ -1,13 +1,25 @@
 package searchpp.model.products;
 
 class Rating {
-    public String percent;
+    public double percent;
     public int rating;
     public String url = "";
 
+    public double getPercent() {
+        return percent;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
     @Override
     public String toString() {
-        return String.format("%d stars: %3s   url: %s", rating, percent, url);
+        return String.format("%d stars: %4.1f %%   url: %s", rating, percent, url);
     }
 }
 
@@ -19,6 +31,26 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
 
     public AmazonProductRating(AmazonProduct product) {
         this.product = product;
+    }
+
+    public Rating[] getAllRatings() {
+        return ratings;
+    }
+
+    public Rating getRating(int starts) {
+        if (starts < 0)
+            starts = 1;
+        if (starts > 5)
+            starts = 5;
+        return ratings[starts - 1];
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public int getRatingsCount() {
+        return allRatings;
     }
 
 
@@ -34,7 +66,7 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
         int position = Integer.parseInt(starsSplit[0]) - 1;
         if (ratings[position] == null)
             ratings[position] = new Rating();
-        ratings[position].percent = rating;
+        ratings[position].percent = Double.parseDouble(rating.substring(0, rating.length() - 1));
         ratings[position].rating = position + 1;
     }
 
@@ -54,7 +86,6 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
                 this.allRatings = 0;
         }
     }
-
 
     private double productRating = -1.;
     private void calcProductRating() {
