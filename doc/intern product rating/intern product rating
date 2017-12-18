@@ -1,0 +1,4 @@
+Plot zuordnung:
+
+productRating = allRatings + allRatings * (allRatings * 0.25 * (averageRating - 3.) * (averageRating - 3.) * (averageRating - 3.));
+     y        =      z     +     z      * (     z     * 0.25 *                                (x-3)^3                            );

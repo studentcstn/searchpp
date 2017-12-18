@@ -90,7 +90,9 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
     private double productRating = -1.;
     private void calcProductRating() {
         //is a test. I do not know if it is working
-        productRating = allRatings - allRatings * (1./25.) * (-(averageRating * averageRating) + 25.);
+        //productRating = allRatings - allRatings * (1./25.) * (-(averageRating * averageRating) + 25.);
+        //better rating system
+        productRating = allRatings + allRatings * (allRatings * 0.25 * (averageRating - 3.) * (averageRating - 3.) * (averageRating - 3.));
     }
 
     @Override
