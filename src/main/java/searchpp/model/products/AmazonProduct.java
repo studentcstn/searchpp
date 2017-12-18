@@ -9,7 +9,7 @@ public class AmazonProduct extends Product
     private long _ean;
     private String _manufacturer;
     private String _model;
-    private double _rating;
+    private AmazonProductRating _rating;
 
     public AmazonProduct()
     {}
@@ -49,11 +49,11 @@ public class AmazonProduct extends Product
         return _model;
     }
 
-    public void setRating(double rating)
+    public void setRating(AmazonProductRating rating)
     {
         _rating = rating;
     }
-    public double getRating() {
+    public AmazonProductRating getRating() {
         return _rating;
     }
 }

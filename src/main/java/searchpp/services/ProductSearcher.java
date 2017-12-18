@@ -6,10 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import searchpp.model.config.Api;
-import searchpp.model.products.AmazonProduct;
-import searchpp.model.products.Condition;
-import searchpp.model.products.EbayProduct;
-import searchpp.model.products.ListingType;
+import searchpp.model.products.*;
 import searchpp.utils.AmazonRequestsHelper;
 import searchpp.utils.ConfigLoader;
 import searchpp.utils.EbayRequestsHelper;
@@ -63,7 +60,11 @@ public class ProductSearcher
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 
         System.out.println(requestUrl);
-        return parseAmazonRequest(requestUrl).get(0);
+        List<AmazonProduct> products = parseAmazonRequest(requestUrl);
+        if(products.size() < 1)
+            return null;
+        else
+            return products.get(0);
     }
 
     private static List<AmazonProduct> parseAmazonRequest(String requestUrl)
@@ -86,28 +87,34 @@ public class ProductSearcher
                     Node item = itemList.item(i);
 
                     Element eElement = (Element) item;
+
                     String asin = getTagValue(eElement, "ASIN");
+
                     String title = getTagValue(eElement, "Title");
 
                     Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
                     Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
 
                     Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
-                    Double price = Double.parseDouble(getTagValue(ePrice, "Amount")) / 100;
+                    String sPrice = getTagValue(ePrice, "Amount");
+                    double price = 0;
+                    if(!sPrice.equals(""))
+                        price = Double.parseDouble(sPrice) / 100;
 
                     String rank = getTagValue(eElement, "SalesRank");
                     int salesRank = -1;
                     if (!rank.equals(""))
                         salesRank = Integer.parseInt(rank);
 
-                    /* nicht überall ist ein ean angegeben */
                     String eanElement = getTagValue(eElement, "EAN");
                     long ean = -1;
                     if (eanElement.matches("[0-9]+"))
                         ean = Long.parseLong(eanElement);
                     String manufacturer = getTagValue(eElement, "Manufacturer");
                     String model = getTagValue(eElement, "Model");
-                    //Todo Rating
+
+                    if(asin.equals("") || title.equals("") || price == 0)
+                        break;
 
                     product.setProductId(asin);
                     product.setTitle(title);
@@ -117,7 +124,9 @@ public class ProductSearcher
                     product.setManufacturer(manufacturer);
                     product.setModel(model);
                     product.setSalesRank(salesRank);
-                    //Todo product.setRating();
+
+                    AmazonProductRating amazonProductRating = AmazonRating.getRating(product);
+                    product.setRating(amazonProductRating);
 
                     products.add(product);
 
@@ -129,13 +138,15 @@ public class ProductSearcher
                     System.out.println("Title: " + product.getTitle());
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("Price: " + product.getPrice());
+                    System.out.println("Rating: " + product.getRating().toString());
                     System.out.println("------------");
                 }
 
                 return products;
-
             } catch (Exception e)
-            {}
+            {
+                System.err.println("Error during request, trying again...");
+            }
         }
 
         return products;
@@ -164,48 +175,62 @@ public class ProductSearcher
     {
         List<EbayProduct> products = new ArrayList<>();
 
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(requestUrl);
-
-            NodeList itemList = doc.getElementsByTagName("item");
-
-            for(int i = 0; i < itemList.getLength(); i++)
+        for(int n = 0; n < 5; n++)
+        {
+            try
             {
-                EbayProduct product = new EbayProduct();
-                Node item = itemList.item(i);
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(requestUrl);
 
-                Element eElement = (Element) item;
-                String itemId = getTagValue(eElement, "itemId");
-                String title = getTagValue(eElement, "title");
+                NodeList itemList = doc.getElementsByTagName("item");
 
-                Element eCondition = (Element) eElement.getElementsByTagName("condition").item(0);
-                Condition condition = Condition.getProductCondition(getTagValue(eCondition, "conditionId"));
+                for (int i = 0; i < itemList.getLength(); i++)
+                {
+                    EbayProduct product = new EbayProduct();
+                    Node item = itemList.item(i);
 
-                Element ePrice = (Element) eElement.getElementsByTagName("sellingStatus").item(0);
-                Double price = Double.parseDouble(getTagValue(ePrice, "currentPrice"));
+                    Element eElement = (Element) item;
+                    String itemId = getTagValue(eElement, "itemId");
+                    String title = getTagValue(eElement, "title");
 
-                Element eListingType = (Element) eElement.getElementsByTagName("listingInfo").item(0);
-                ListingType listingType = ListingType.getType(getTagValue(eListingType, "listingType"));
+                    Element eCondition = (Element) eElement.getElementsByTagName("condition").item(0);
+                    Condition condition = Condition.getProductCondition(getTagValue(eCondition, "conditionId"));
 
-                product.setProductId(itemId);
-                product.setTitle(title);
-                product.setCondition(condition);
-                product.setPrice(price);
-                product.setListingType(listingType);
+                    Element ePrice = (Element) eElement.getElementsByTagName("sellingStatus").item(0);
+                    String sPrice = getTagValue(ePrice, "currentPrice");
+                    double price = 0;
+                    if (!sPrice.equals(""))
+                        price = Double.parseDouble(sPrice);
 
-                System.out.println("ItemId: " + product.getProductId());
-                System.out.println("Title: " + product.getTitle());
-                System.out.println("Price: " + product.getPrice());
-                System.out.println("Condition: " + product.getCondition());
-                System.out.println("ListingType: " + product.getListingType());
-                System.out.println("------------");
+                    Element eListingType = (Element) eElement.getElementsByTagName("listingInfo").item(0);
+                    ListingType listingType = ListingType.getType(getTagValue(eListingType, "listingType"));
+
+                    if (itemId.equals("") || title.equals("") || price == 0)
+                        break;
+
+                    product.setProductId(itemId);
+                    product.setTitle(title);
+                    product.setCondition(condition);
+                    product.setPrice(price);
+                    product.setListingType(listingType);
+
+                    products.add(product);
+
+                    System.out.println("ItemId: " + product.getProductId());
+                    System.out.println("Title: " + product.getTitle());
+                    System.out.println("Price: " + product.getPrice());
+                    System.out.println("Condition: " + product.getCondition());
+                    System.out.println("ListingType: " + product.getListingType());
+                    System.out.println("------------");
+                }
+
+                return products;
+            } catch (Exception e)
+            {
+                System.err.println("Error while requesting, trying again...");
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
-
         return products;
     }
 
@@ -229,45 +254,60 @@ public class ProductSearcher
 
     private static EbayProduct parseEbayProduct(String requestUrl)
     {
-         EbayProduct product = new EbayProduct();
+        EbayProduct product = new EbayProduct();
 
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(requestUrl);
-
-            NodeList itemList = doc.getElementsByTagName("Item");
-
-            for(int i = 0; i < itemList.getLength(); i++)
+        for(int n = 0; n < 5; n++)
+        {
+            try
             {
-                Node item = itemList.item(i);
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(requestUrl);
 
-                Element eElement = (Element) item;
-                String itemId = getTagValue(eElement, "ItemID");
-                String title = getTagValue(eElement, "Title");
+                NodeList itemList = doc.getElementsByTagName("Item");
 
-                Condition condition = Condition.getProductCondition(getTagValue(eElement, "ConditionID"));
-                Double price = Double.parseDouble(getTagValue(eElement, "ConvertedCurrentPrice"));
-                ListingType listingType = ListingType.getType(getTagValue(eElement, "ListingType"));
+                for (int i = 0; i < itemList.getLength(); i++)
+                {
+                    Node item = itemList.item(i);
 
-                product.setProductId(itemId);
-                product.setTitle(title);
-                product.setCondition(condition);
-                product.setPrice(price);
-                product.setListingType(listingType);
+                    Element eElement = (Element) item;
+                    String itemId = getTagValue(eElement, "ItemID");
+                    String title = getTagValue(eElement, "Title");
 
-                System.out.println("ItemId: " + product.getProductId());
-                System.out.println("Title: " + product.getTitle());
-                System.out.println("Price: " + product.getPrice());
-                System.out.println("Condition: " + product.getCondition());
-                System.out.println("ListingType: " + product.getListingType());
-                System.out.println("------------");
+                    Condition condition = Condition.getProductCondition(getTagValue(eElement, "ConditionID"));
+
+                    String sPrice = getTagValue(eElement, "ConvertedCurrentPrice");
+                    double price = 0;
+                    if (!sPrice.equals(""))
+                        price = Double.parseDouble(sPrice);
+
+                    ListingType listingType = ListingType.getType(getTagValue(eElement, "ListingType"));
+
+                    if (itemId.equals("") || title.equals("") || price == 0)
+                        break;
+
+                    product.setProductId(itemId);
+                    product.setTitle(title);
+                    product.setCondition(condition);
+                    product.setPrice(price);
+                    product.setListingType(listingType);
+
+                    System.out.println("ItemId: " + product.getProductId());
+                    System.out.println("Title: " + product.getTitle());
+                    System.out.println("Price: " + product.getPrice());
+                    System.out.println("Condition: " + product.getCondition());
+                    System.out.println("ListingType: " + product.getListingType());
+                    System.out.println("------------");
+                }
+
+                return product;
+
+            } catch (Exception e)
+            {
+                System.err.println("Error while requesting, trying again...");
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
-
-        return product;
+        return null;
     }
 
 
