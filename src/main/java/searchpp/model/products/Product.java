@@ -26,6 +26,8 @@ public abstract class Product
      */
     private double _price; //todo default price
 
+    private String _imgUrl;
+
     public Product()
     {}
 
@@ -71,4 +73,15 @@ public abstract class Product
     public double getPrice() {
         return _price;
     }
+
+    public String getImgUrl()
+    {
+        return _imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl)
+    {
+        _imgUrl = imgUrl;
+    }
+
 }

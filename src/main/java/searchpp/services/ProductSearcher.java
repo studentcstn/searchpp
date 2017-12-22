@@ -37,7 +37,7 @@ public class ProductSearcher
         params.put("Service", "AWSECommerceService");
         params.put("Operation", "ItemSearch");
         params.put("SearchIndex", "All");
-        params.put("ResponseGroup", "ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
+        params.put("ResponseGroup", "Images, ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
         params.put("Keywords", searchString);
 
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
@@ -54,7 +54,7 @@ public class ProductSearcher
         params.put("Service", "AWSECommerceService");
         params.put("Operation", "ItemLookup");
         params.put("IdType", "ASIN");
-        params.put("ResponseGroup", "ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
+        params.put("ResponseGroup", "Images, ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
         params.put("ItemId", product.getProductId());
 
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
@@ -113,6 +113,9 @@ public class ProductSearcher
                     String manufacturer = getTagValue(eElement, "Manufacturer");
                     String model = getTagValue(eElement, "Model");
 
+                    Element eImage = (Element) eElement.getElementsByTagName("LargeImage").item(0);
+                    String imgUrl = getTagValue(eImage, "URL");
+
                     if(asin.equals("") || title.equals("") || price == 0)
                         break;
 
@@ -124,6 +127,7 @@ public class ProductSearcher
                     product.setManufacturer(manufacturer);
                     product.setModel(model);
                     product.setSalesRank(salesRank);
+                    product.setImgUrl(imgUrl);
 
                     AmazonProductRating amazonProductRating = AmazonRating.getRating(product);
                     product.setRating(amazonProductRating);
@@ -138,6 +142,7 @@ public class ProductSearcher
                     System.out.println("Title: " + product.getTitle());
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("Price: " + product.getPrice());
+                    System.out.println("Img: " + product.getImgUrl());
                     System.out.println("Rating: " + product.getRating().toString());
                     System.out.println("------------");
                 }
@@ -206,6 +211,8 @@ public class ProductSearcher
                     Element eListingType = (Element) eElement.getElementsByTagName("listingInfo").item(0);
                     ListingType listingType = ListingType.getType(getTagValue(eListingType, "listingType"));
 
+                    String imgUrl = getTagValue(eElement, "galleryURL");
+
                     if (itemId.equals("") || title.equals("") || price == 0)
                         break;
 
@@ -214,6 +221,7 @@ public class ProductSearcher
                     product.setCondition(condition);
                     product.setPrice(price);
                     product.setListingType(listingType);
+                    product.setImgUrl(imgUrl);
 
                     products.add(product);
 
@@ -222,6 +230,7 @@ public class ProductSearcher
                     System.out.println("Price: " + product.getPrice());
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("ListingType: " + product.getListingType());
+                    System.out.println("Img: " + product.getImgUrl());
                     System.out.println("------------");
                 }
 
@@ -283,6 +292,7 @@ public class ProductSearcher
 
                     ListingType listingType = ListingType.getType(getTagValue(eElement, "ListingType"));
 
+                    String imgUrl = getTagValue(eElement, "PictureURL");
                     if (itemId.equals("") || title.equals("") || price == 0)
                         break;
 
@@ -291,12 +301,14 @@ public class ProductSearcher
                     product.setCondition(condition);
                     product.setPrice(price);
                     product.setListingType(listingType);
+                    product.setImgUrl(imgUrl);
 
                     System.out.println("ItemId: " + product.getProductId());
                     System.out.println("Title: " + product.getTitle());
                     System.out.println("Price: " + product.getPrice());
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("ListingType: " + product.getListingType());
+                    System.out.println("Img: " + product.getImgUrl());
                     System.out.println("------------");
                 }
 
