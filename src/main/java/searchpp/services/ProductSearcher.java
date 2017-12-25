@@ -31,19 +31,28 @@ public class ProductSearcher
 
     public static List<AmazonProduct> searchAmazonProductList(String searchString)
     {
-        String requestUrl;
-
         Map<String, String> params = new HashMap<>();
-        params.put("Service", "AWSECommerceService");
-        params.put("Operation", "ItemSearch");
-        params.put("SearchIndex", "All");
-        params.put("ResponseGroup", "Images, ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
         params.put("Keywords", searchString);
 
-        requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
+        return searchAmazon(params);
+    }
 
-        System.out.println(requestUrl);
-        return parseAmazonRequest(requestUrl);
+    public static List<AmazonProduct> searchAmazonProductList(String searchString, double minPrice, double maxPrice)
+    {
+        Map<String, String> params = new HashMap<>();
+        params.put("Keywords", searchString);
+
+        if(minPrice > maxPrice)
+        {
+            double tmp = minPrice;
+            minPrice = maxPrice;
+            maxPrice = tmp;
+        }
+
+        params.put("MinimumPrice", Integer.toString((int)minPrice*100));
+        params.put("MaximumPrice", Integer.toString((int)maxPrice*100));
+
+        return searchAmazon(params);
     }
 
     public static AmazonProduct searchAmazonProduct(AmazonProduct product)
@@ -67,6 +76,28 @@ public class ProductSearcher
             return products.get(0);
     }
 
+    private static List<AmazonProduct> searchAmazon(Map<String, String> params)
+    {
+        String requestUrl;
+
+        params.put("Service", "AWSECommerceService");
+        params.put("Operation", "ItemSearch");
+        params.put("SearchIndex", "All");
+        params.put("ResponseGroup", "Images, ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
+
+        List<AmazonProduct> products = new ArrayList<>();
+
+        for(int i = 1; i <= 5; i++)
+        {
+            params.put("ItemPage", Integer.toString(i));
+            requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
+            System.out.println(requestUrl);
+            products.addAll(parseAmazonRequest(requestUrl));
+        }
+
+        return products;
+    }
+
     private static List<AmazonProduct> parseAmazonRequest(String requestUrl)
     {
         List<AmazonProduct> products = new ArrayList<>();
@@ -88,14 +119,23 @@ public class ProductSearcher
 
                     Element eElement = (Element) item;
 
+                    if(getTagValue(eElement, "Format").equals("Kindle eBook"))
+                        continue;
+
                     String asin = getTagValue(eElement, "ASIN");
 
                     String title = getTagValue(eElement, "Title");
 
                     Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
+                    if(eCondtion == null)
+                        continue;
+
                     Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
 
                     Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
+                    if(ePrice == null)
+                        continue;
+
                     String sPrice = getTagValue(ePrice, "Amount");
                     double price = 0;
                     if(!sPrice.equals(""))
@@ -114,10 +154,13 @@ public class ProductSearcher
                     String model = getTagValue(eElement, "Model");
 
                     Element eImage = (Element) eElement.getElementsByTagName("LargeImage").item(0);
+                    if(eImage == null)
+                        continue;
+
                     String imgUrl = getTagValue(eImage, "URL");
 
-                    if(asin.equals("") || title.equals("") || price == 0)
-                        break;
+                    if(asin.equals("") || title.equals("") || price == 0 || condition == null)
+                        continue;
 
                     product.setProductId(asin);
                     product.setTitle(title);
@@ -148,9 +191,15 @@ public class ProductSearcher
                 }
 
                 return products;
-            } catch (Exception e)
+            } catch (ParserConfigurationException e)
+            {
+                System.err.println("ParserConfigurationException");
+            } catch (IOException e)
             {
                 System.err.println("Error during request, trying again...");
+            } catch (SAXException e)
+            {
+                System.err.println("SAXException");
             }
         }
 
@@ -159,16 +208,44 @@ public class ProductSearcher
 
     public static List<EbayProduct> searchEbayProductList(String searchString)
     {
+        Map<String, String> params = new HashMap<>();
+
+        params.put("keywords", searchString);
+
+        return searchEbay(params);
+    }
+
+    public static List<EbayProduct> searchEbayProductList(String searchString, double minPrice, double maxPrice)
+    {
+        Map<String, String> params = new HashMap<>();
+
+        params.put("keywords", searchString);
+
+        if(minPrice > maxPrice)
+        {
+            double tmp = minPrice;
+            minPrice = maxPrice;
+            maxPrice = tmp;
+        }
+
+        params.put("itemFilter(0).name", "MinPrice");
+        params.put("itemFilter(0).value", Double.toString(minPrice));
+        params.put("itemFilter(1).name", "MaxPrice");
+        params.put("itemFilter(1).value", Double.toString(maxPrice));
+
+        return searchEbay(params);
+    }
+
+    private static List<EbayProduct> searchEbay(Map<String, String> params)
+    {
         String requestUrl;
 
-        Map<String, String> params = new HashMap<>();
         params.put("SECURITY-APPNAME", ConfigLoader.getConfig("ebay", Api.clientID));
         params.put("OPERATION-NAME" , "findItemsAdvanced");
         params.put("SERVICE-VERSION", "1.0.0");
         params.put("RESPONSE-DATA-FORMAT", "XML");
         params.put("REST-PAYLOAD", "true");
         params.put("GLOBAL-ID", "EBAY-DE");
-        params.put("keywords", searchString);
 
         requestUrl = _ebayRequestsHelperSvcs.generateRequest(params, "/services/search/FindingService/v1");
 
@@ -214,7 +291,7 @@ public class ProductSearcher
                     String imgUrl = getTagValue(eElement, "galleryURL");
 
                     if (itemId.equals("") || title.equals("") || price == 0)
-                        break;
+                        continue;
 
                     product.setProductId(itemId);
                     product.setTitle(title);
@@ -235,9 +312,15 @@ public class ProductSearcher
                 }
 
                 return products;
-            } catch (Exception e)
+            } catch (ParserConfigurationException e)
             {
-                System.err.println("Error while requesting, trying again...");
+                System.err.println("ParserConfigurationException");
+            } catch (IOException e)
+            {
+                System.err.println("Error during request, trying again...");
+            } catch (SAXException e)
+            {
+                System.err.println("SAXException");
             }
         }
         return products;
@@ -294,7 +377,7 @@ public class ProductSearcher
 
                     String imgUrl = getTagValue(eElement, "PictureURL");
                     if (itemId.equals("") || title.equals("") || price == 0)
-                        break;
+                        continue;
 
                     product.setProductId(itemId);
                     product.setTitle(title);
@@ -314,9 +397,15 @@ public class ProductSearcher
 
                 return product;
 
-            } catch (Exception e)
+            } catch (ParserConfigurationException e)
             {
-                System.err.println("Error while requesting, trying again...");
+                System.err.println("ParserConfigurationException");
+            } catch (IOException e)
+            {
+                System.err.println("Error during request, trying again...");
+            } catch (SAXException e)
+            {
+                System.err.println("SAXException");
             }
         }
         return null;
