@@ -84,4 +84,8 @@ public abstract class Product
         _imgUrl = imgUrl;
     }
 
+    @Override
+    public String toString() {
+        return getProductId() + " " + getTitle();
+    }
 }

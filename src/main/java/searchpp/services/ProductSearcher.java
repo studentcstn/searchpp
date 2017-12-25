@@ -186,7 +186,8 @@ public class ProductSearcher
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("Price: " + product.getPrice());
                     System.out.println("Img: " + product.getImgUrl());
-                    System.out.println("Rating: " + product.getRating().toString());
+                    if (product.getRating() != null)
+                        System.out.println("Rating: " + product.getRating().toString());
                     System.out.println("------------");
                 }
 

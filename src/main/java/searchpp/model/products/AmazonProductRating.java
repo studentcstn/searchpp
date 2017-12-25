@@ -87,19 +87,24 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
         }
     }
 
-    private double productRating = -1.;
+    private double productRating = Double.NaN;
     private void calcProductRating() {
         //is a test. I do not know if it is working
         //productRating = allRatings - allRatings * (1./25.) * (-(averageRating * averageRating) + 25.);
         //better rating system
         productRating = allRatings + allRatings * (allRatings * 0.25 * (averageRating - 3.) * (averageRating - 3.) * (averageRating - 3.));
     }
+    public double getInternProductRating() {
+        if (Double.isNaN(productRating))
+            calcProductRating();
+        return productRating;
+    }
 
     @Override
     public int compareTo(AmazonProductRating o) {
-        if (productRating < 0)
+        if (Double.isNaN(productRating))
             calcProductRating();
-        if (o.productRating < 0)
+        if (Double.isNaN(o.productRating))
             o.calcProductRating();
         return Double.compare(productRating, o.productRating);
     }
@@ -115,7 +120,7 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
         }
         if (productRating < 0)
             calcProductRating();
-        stringBuilder.append(String.format("  intern product rating: %f", productRating));
+        stringBuilder.append(String.format("  intern product rating: %f", getInternProductRating()));
         return stringBuilder.toString();
     }
 }

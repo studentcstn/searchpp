@@ -56,4 +56,9 @@ public class AmazonProduct extends Product
     public AmazonProductRating getRating() {
         return _rating;
     }
+
+    @Override
+    public String toString() {
+        return getRating().getInternProductRating() + " " + super.toString();
+    }
 }
