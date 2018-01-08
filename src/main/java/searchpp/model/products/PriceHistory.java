@@ -1,5 +1,7 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONObject;
+
 import java.util.Date;
 
 public class PriceHistory
@@ -23,5 +25,13 @@ public class PriceHistory
     public double getPrice()
     {
         return _price;
+    }
+    public JSONObject getJsonItem(){
+        JSONObject priceHistory = new JSONObject();
+        priceHistory.put("date", getDate());
+        priceHistory.put("price", getPrice());
+
+
+        return priceHistory;
     }
 }

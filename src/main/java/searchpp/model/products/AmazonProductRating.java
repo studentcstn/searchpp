@@ -1,5 +1,7 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONObject;
+
 class Rating {
     public double percent;
     public int rating;
@@ -20,6 +22,14 @@ class Rating {
     @Override
     public String toString() {
         return String.format("%d stars: %4.1f %%   url: %s", rating, percent, url);
+    }
+    public JSONObject getJsonItem(){
+        JSONObject rating = new JSONObject();
+        rating.put("percent", getPercent());
+        rating.put("raiting", getRating());
+        rating.put("url", getUrl());
+
+        return rating;
     }
 }
 
@@ -117,5 +127,14 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
             calcProductRating();
         stringBuilder.append(String.format("  intern product rating: %f", productRating));
         return stringBuilder.toString();
+    }
+    public JSONObject getJsonItem(){
+        JSONObject amazonPRaiting = new JSONObject();
+        amazonPRaiting.put("product", product);
+        amazonPRaiting.put("ratings",ratings);
+        amazonPRaiting.put("averageRating", averageRating);
+        amazonPRaiting.put("allRatings", allRatings);
+
+        return amazonPRaiting;
     }
 }

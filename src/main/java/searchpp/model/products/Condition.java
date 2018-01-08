@@ -1,5 +1,7 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONObject;
+
 /**
  * Created by Tobi on 04.12.2017.
  */
@@ -59,5 +61,10 @@ public enum Condition
                 break;
         }
         return condition;
+    }
+    public JSONObject getJsonItem(String cond){
+        JSONObject condi = new JSONObject();
+        condi.put("condition", getProductCondition(cond));
+        return condi;
     }
 }
