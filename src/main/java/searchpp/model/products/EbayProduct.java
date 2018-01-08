@@ -36,6 +36,8 @@ public class EbayProduct extends Product
         ebayP.put("price", getPrice());
         ebayP.put("title", getTitle());
         ebayP.put("productid", getProductId());
+        ebayP.put("producturl", getProductUrl());
+        ebayP.put("imgurl", getImgUrl());
 
         return ebayP;
     }

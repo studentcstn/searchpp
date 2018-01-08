@@ -68,6 +68,8 @@ public class AmazonProduct extends Product
         JSONObject amazonP = new JSONObject();
         amazonP.put("globalID",super.getGlobalId());
         amazonP.put("productID",super.getProductId());
+        amazonP.put("producturl", getProductUrl());
+        amazonP.put("imgurl", getImgUrl());
         amazonP.put("title",super.getTitle());
         amazonP.put("condition",super.getCondition());
         amazonP.put("price",super.getPrice());
