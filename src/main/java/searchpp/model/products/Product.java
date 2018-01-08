@@ -30,6 +30,8 @@ public abstract class Product
 
     private String _imgUrl;
 
+    private String _productUrl;
+
     public Product()
     {}
 
@@ -84,6 +86,16 @@ public abstract class Product
     public void setImgUrl(String imgUrl)
     {
         _imgUrl = imgUrl;
+    }
+
+    public String getProductUrl()
+    {
+        return _productUrl;
+    }
+
+    public void setProductUrl(String productUrl)
+    {
+        _productUrl = productUrl;
     }
 
     public abstract JSONObject getJsonItem();

@@ -16,7 +16,7 @@ public class ProductGroup extends ArrayList<Product> {
      */
     public void setPrice(int min, int max) {
         for (int i = 0; i < size(); ++i) {
-            if (get(i).getPrice() < min || get(i).getPrice() > max) {
+            if (get(i).getPrice() < min*0.01 || get(i).getPrice() > max*0.01) {
                 remove(i);
                 --i;
             }
