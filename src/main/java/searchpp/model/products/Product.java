@@ -1,5 +1,7 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONObject;
+
 /**
  * Created by Tobi on 04.12.2017.
  */
@@ -25,6 +27,8 @@ public abstract class Product
      * Price
      */
     private double _price; //todo default price
+
+    private String _imgUrl;
 
     public Product()
     {}
@@ -70,5 +74,22 @@ public abstract class Product
     }
     public double getPrice() {
         return _price;
+    }
+
+    public String getImgUrl()
+    {
+        return _imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl)
+    {
+        _imgUrl = imgUrl;
+    }
+
+    public abstract JSONObject getJsonItem();
+
+    @Override
+    public String toString() {
+        return getProductId() + " " + getTitle();
     }
 }

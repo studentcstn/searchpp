@@ -18,9 +18,11 @@ public class EbayProduct extends Product
     public void setListingType(ListingType listingType) {
         _listingType = listingType;
     }
+
     public ListingType getListingType() {
         return _listingType;
     }
+
     public JSONObject getJsonItem(){
         JSONObject ebayP = new JSONObject();
         ebayP.put("globalID",super.getGlobalId());

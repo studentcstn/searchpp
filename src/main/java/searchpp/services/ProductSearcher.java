@@ -159,6 +159,8 @@ public class ProductSearcher
 
                     String imgUrl = getTagValue(eImage, "URL");
 
+                    String productUrl = getTagValue(eElement, "DetailPageURL");
+
                     if(asin.equals("") || title.equals("") || price == 0 || condition == null)
                         continue;
 
@@ -377,6 +379,9 @@ public class ProductSearcher
                     ListingType listingType = ListingType.getType(getTagValue(eElement, "ListingType"));
 
                     String imgUrl = getTagValue(eElement, "PictureURL");
+
+                    String productUrl = getTagValue(eElement, "viewItemURL");
+
                     if (itemId.equals("") || title.equals("") || price == 0)
                         continue;
 

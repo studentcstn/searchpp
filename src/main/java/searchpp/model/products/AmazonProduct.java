@@ -1,5 +1,7 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONObject;
+
 /**
  * Created by Tobi on 04.12.2017.
  */
@@ -55,5 +57,26 @@ public class AmazonProduct extends Product
     }
     public AmazonProductRating getRating() {
         return _rating;
+    }
+
+    @Override
+    public String toString() {
+        return getRating().getInternProductRating() + " " + super.toString();
+    }
+
+    public JSONObject getJsonItem(){
+        JSONObject amazonP = new JSONObject();
+        amazonP.put("globalID",super.getGlobalId());
+        amazonP.put("productID",super.getProductId());
+        amazonP.put("title",super.getTitle());
+        amazonP.put("condition",super.getCondition());
+        amazonP.put("price",super.getPrice());
+        amazonP.put("ean", getEan());
+        amazonP.put("manufacturer", getManufacturer());
+        amazonP.put("model", getModel());
+        amazonP.put("reating", getRating());
+        amazonP.put("salesrank", getSalesRank());
+
+        return  amazonP;
     }
 }
