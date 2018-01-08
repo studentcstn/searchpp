@@ -173,6 +173,7 @@ public class ProductSearcher
                     product.setModel(model);
                     product.setSalesRank(salesRank);
                     product.setImgUrl(imgUrl);
+                    product.setProductUrl(productUrl);
 
                     AmazonProductRating amazonProductRating = AmazonRating.getRating(product);
                     product.setRating(amazonProductRating);
@@ -188,6 +189,7 @@ public class ProductSearcher
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("Price: " + product.getPrice());
                     System.out.println("Img: " + product.getImgUrl());
+                    System.out.println("Url: " + product.getProductUrl());
                     if (product.getRating() != null)
                         System.out.println("Rating: " + product.getRating().toString());
                     System.out.println("------------");
@@ -293,6 +295,8 @@ public class ProductSearcher
 
                     String imgUrl = getTagValue(eElement, "galleryURL");
 
+                    String productUrl = getTagValue(eElement, "viewItemURL");
+
                     if (itemId.equals("") || title.equals("") || price == 0)
                         continue;
 
@@ -302,6 +306,7 @@ public class ProductSearcher
                     product.setPrice(price);
                     product.setListingType(listingType);
                     product.setImgUrl(imgUrl);
+                    product.setProductUrl(productUrl);
 
                     products.add(product);
 
@@ -311,6 +316,7 @@ public class ProductSearcher
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("ListingType: " + product.getListingType());
                     System.out.println("Img: " + product.getImgUrl());
+                    System.out.println("Url: " + product.getProductUrl());
                     System.out.println("------------");
                 }
 
@@ -380,7 +386,7 @@ public class ProductSearcher
 
                     String imgUrl = getTagValue(eElement, "PictureURL");
 
-                    String productUrl = getTagValue(eElement, "viewItemURL");
+                    String productUrl = getTagValue(eElement, "ViewItemURLForNaturalSearch");
 
                     if (itemId.equals("") || title.equals("") || price == 0)
                         continue;
@@ -391,6 +397,7 @@ public class ProductSearcher
                     product.setPrice(price);
                     product.setListingType(listingType);
                     product.setImgUrl(imgUrl);
+                    product.setProductUrl(productUrl);
 
                     System.out.println("ItemId: " + product.getProductId());
                     System.out.println("Title: " + product.getTitle());
@@ -398,6 +405,7 @@ public class ProductSearcher
                     System.out.println("Condition: " + product.getCondition());
                     System.out.println("ListingType: " + product.getListingType());
                     System.out.println("Img: " + product.getImgUrl());
+                    System.out.println("Url: " + product.getProductUrl());
                     System.out.println("------------");
                 }
 
