@@ -36,6 +36,12 @@ public class ProductSearcher_test {
     }
 
     @Test
+    public void searchAmazonProductListMinMaxPrice() {
+        loadTestConfig();
+        ProductSearcher.searchAmazonProductList("Raspberry pi", 30,60);
+    }
+
+    @Test
     public void searchEbayProduct() {
         loadTestConfig();
         EbayProduct testProduct = new EbayProduct();
@@ -47,5 +53,11 @@ public class ProductSearcher_test {
     public void searchEbayProductList() {
         loadTestConfig();
         ProductSearcher.searchEbayProductList("Raspberry pi");
+    }
+
+    @Test
+    public void searchEbayProductListMinMaxPrice() {
+        loadTestConfig();
+        ProductSearcher.searchEbayProductList("Raspberry pi", 30, 60);
     }
 }
