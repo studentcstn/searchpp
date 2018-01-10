@@ -25,8 +25,13 @@ public class Products {
     @Produces(MediaType.APPLICATION_JSON)
     //                                                                       price in cent                     price in cent
     public String get(@QueryParam("search_text") String search, @QueryParam("price_min") int min, @QueryParam("price_max") int max, @QueryParam("used") boolean used) {
-        if (search == null)
-            return new JsonArray().toString();
+        // no string, return
+        if (search == null) {
+            JSONObject object = new JSONObject();
+            object.put("data", new JSONArray());
+            object.put("elements", 0);
+            return object.toJSONString();
+        }
 
         //control price
         boolean price = false;
@@ -55,6 +60,14 @@ public class Products {
             amazonProductList = ProductSearcher.searchAmazonProductList(search, min * .01, max * 0.01);
         else
             amazonProductList = ProductSearcher.searchAmazonProductList(search);
+
+        // no products, return
+        if (amazonProductList.size() == 0) {
+            JSONObject object = new JSONObject();
+            object.put("data", new JSONArray());
+            object.put("elements", 0);
+            return object.toJSONString();
+        }
 
         //sort products
         amazonProductList.sort(new Comparator<AmazonProduct>() {
@@ -91,21 +104,21 @@ public class Products {
             productGroups[i] = new ProductGroup(amazonProductList.get(i).getGlobalId());
             productGroups[i].add(amazonProductList.get(i));
             productGroups[i].addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProductList.get(i).getEan())));
-            //remove all products out of price range
-            if (price)
-                productGroups[i].setPrice(min, max);
         }
 
         //todo save to database
 
+        //convert to json
         JSONArray array = new JSONArray();
-        for (ProductGroup products : productGroups)
+        for (ProductGroup products : productGroups) {
+            //remove all products out of price range
+            if (price)
+                products.setPrice(min, max);
             array.add(products.getJsonObject());
-
+        }
         JSONObject object = new JSONObject();
         object.put("data", array);
         object.put("elements", array.size());
-
 
         return object.toJSONString();
     }

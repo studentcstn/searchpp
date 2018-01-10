@@ -1,22 +1,77 @@
 package searchpp.model.products;
 
+import com.mysql.cj.xdevapi.JsonArray;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import searchpp.model.json.JsonList;
 import searchpp.model.json.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * ProductGroup
  *
  * @version 1
  */
-public class ProductGroup extends ArrayList<Product> implements JsonObject {
+public class ProductGroup extends ArrayList<Product> implements JsonObject, JsonList {
 
     private long productID;
 
+    private boolean price = false;
+    private double priceMin = Double.MAX_VALUE;
+    private double priceMax = Double.MIN_VALUE;
+
+    private boolean _new = false;
+    private boolean used = false;
+
     public ProductGroup(long productID) {
         this.productID = productID;
+    }
+
+    public long getProductID() {
+        return productID;
+    }
+
+    @Override
+    public boolean add(Product product) {
+        boolean add = super.add(product);
+
+        if (!add)
+            return false;
+
+        setProduct(product);
+
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Product> c) {
+        boolean add = super.addAll(c);
+
+        if (!add)
+            return false;
+
+        for (Product product : c)
+            setProduct(product);
+
+        return true;
+    }
+
+    private void setProduct(Product product) {
+        if (product.getPrice() < priceMin) {
+            priceMin = product.getPrice();
+            price = true;
+        }
+        if (product.getPrice() > priceMax) {
+            priceMax = product.getPrice();
+            price = true;
+        }
+
+        if (product.getCondition() == Condition.NEW)
+            _new = true;
+        else
+            used = true;
     }
 
     /**
@@ -43,14 +98,41 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject {
 
     @Override
     public JSONObject getJsonObject() {
-        JSONArray array = new JSONArray();
-        for (int i = 0; i < size(); ++i)
-            array.add(get(i).getJsonObject());
         JSONObject object = new JSONObject();
-        object.put("data", array);
-        object.put("elements", size());
         object.put("product_id", productID);
 
+        if (price) {
+            object.put("price_min", priceMin);
+            object.put("price_max", priceMax);
+        }
+
+        if (size() > 0) {
+            object.put("name", get(0).getTitle());
+            for (int i = 0; i < size(); ++i) {
+                if (get(i).getClass() == AmazonProduct.class) {
+                    object.put("rating", ((AmazonProduct) get(i)).getRating().getAverageRating());
+                    break;
+                }
+            }
+            object.put("img", get(0).getImgUrl());
+        }
+        JSONArray array = new JSONArray();
+        if (_new)
+            array.add("NEW");
+        if (used)
+            array.add("USED");
+
+        object.put("types", array);
+
         return object;
+    }
+
+    @Override
+    public JSONArray getJsonList() {
+        JSONArray array = new JSONArray();
+        for (Product product : this)
+            array.add(product.getJsonObject());
+
+        return array;
     }
 }

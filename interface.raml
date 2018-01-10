@@ -220,28 +220,31 @@ securitySchemes:
           application/json:
             examples:
               products_found:
-                elements: 1
+                elements: 2
                 data:
                   [
                     {
                       product_id: 123456,
-                      elements: 1,
-                      data:
-                        [
-                          {
-                            origin_url: www.example.com,
-                            name: Produktname1,
-                            price: "1,23",
-                            rating: "4,3",
-                            img: www.example.com/example,
-                            type: new | used
-                          }
-                        ]
+                      name: Produktname,
+                      price_min: 1.23,
+                      price_max: 2.34,
+                      rating: 4.3,
+                      img: www.example.com/example,
+                      types: [new, used]
+                    }
+                    {
+                      product_id: 234567,
+                      name: Produktname,
+                      price_min: 12.34,
+                      price_max: 23.45,
+                      rating: 4.7,
+                      img: www.example.com/example,
+                      types: [new, used]
                     }
                   ]
               no_products_found:
                 elements: 0
-                description: why not found
+                data: []
       500:
         description: Interner Fehler
 
@@ -255,12 +258,25 @@ securitySchemes:
             application/json:
               example:
                 product_id: 12345
-                origin_url: www.example.com
-                name: product name
-                #product_description: product description
-                price: 1,23
-                rating: 3,9
-                type: new | used
+                elements: 2,
+                data:
+                  [
+                    {
+                     origin_url: amazon,
+                     name: Produktname,
+                     price: 1.23,
+                     rating: 4.3,
+                     img: www.example.com/example,
+                     type: new | used
+                    }
+                    {
+                      origin_url: ebay,
+                      name: Produktname,
+                      price: 1.23,
+                      img: www.example.com/example,
+                      type: new | used
+                    }
+                  ]
         404:
           description: Produkt nicht gefunden
         500:
@@ -275,15 +291,19 @@ securitySchemes:
               application/json:
                 examples:
                   ratings_available:
-                    elements: 2
+                    elements: 5
+                    allRatings: 521
                     data:
-                      [{ rating: 5, percent: 83, url: url },
-                       { rating: 4, percent: 10, url: url },
-                       { rating: 3, percent: 4, url: url },
-                       { rating: 2, percent: 2, url: url },
-                       { rating: 1, percent: 1, url: url }]
+                      [
+                        { rating: 5, percent: 83, url: url },
+                        { rating: 4, percent: 10, url: url },
+                        { rating: 3, percent: 4, url: url },
+                        { rating: 2, percent: 2, url: url },
+                        { rating: 1, percent: 1, url: url }
+                      ]
                   no_ratings_available:
                     elements: 0
+                    data: []
           404:
             description: Produkt nicht gefunden
           500:

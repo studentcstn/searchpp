@@ -30,10 +30,9 @@ public class DBProduct
                 switch (plattform)
                 {
                     case "amazon":
-                        AmazonProduct aproduct = new AmazonProduct();
-                        aproduct.setProductId(pid);
+                        AmazonProduct aproduct;
                         //Fehlt: Fehler
-                        aproduct = ProductSearcher.searchAmazonProduct(aproduct);
+                        aproduct = ProductSearcher.searchAmazonProduct(pid);
                         aproduct.setGlobalId(gId);
                         products.add(aproduct);
                         break;

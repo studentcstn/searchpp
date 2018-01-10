@@ -105,7 +105,7 @@ public abstract class Product implements JsonObject
     @Override
     public JSONObject getJsonObject() {
         JSONObject object = new JSONObject();
-        object.put("product_id", _productId);
+        object.put("origin_id", _productId);
         object.put("origin_url", _productUrl);
         object.put("name", _title);
         object.put("price", _price);

@@ -55,7 +55,7 @@ public class ProductSearcher
         return searchAmazon(params);
     }
 
-    public static AmazonProduct searchAmazonProduct(AmazonProduct product)
+    public static AmazonProduct searchAmazonProduct(String amazonASIN)
     {
         String requestUrl;
 
@@ -64,7 +64,7 @@ public class ProductSearcher
         params.put("Operation", "ItemLookup");
         params.put("IdType", "ASIN");
         params.put("ResponseGroup", "Images, ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
-        params.put("ItemId", product.getProductId());
+        params.put("ItemId", amazonASIN);
 
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 

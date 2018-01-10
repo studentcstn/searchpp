@@ -24,9 +24,7 @@ public class ProductSearcher_test {
     @Test
     public void searchAmazonProduct() {
         loadTestConfig();
-        AmazonProduct testProduct = new AmazonProduct();
-        testProduct.setProductId("B01CD5VC92");
-        ProductSearcher.searchAmazonProduct(testProduct);
+        ProductSearcher.searchAmazonProduct("B01CD5VC92");
     }
 
     @Test
