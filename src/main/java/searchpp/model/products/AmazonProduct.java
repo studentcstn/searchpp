@@ -13,8 +13,7 @@ public class AmazonProduct extends Product
     private String _model;
     private AmazonProductRating _rating;
 
-    public AmazonProduct()
-    {}
+    public AmazonProduct() {}
 
     public void setSalesRank(int salesRank)
     {
@@ -28,6 +27,7 @@ public class AmazonProduct extends Product
     public void setEan(long ean)
     {
         _ean = ean;
+        super.setGlobalId(ean);
     }
     public long getEan() {
         return _ean;
@@ -64,21 +64,12 @@ public class AmazonProduct extends Product
         return getRating().getInternProductRating() + " " + super.toString();
     }
 
-    public JSONObject getJsonItem(){
-        JSONObject amazonP = new JSONObject();
-        amazonP.put("globalID",super.getGlobalId());
-        amazonP.put("productID",super.getProductId());
-        amazonP.put("producturl", getProductUrl());
-        amazonP.put("imgurl", getImgUrl());
-        amazonP.put("title",super.getTitle());
-        amazonP.put("condition",super.getCondition());
-        amazonP.put("price",super.getPrice());
-        amazonP.put("ean", getEan());
-        amazonP.put("manufacturer", getManufacturer());
-        amazonP.put("model", getModel());
-        amazonP.put("reating", getRating());
-        amazonP.put("salesrank", getSalesRank());
+    @Override
+    public JSONObject getJsonObject(){
+        JSONObject object = super.getJsonObject();
+        if (_rating != null)
+            object.put("rating", _rating.getAverageRating());
 
-        return  amazonP;
+        return  object;
     }
 }

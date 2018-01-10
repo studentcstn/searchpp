@@ -1,8 +1,11 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import searchpp.model.json.JsonList;
+import searchpp.model.json.JsonObject;
 
-class Rating {
+class Rating implements JsonObject {
     public double percent;
     public int rating;
     public String url = "";
@@ -23,17 +26,19 @@ class Rating {
     public String toString() {
         return String.format("%d stars: %4.1f %%   url: %s", rating, percent, url);
     }
-    public JSONObject getJsonItem(){
+
+    @Override
+    public JSONObject getJsonObject(){
         JSONObject rating = new JSONObject();
         rating.put("percent", getPercent());
-        rating.put("raiting", getRating());
+        rating.put("rating", getRating());
         rating.put("url", getUrl());
 
         return rating;
     }
 }
 
-public class AmazonProductRating implements Comparable<AmazonProductRating> {
+public class AmazonProductRating implements Comparable<AmazonProductRating>, JsonList {
     private AmazonProduct product;
     private Rating[] ratings = new Rating[5];
     private double averageRating = 0;
@@ -97,6 +102,7 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
         }
     }
 
+    //internal rating
     private double productRating = Double.NaN;
     private void calcProductRating() {
         //is a test. I do not know if it is working
@@ -133,13 +139,17 @@ public class AmazonProductRating implements Comparable<AmazonProductRating> {
         stringBuilder.append(String.format("  intern product rating: %f", getInternProductRating()));
         return stringBuilder.toString();
     }
-    public JSONObject getJsonItem(){
-        JSONObject amazonPRaiting = new JSONObject();
-        amazonPRaiting.put("product", product);
-        amazonPRaiting.put("ratings",ratings);
-        amazonPRaiting.put("averageRating", averageRating);
-        amazonPRaiting.put("allRatings", allRatings);
 
-        return amazonPRaiting;
+    /**
+     * Returns ratings
+     * @return Ratings in a JsonList
+     */
+    @Override
+    public JSONArray getJsonList() {
+        JSONArray array = new JSONArray();
+        for (Rating rating : ratings)
+            array.add(rating.getJsonObject());
+
+        return array;
     }
 }

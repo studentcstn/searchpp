@@ -1,6 +1,9 @@
 package searchpp.sites.products;
 
+import com.google.api.client.json.Json;
 import com.mysql.cj.xdevapi.JsonArray;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.Product;
 import searchpp.model.products.ProductGroup;
@@ -20,6 +23,7 @@ public class Products {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    //                                                                       price in cent                     price in cent
     public String get(@QueryParam("search_text") String search, @QueryParam("price_min") int min, @QueryParam("price_max") int max, @QueryParam("used") boolean used) {
         if (search == null)
             return new JsonArray().toString();
@@ -84,7 +88,7 @@ public class Products {
         //group products and download ebay products
         ProductGroup[] productGroups = new ProductGroup[amazonProductList.size()];
         for (int i = 0; i < productGroups.length; ++i) {
-            productGroups[i] = new ProductGroup();
+            productGroups[i] = new ProductGroup(amazonProductList.get(i).getGlobalId());
             productGroups[i].add(amazonProductList.get(i));
             productGroups[i].addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProductList.get(i).getEan())));
             //remove all products out of price range
@@ -94,11 +98,15 @@ public class Products {
 
         //todo save to database
 
-        ConverterToJson converter = new ConverterToJson();
+        JSONArray array = new JSONArray();
         for (ProductGroup products : productGroups)
-            for(Product product : products)
-            converter.addJsonList(product.getJsonItem());
+            array.add(products.getJsonObject());
 
-        return converter.getJsonList().toString();
+        JSONObject object = new JSONObject();
+        object.put("data", array);
+        object.put("elements", array.size());
+
+
+        return object.toJSONString();
     }
 }

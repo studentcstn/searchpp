@@ -48,9 +48,5 @@ public enum ListingType
         }
         return  listingType;
     }
-    public JSONObject getJsonItem(String listing){
-        JSONObject list = new JSONObject();
-        list.put("condition", getType(listing));
-        return list;
-    }
+
 }

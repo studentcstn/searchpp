@@ -1,5 +1,9 @@
 package searchpp.model.products;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import searchpp.model.json.JsonObject;
+
 import java.util.ArrayList;
 
 /**
@@ -7,7 +11,13 @@ import java.util.ArrayList;
  *
  * @version 1
  */
-public class ProductGroup extends ArrayList<Product> {
+public class ProductGroup extends ArrayList<Product> implements JsonObject {
+
+    private long productID;
+
+    public ProductGroup(long productID) {
+        this.productID = productID;
+    }
 
     /**
      * Removed all products out of price range
@@ -29,5 +39,18 @@ public class ProductGroup extends ArrayList<Product> {
         for (Product product : this)
             stringBuilder.append(product.toString()).append('\n');
         return stringBuilder.toString();
+    }
+
+    @Override
+    public JSONObject getJsonObject() {
+        JSONArray array = new JSONArray();
+        for (int i = 0; i < size(); ++i)
+            array.add(get(i).getJsonObject());
+        JSONObject object = new JSONObject();
+        object.put("data", array);
+        object.put("elements", size());
+        object.put("product_id", productID);
+
+        return object;
     }
 }

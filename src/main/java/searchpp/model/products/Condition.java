@@ -62,9 +62,5 @@ public enum Condition
         }
         return condition;
     }
-    public JSONObject getJsonItem(String cond){
-        JSONObject condi = new JSONObject();
-        condi.put("condition", getProductCondition(cond));
-        return condi;
-    }
+
 }

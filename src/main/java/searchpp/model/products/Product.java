@@ -1,13 +1,17 @@
 package searchpp.model.products;
 
 import org.json.simple.JSONObject;
+import searchpp.model.json.JsonObject;
 
 /**
  * Created by Tobi on 04.12.2017.
  */
-public abstract class Product
+public abstract class Product implements JsonObject
 {
-    private int _globalId;
+    /**
+     * Internal id
+     */
+    private long _globalId;
     /**
      * Product id
      */
@@ -35,11 +39,11 @@ public abstract class Product
     public Product()
     {}
 
-    public int getGlobalId()
+    public long getGlobalId()
     {
         return _globalId;
     }
-    public void setGlobalId(int globalId)
+    public void setGlobalId(long globalId)
     {
         _globalId = globalId;
     }
@@ -98,7 +102,17 @@ public abstract class Product
         _productUrl = productUrl;
     }
 
-    public abstract JSONObject getJsonItem();
+    @Override
+    public JSONObject getJsonObject() {
+        JSONObject object = new JSONObject();
+        object.put("product_id", _productId);
+        object.put("origin_url", _productUrl);
+        object.put("name", _title);
+        object.put("price", _price);
+        object.put("type", _condition.toString());
+
+        return object;
+    }
 
     @Override
     public String toString() {

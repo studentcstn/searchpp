@@ -1,10 +1,11 @@
 package searchpp.model.products;
 
 import org.json.simple.JSONObject;
+import searchpp.model.json.JsonObject;
 
 import java.util.Date;
 
-public class PriceHistory
+public class PriceHistory implements JsonObject
 {
     private Date _date;
     private double _price;
@@ -26,11 +27,12 @@ public class PriceHistory
     {
         return _price;
     }
-    public JSONObject getJsonItem(){
+
+    @Override
+    public JSONObject getJsonObject() {
         JSONObject priceHistory = new JSONObject();
         priceHistory.put("date", getDate());
         priceHistory.put("price", getPrice());
-
 
         return priceHistory;
     }

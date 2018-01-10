@@ -257,7 +257,7 @@ securitySchemes:
                 product_id: 12345
                 origin_url: www.example.com
                 name: product name
-                product_description: product description
+                #product_description: product description
                 price: 1,23
                 rating: 3,9
                 type: new | used
@@ -277,8 +277,11 @@ securitySchemes:
                   ratings_available:
                     elements: 2
                     data:
-                      [{ rating: 4, text: rating text },
-                       { rating: 1, text: rating text }]
+                      [{ rating: 5, percent: 83, url: url },
+                       { rating: 4, percent: 10, url: url },
+                       { rating: 3, percent: 4, url: url },
+                       { rating: 2, percent: 2, url: url },
+                       { rating: 1, percent: 1, url: url }]
                   no_ratings_available:
                     elements: 0
           404:

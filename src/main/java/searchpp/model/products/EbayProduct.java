@@ -23,24 +23,5 @@ public class EbayProduct extends Product
         return _listingType;
     }
 
-    public JSONObject getJsonItem(){
-        JSONObject ebayP = new JSONObject();
-        ebayP.put("globalID",super.getGlobalId());
-        ebayP.put("productID",super.getProductId());
-        ebayP.put("title",super.getTitle());
-        ebayP.put("condition",super.getCondition());
-        ebayP.put("price",super.getPrice());
-        ebayP.put("listingtype", getListingType());
-        ebayP.put("condition", getCondition());
-        ebayP.put("globalid", getGlobalId());
-        ebayP.put("price", getPrice());
-        ebayP.put("title", getTitle());
-        ebayP.put("productid", getProductId());
-        ebayP.put("producturl", getProductUrl());
-        ebayP.put("imgurl", getImgUrl());
-
-        return ebayP;
-    }
-
 
 }

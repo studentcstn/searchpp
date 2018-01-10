@@ -161,7 +161,7 @@ public class ProductSearcher
 
                     String productUrl = getTagValue(eElement, "DetailPageURL");
 
-                    if(asin.equals("") || title.equals("") || price == 0 || condition == null)
+                    if(asin.equals("") || title.equals("") || price == 0 || condition == null || ean == -1)
                         continue;
 
                     product.setProductId(asin);
