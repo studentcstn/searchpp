@@ -1,13 +1,9 @@
 package searchpp.sites.products;
 
-import com.google.api.client.json.Json;
-import com.mysql.cj.xdevapi.JsonArray;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import searchpp.model.products.AmazonProduct;
-import searchpp.model.products.Product;
 import searchpp.model.products.ProductGroup;
-import searchpp.services.ConverterToJson;
 import searchpp.services.ProductSearcher;
 
 import javax.ws.rs.GET;

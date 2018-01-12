@@ -1,14 +1,13 @@
 package searchpp;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-
-import searchpp.model.config.Api;
-import searchpp.utils.ConfigLoader;
 
 /**
  * Main class.
@@ -26,6 +25,8 @@ public class Main {
         // in searchpp package
         final ResourceConfig rc = new ResourceConfig().packages("searchpp");
 
+        rc.register(CORSResponseFilter.class);
+
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
@@ -38,6 +39,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
+        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("Client"), "/");
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();
