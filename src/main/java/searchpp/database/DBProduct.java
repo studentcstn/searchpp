@@ -1,9 +1,6 @@
 package searchpp.database;
 
-import searchpp.model.products.AmazonProduct;
-import searchpp.model.products.EbayProduct;
-import searchpp.model.products.PriceHistory;
-import searchpp.model.products.Product;
+import searchpp.model.products.*;
 import searchpp.services.ProductSearcher;
 
 import java.sql.ResultSet;
@@ -13,6 +10,24 @@ import java.util.List;
 
 public class DBProduct
 {
+    public static String loadAmazonProduct(int gIDd)
+    {
+        String sql = "SELECT site_id FROM product_to_site WHERE platform = 'amazon'" +
+                "AND product_id = " + gIDd + ";";
+        try
+        {
+            ResultSet result = DBConnection.getConnection().query(sql);
+            if(result.next())
+            {
+                return result.getString(1);
+            }
+            return null;
+        }
+        catch(SQLException ex)
+        {
+            return null;
+        }
+    }
     public static List<Product> loadSiteProducts(int gId)
     {
         ArrayList<Product> products = new ArrayList<>();
@@ -50,12 +65,26 @@ public class DBProduct
         return products;
     }
 
-    public static int saveProducts(Product ... p)
+    public static boolean saveProducts(ProductGroup group)
     {
+        if(group.size() == 0) return false;
+        String sql;
+        int id = 0;
         try {
-            String sql = "INSERT INTO products() VALUES();";
-            int id = DBConnection.getConnection().insert(sql);
-            for (Product product : p) {
+            String query = "SELECT product_id FROM product_to_site WHERE platform = 'amazon'" +
+                    " AND site_id = '" + group.get(0).getProductId() + "';";
+            ResultSet result = DBConnection.getConnection().query(query);
+            if(result.next())
+            {
+                id = result.getInt(1);
+            }
+            else
+            {
+                sql = "INSERT INTO products() VALUES();";
+                id = DBConnection.getConnection().insert(sql);
+            }
+
+            for (Product product : group) {
                 String site = null;
                 if (product instanceof AmazonProduct) {
                     site = "amazon";
@@ -68,11 +97,13 @@ public class DBProduct
                     DBConnection.getConnection().execute(sql);
                 }
             }
-            return id;
+
+            group.setGlobalId(id);
+            return true;
         }
         catch(SQLException ex)
         {
-            return -1;
+            return false;
         }
     }
 

@@ -3,6 +3,7 @@ package searchpp.model.products;
 import com.mysql.cj.xdevapi.JsonArray;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import searchpp.database.DBProduct;
 import searchpp.model.json.JsonList;
 import searchpp.model.json.JsonObject;
 
@@ -16,7 +17,7 @@ import java.util.Collection;
  */
 public class ProductGroup extends ArrayList<Product> implements JsonObject, JsonList {
 
-    private long productID;
+    private int productID;
 
     private boolean price = false;
     private double priceMin = Double.MAX_VALUE;
@@ -25,11 +26,13 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
     private boolean _new = false;
     private boolean used = false;
 
-    public ProductGroup(long productID) {
-        this.productID = productID;
+    public ProductGroup(){}
+    public ProductGroup(int gId)
+    {
+        this.productID = gId;
     }
 
-    public long getProductID() {
+    public int getProductID() {
         return productID;
     }
 
@@ -56,6 +59,11 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
             setProduct(product);
 
         return true;
+    }
+
+    public boolean saveToDatabase()
+    {
+        return DBProduct.saveProducts(this);
     }
 
     private void setProduct(Product product) {
@@ -134,5 +142,10 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
             array.add(product.getJsonObject());
 
         return array;
+    }
+
+    public void setGlobalId(int globalId)
+    {
+        this.productID = globalId;
     }
 }

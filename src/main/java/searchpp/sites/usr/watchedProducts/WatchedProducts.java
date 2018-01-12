@@ -31,7 +31,7 @@ public class WatchedProducts
         ConverterToJson conv = new ConverterToJson();
         for(Product p : products)
         {
-            conv.addJsonList(p.getJsonItem());
+            //conv.addJsonList(p.getJsonItem());
         }
         return conv.toString();
     }

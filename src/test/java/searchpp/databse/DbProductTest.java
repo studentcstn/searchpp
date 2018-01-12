@@ -60,8 +60,8 @@ public class DbProductTest
         ap.setProductId("B011N78DMA");
         //ep.setProductId("282775961177");//Abgelaufenes Produkt
         ep.setProductId(ProductSearcher.searchEbayProductList("Logitech g920").get(0).getProductId());
-        int id = DBProduct.saveProducts(ep);
-        Assert.assertTrue(id != -1);
+        //int id = DBProduct.saveProducts(ep);
+        //Assert.assertTrue(id != -1);
     }
 
     @Test

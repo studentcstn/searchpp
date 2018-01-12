@@ -97,12 +97,15 @@ public class Products {
         //group products and download ebay products
         ProductGroup[] productGroups = new ProductGroup[amazonProductList.size()];
         for (int i = 0; i < productGroups.length; ++i) {
-            productGroups[i] = new ProductGroup(amazonProductList.get(i).getGlobalId());
+            productGroups[i] = new ProductGroup();//(amazonProductList.get(i).getGlobalId());
             productGroups[i].add(amazonProductList.get(i));
             productGroups[i].addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProductList.get(i).getEan())));
         }
 
-        //todo save to database
+        for(ProductGroup grp : productGroups)
+        {
+            grp.saveToDatabase();
+        }
 
         //convert to json
         JSONArray array = new JSONArray();

@@ -2,6 +2,7 @@ package searchpp.sites.products.productId;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import searchpp.database.DBProduct;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.ProductGroup;
 import searchpp.services.ProductSearcher;
@@ -19,16 +20,12 @@ public class ProductId {
     @Produces(MediaType.APPLICATION_JSON)
     public String get(@PathParam("productId") String productID) {
 
-        String asin;
-
-        //todo get asin with productID from database
-
-        //todo remove next line
-        asin = "B01CD5VC92";
+        int gId = Integer.parseInt(productID);
+        String asin = DBProduct.loadAmazonProduct(gId);
 
         AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin);
 
-        ProductGroup  productGroup = new ProductGroup(amazonProduct.getGlobalId());
+        ProductGroup  productGroup = new ProductGroup(gId);
         productGroup.add(amazonProduct);
         productGroup.addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProduct.getEan())));
 
