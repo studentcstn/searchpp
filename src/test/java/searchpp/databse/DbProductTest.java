@@ -58,8 +58,9 @@ public class DbProductTest
         AmazonProduct ap = new AmazonProduct();
         EbayProduct ep = new EbayProduct();
         ap.setProductId("B011N78DMA");
-        ep.setProductId(ProductSearcher.searchEbayProductList("logitech g920").get(0).getProductId());
-        int id = DBProduct.saveProducts(ap, ep);
+        //ep.setProductId("282775961177");//Abgelaufenes Produkt
+        ep.setProductId(ProductSearcher.searchEbayProductList("Logitech g920").get(0).getProductId());
+        int id = DBProduct.saveProducts(ep);
         Assert.assertTrue(id != -1);
     }
 

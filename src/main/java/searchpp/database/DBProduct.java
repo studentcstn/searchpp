@@ -1,7 +1,5 @@
 package searchpp.database;
 
-import com.mysql.cj.api.xdevapi.SqlStatement;
-import com.mysql.cj.xdevapi.SqlDataResult;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.EbayProduct;
 import searchpp.model.products.PriceHistory;
@@ -11,7 +9,6 @@ import searchpp.services.ProductSearcher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class DBProduct
@@ -93,6 +90,25 @@ public class DBProduct
 
         }
         return result;
+    }
+
+    public static List<Product> loadAllWatchedProducts()
+    {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT DISTINCT product_id FROM usr_product_watch;";
+        try
+        {
+            ResultSet result = DBConnection.getConnection().query(sql);
+            while (result.next())
+            {
+                products.addAll(DBProduct.loadSiteProducts(result.getInt(1)));
+            }
+        }
+        catch (SQLException ex)
+        {
+            //Log Error
+        }
+        return products;
     }
 
     public static List<PriceHistory> loadPriceHistory(Product p)
