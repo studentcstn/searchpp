@@ -22,12 +22,12 @@ public class Usr {
 
     @GET
     public void get() {
-        // TODO Move to config file
         String clientId = ConfigLoader.getConfig("google", Api.clientID);
 
         String scope = "openid%20email%20https://www.googleapis.com/auth/calendar";
         String redirectUri = "http://localhost:8080/myapp/usr/token";
 
+        // TODO security: generate `state` token
         StringBuilder url = new StringBuilder().append("https://accounts.google.com/o/oauth2/auth")
             .append("?client_id=").append(clientId)
             .append("&response_type=code")

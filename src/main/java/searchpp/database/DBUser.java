@@ -6,6 +6,7 @@ import searchpp.model.user.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,27 @@ public class DBUser
         }
     }
 
+    public static User loadUserByToken(String token)
+    {
+        try
+        {
+            String sql = "SELECT id, email, token, access_token, refresh_token FROM users WHERE token = '" + token + "';";
+            ResultSet result = DBConnection.getConnection().query(sql);
+            if (result.first())
+            {
+                return new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5));
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch(SQLException e)
+        {
+            return null;
+        }
+    }
+
     public static User createUser(String email)
     {
         try
@@ -43,6 +65,36 @@ public class DBUser
                 return null;
             }
             return new User(id, email);
+        }
+        catch(SQLException ex)
+        {
+            return null;
+        }
+    }
+
+    public static User createUserOrUpdate(String email, String token, String accessToken, String refreshToken)
+    {
+        try
+        {
+            PreparedStatement stmt = DBConnection
+                .getConnection()
+                .prepareStatement(
+                "INSERT INTO users (email, token, access_token, refresh_token) VALUES (?,?,?,?) " +
+                "ON DUPLICATE KEY UPDATE email=VALUES(email), token=VALUES(token), " +
+                "access_token=VALUES(access_token), refresh_token=VALUES(refresh_token)"
+            );
+
+            stmt.setString(1, email);
+            stmt.setString(2, token);
+            stmt.setString(3, accessToken);
+            stmt.setString(4, refreshToken);
+
+            int id = stmt.executeUpdate();
+            if (id == -1) {
+                return null;
+            }
+
+            return new User(id, email, token, accessToken, refreshToken);
         }
         catch(SQLException ex)
         {
