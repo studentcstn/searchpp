@@ -1,0 +1,43 @@
+<div class="row vertical-center">
+
+	<div class="col-md-2 col-sm-1">
+	</div>
+	
+	<div class="col-md-8 col-sm-10 col-xs-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading">Produktsuche</div>
+			<div class="panel-body">
+				<form name="productSearch" class="form-horizontal">
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="name">Produkt:</label>
+						<div class="col-sm-9"> 
+							<input type="text" class="form-control" name="name" ng-model="product.name" ng-required="true"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="name">Preis Minimum in €:</label>
+						<div class="col-sm-3"> 
+							<input type="number" class="form-control" name="min" ng-model="product.min" ng-required="false"/>
+						</div>						
+						<label class="control-label col-sm-3" for="name">Preis Maximum in €:</label>
+						<div class="col-sm-3"> 
+							<input type="number" class="form-control" name="max" ng-model="product.max" ng-required="false"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="name">Gebrauchte Produkte?</label>
+						<div class="col-sm-3"> 
+							<input type="radio" name="used" value="true" ng-model="product.used" ng-required="false"/>Ja
+							<input type="radio" name="used" value="false" ng-model="product.used" ng-required="false"/>Nein
+						</div>
+					</div>					
+					<div>
+						<button type="submit" class="btn btn-primary btn-lg col-xs-12 col-sm-offset-1  col-sm-10" ng-click="search(product)">Suchen</button>
+					</div>
+					
+				</form>
+			</div>
+		</div>
+	</div>	
+	
+</div>

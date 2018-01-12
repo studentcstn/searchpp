@@ -1,0 +1,89 @@
+<!Doctype html>
+<html ng-app="app">
+	
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Sprechstundenverwaltung</title>
+		
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="css/fh_hof.css">
+		<link rel="stylesheet" href="css/singleApp.css">
+		<link rel="stylesheet" href="css/jquery-confirm.css">		
+		
+		<script src="js/angular.js"></script>
+		<script src="js/angular-route.js"></script>
+		<script src="js/ngStorage.js"></script>
+		<script src="js/angular-sanitize.js"></script>
+		
+		
+		<script src="js/jquery-3.2.1.js"></script>
+		<script src="js/bootstrap.js"></script>		
+		
+		<script src="js/singleApp.js"></script>
+		
+		<script src="js/controller/mainCtrl.js"></script>
+		<script src="js/controller/userCtrl.js"></script>
+		<script src="js/controller/dozentLoginCtrl.js"></script>
+		<script src="js/controller/searchCtrl.js"></script>
+		
+		<script>
+			// Passt den Abstand der Seite zur Navbar an (wichtig wenn Mobile und User eingelogt)
+			
+			var onResize = function() {
+			  // apply dynamic padding at the top of the body according to the fixed navbar height
+			  $("body").css("padding-top", $(".navbar-fixed-top").height() + 20);
+			};
+
+			// attach the function to the window resize event
+			$(window).resize(onResize);
+
+			// call it also when the page is ready after load or reload
+			$(function() {
+			  onResize();
+			});
+		
+		</script>
+		
+	</head>
+
+	<body ng-controller="mainCtrl">
+	
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<!--
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					-->
+					
+					<a class="navbar-brand" href="#">Search++</a>
+				</div>
+				
+				
+				<div class="nav navbar-nav navbar-right"  ng-controller="userCtrl">
+					<ul class="nav navbar-nav" >
+						<li class="dropdown" ng-hide="dozIsLoggedIn"><a class="dropdown-toggle" role="button" href="#/Dozent/Login"><span style="margin-left: 1.5em;">Anmelden</span><span class="caret"></span></a></li>
+						<li class="dropdown" ng-show="dozIsLoggedIn"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span style="margin-left: 1.5em;">{{user.name}}</span><span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="#/Dozent/Termine">Beobachtungsliste</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#/" ng-click="logout()">Abmelden</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				
+		  	</div>
+    	</nav>
+		
+		<div class="container" ng-view>
+		</div>			
+	</body>
+</html>

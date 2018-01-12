@@ -1,0 +1,119 @@
+.panel-primary > .panel-heading {
+  background: url(../stripe.gif) repeat #000000;
+}
+
+.list-group-item .btn {
+	margin-bottom: 0.5em;
+}
+
+.btn {
+	display: block;
+}
+	
+.main-panel {
+	height: auto;
+}
+	
+.btn-large {
+	display: block;
+	width: 100%;
+}
+
+.main-panel-doz-ter {
+	height: auto;
+}
+
+.fixed-panel-doz-eintrag {
+	height: auto;
+}
+
+.fixed-panel-doz-anfrage {
+	height: auto;
+}
+
+.main-panel-doz-def {
+	height: auto;
+}
+
+.fixed-panel-doz-def {
+	height: auto;
+}
+
+.main-panel-stu-termine {
+	height: auto;
+}
+
+.fixed-panel-stu-termine {
+	height: auto;
+}
+
+.btn-lg {
+	margin-bottom: 0.5em;
+}
+	
+@media (min-width: 768px) { 
+
+	.btn-lg {
+		margin-bottom: 0;
+	}
+	
+	body { 
+		padding-top: 0px; 
+	}
+	
+	.main-panel {
+		height: 88%;
+		height: 88vh;
+	}
+	
+	.vertical-center {
+	  min-height: 88%;
+	  min-height: 88vh;
+	  
+	  display: flex;
+	  align-items: center;
+	}
+	
+	
+	.main-panel-doz-ter {
+		height: 80%;
+		height: 80vh;
+	}
+
+	.fixed-panel-doz-eintrag {
+		height: 83%;
+		height:83vh;
+		overflow-y:scroll;
+	}
+
+	.fixed-panel-doz-anfrage {
+		height: 75%;
+		height: 75vh;
+		overflow-y:scroll;
+	}
+	
+	
+	.main-panel-doz-def {
+		height: 82%;
+		height: 82vh;
+	}
+
+	.fixed-panel-doz-def {
+		height: 75%;
+		height:75vh;
+		overflow-y:scroll;
+	}
+	
+	
+	.main-panel-stu-termine {
+		height: 88%;
+		height: 88vh;
+	}
+
+	.fixed-panel-stu-termine {
+		height: 83%;
+		height: 83vh;
+		overflow-y:scroll;
+	}
+	
+}
