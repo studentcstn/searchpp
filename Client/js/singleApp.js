@@ -13,17 +13,19 @@ window.routes =
 	{
 		controller: 'searchCtrl',
 		templateUrl: 'pages/search.html',
-		requireDozLogin: false,
-		requireStudLogin: false,
-		requireAdminLogin: false
+		requireLogin: false
+	},
+	"/product" : 
+	{
+		controller: 'productDetailCtrl',
+		templateUrl: 'pages/detail.html',
+		requireLogin: false
 	},
 	"/Dozent/Login" : 
 	{
 		controller: 'dozentLoginCtrl',
 		templateUrl: 'pages/dozLogin.html',
-		requireDozLogin: false,
-		requireStudLogin: false,
-		requireAdminLogin: false
+		requireLogin: false,
 	}
 };
 
