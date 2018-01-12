@@ -1,6 +1,10 @@
 package searchpp.sites.usr.token;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import searchpp.database.DBUser;
+import searchpp.model.user.User;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,6 +36,7 @@ public class Token {
         String redirectUri = "http://localhost:8080/myapp/usr/token";
 
         if (request.getParameter("error") != null) {
+            // TODO log
             System.out.println(request.getParameter("error"));
             return;
         }
@@ -41,7 +46,7 @@ public class Token {
         String body = null;
 
         try {
-            body = Jsoup.connect("https://accounts.google.com/o/oauth2/token")
+            body = Jsoup.connect("https://www.googleapis.com/oauth2/v4/token")
                 .ignoreContentType(true)
                 .method(Connection.Method.POST)
                 .data("code", code)
@@ -52,23 +57,22 @@ public class Token {
                 .execute()
                 .body();
         } catch (IOException e) {
-            // TODO Error handling
+            // TODO log and response
             System.out.println(e);
             return;
         }
 
         JSONObject jsonObject = null;
-
         try {
             jsonObject = (JSONObject) new JSONParser().parse(body);
         } catch (ParseException e) {
+            // TODO log and response
             throw new RuntimeException("Unable to parse json " + body);
         }
 
-        String accessToken = (String) jsonObject.get("access_token");
-
+        String accessToken = (String)jsonObject.get("access_token");
+        String refreshToken = (String)jsonObject.get("refresh_token");
         request.getSession().setAttribute("access_token", accessToken);
-        System.out.println("accessToken: " + accessToken);
 
         String json = null;
 
@@ -78,19 +82,30 @@ public class Token {
                 .execute()
                 .body();
         } catch (IOException e) {
-            // TODO Error handling
+            // TODO log and response
             System.out.println(e);
             return;
         }
 
-        System.out.println(json);
-
         try {
-            response.getOutputStream().write(json.getBytes());
-        } catch (IOException e) {
-            // TODO Error handling
+            jsonObject = (JSONObject) new JSONParser().parse(json);
+        } catch (ParseException e) {
+            // TODO log and response
             System.out.println(e);
             return;
+        }
+
+        String token = (String)jsonObject.get("id");
+        String email = (String)jsonObject.get("email");
+
+        User u = DBUser.createUserOrUpdate(email, token, accessToken, refreshToken);
+
+        try {
+            // TODO temporary redirect
+            response.sendRedirect("http://localhost:8080/myapp/apikey?token=" + u.getToken());
+        } catch(IOException e) {
+            // TODO useful error message
+            System.out.println("Something went wrong: " + e);
         }
     }
 }

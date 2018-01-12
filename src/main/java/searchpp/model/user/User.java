@@ -9,6 +9,9 @@ public class User
 {
     private int _id;
     private String _email;
+    private String _token;
+    private String _accessToken;
+    private String _refreshToken;
     private List<Product> _watchedProducts;
 
     public int getId()
@@ -21,6 +24,21 @@ public class User
         return _email;
     }
 
+    public String getToken()
+    {
+        return _token;
+    }
+
+    public String getAccessToken()
+    {
+        return _accessToken;
+    }
+
+    public String getRefreshToken()
+    {
+        return _refreshToken;
+    }
+
     public List<Product> getWatchedProducts()
     {
         return _watchedProducts;
@@ -30,6 +48,15 @@ public class User
     {
         this._id = id;
         this._email = email;
+    }
+
+    public User(int id, String email, String token, String accessToken, String refreshToken)
+    {
+        this._id = id;
+        this._email = email;
+        this._token = token;
+        this._accessToken = accessToken;
+        this._refreshToken = refreshToken;
     }
 
     public boolean addWatchedProduct(Product p)

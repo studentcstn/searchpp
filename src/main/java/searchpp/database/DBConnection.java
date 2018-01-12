@@ -87,6 +87,10 @@ public class DBConnection
         }
     }
 
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        return _sqlCon.prepareStatement(sql);
+    }
+
     public ResultSet query(String sql)
     {
         Statement stmt;
