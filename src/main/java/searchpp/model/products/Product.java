@@ -107,6 +107,7 @@ public abstract class Product implements JsonObject
         JSONObject object = new JSONObject();
         object.put("origin_id", _productId);
         object.put("origin_url", _productUrl);
+        object.put("img", _imgUrl);
         object.put("name", _title);
         object.put("price", _price);
         object.put("type", _condition.toString());
