@@ -1,6 +1,7 @@
 package searchpp;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -33,6 +34,8 @@ public class Main {
         // in searchpp package
         final ResourceConfig rc = new ResourceConfig().packages("searchpp");
 
+        rc.register(CORSResponseFilter.class);
+
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
@@ -45,9 +48,9 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
+        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("Client"), "/");
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
-        loadConfig();
         PriceHistoryService phs = new PriceHistoryService();
         Timer t = new Timer();
         t.scheduleAtFixedRate(phs, 0, 15*1000);
@@ -55,32 +58,5 @@ public class Main {
         t.cancel();
         server.stop();
     }
-    public static void loadConfig()
-    {
-        ConfigLoader configLoader = ConfigLoader.getInstance();
 
-        File testConfig = new File("src/test/java/searchpp/services/searchpp.conf");
-        if (!testConfig.exists())
-            return;
-
-        //change file and load new
-        loadTestConfig(configLoader, testConfig);
-    }
-    public static void loadTestConfig(ConfigLoader configLoader, File testConfig) {
-        try
-        {
-            Class c = configLoader.getClass();
-            Field field = c.getDeclaredField("file");
-            field.setAccessible(true);
-            field.set(configLoader, testConfig);
-
-            Method method = c.getDeclaredMethod("loadConfig");
-            method.setAccessible(true);
-            method.invoke(configLoader);
-        }
-        catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
-        {
-            e.printStackTrace();
-        }
-    }
 }
