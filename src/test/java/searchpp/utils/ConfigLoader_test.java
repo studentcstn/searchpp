@@ -62,5 +62,31 @@ public class ConfigLoader_test {
         assertNotNull(ConfigLoader.getConfig("ebay", Api.secretKey));
         assertTrue(ConfigLoader.getConfig("ebay", Api.secretKey).equals("67890"));
 
+
+
+        assertNotNull(ConfigLoader.getInstance().getConfig("google"));
+
+        assertNotNull(ConfigLoader.getConfig("google", Api.clientID));
+        assertTrue(ConfigLoader.getConfig("google", Api.clientID).equals("abcde"));
+
+        assertNull(ConfigLoader.getConfig("google", Api.accessKey));
+
+        assertNotNull(ConfigLoader.getConfig("google", Api.secretKey));
+        assertTrue(ConfigLoader.getConfig("google", Api.secretKey).equals("fghij"));
+
+
+
+
+        assertNotNull(ConfigLoader.getInstance().getConfig("db"));
+
+        assertNotNull(ConfigLoader.getConfig("db", Api.clientID));
+        assertTrue(ConfigLoader.getConfig("db", Api.clientID).equals("klmno"));
+
+        assertNotNull(ConfigLoader.getConfig("db", Api.accessKey));
+        assertTrue(ConfigLoader.getConfig("db", Api.accessKey).equals("pqrst"));
+
+        assertNotNull(ConfigLoader.getConfig("db", Api.secretKey));
+        assertTrue(ConfigLoader.getConfig("db", Api.secretKey).equals("uvwxy"));
+
     }
 }

@@ -251,6 +251,19 @@ securitySchemes:
   /{productId}:
     get:
       description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
+      queryParameters:
+        price_min:
+          displayName: Preisspanne Start
+          type: number
+          required: false
+        price_max:
+          displayName: Preisspanne Ende
+          type: number
+          required: false
+        used:
+          displayName: Gebraucht
+          type: boolean
+          required: false
       responses:
         200:
           description: Anfrage war erfolgreich

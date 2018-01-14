@@ -119,6 +119,19 @@ public final class ConfigLoader {
                 if (input.indexOf('=') == -1)
                     continue;
 
+                //look for comment
+                int id = input.indexOf('#');
+                if (id >= 0)
+                    input = input.substring(0, id);
+
+                //clear string
+                if (input.indexOf(' ') >= 0) {
+                    StringBuilder stringBuilder = new StringBuilder(input);
+                    while ((id = stringBuilder.indexOf(" ")) >= 0)
+                        stringBuilder.delete(id, id + 1);
+                    input = stringBuilder.toString();
+                }
+
                 //split string into name$key and value
                 String[] name$key_value = input.split("=");
                 if (name$key_value.length < 2)

@@ -39,7 +39,7 @@ public class Products {
             if (min < 0)
                 min = 0;
 
-            if (min > 0 && max == 0.)
+            if (min > 0 && max == 0)
                 max = Integer.MAX_VALUE;
 
             if (min > max) {
@@ -113,6 +113,9 @@ public class Products {
             //remove all products out of price range
             if (price)
                 products.setPrice(min, max);
+            if (used)
+                if (!products.setUsed())
+                    continue;
             array.add(products.getJsonObject());
         }
         JSONObject object = new JSONObject();

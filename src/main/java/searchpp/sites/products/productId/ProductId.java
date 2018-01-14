@@ -7,10 +7,7 @@ import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.ProductGroup;
 import searchpp.services.ProductSearcher;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("products/{productId}")
@@ -18,16 +15,41 @@ public class ProductId {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String get(@PathParam("productId") String productID) {
+    public String get(@PathParam("productId") String productID, @QueryParam("price_min") int min, @QueryParam("price_max") int max, @QueryParam("used") boolean used) {
+
+        //control price
+        boolean price = false;
+        if (min > 0 || max > 0)
+            price = true;
+        if (price) {
+            if (max < 0)
+                max = 0;
+            if (min < 0)
+                min = 0;
+
+            if (min > 0 && max == 0)
+                max = Integer.MAX_VALUE;
+
+            if (min > max) {
+                int tmp = min;
+                min = max;
+                max = tmp;
+            }
+        }
 
         int gId = Integer.parseInt(productID);
         String asin = DBProduct.loadAmazonProduct(gId);
 
         AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin);
 
-        ProductGroup  productGroup = new ProductGroup(gId);
+        ProductGroup productGroup = new ProductGroup(gId);
         productGroup.add(amazonProduct);
         productGroup.addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProduct.getEan())));
+
+        if (price)
+            productGroup.setPrice(min, max);
+        if (used)
+            productGroup.setUsed();
 
         JSONArray array = productGroup.getJsonList();
         JSONObject object = new JSONObject();

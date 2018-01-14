@@ -8,3 +8,11 @@ ebay_secretKey=
 
 google_clientID=
 google_secretKey=
+
+#address of database/schema
+#db_clientID=localhost/searchpp
+db_clientID=
+#username
+db_accessKey=
+#password
+db_secretKey=

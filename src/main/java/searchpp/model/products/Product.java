@@ -110,7 +110,7 @@ public abstract class Product implements JsonObject
         object.put("img", _imgUrl);
         object.put("name", _title);
         object.put("price", _price);
-        object.put("type", _condition.toString());
+        object.put("type", (_condition == Condition.NEW ? "NEW" : "USED"));
 
         return object;
     }

@@ -1,5 +1,8 @@
 package searchpp.database;
 
+import searchpp.model.config.Api;
+import searchpp.utils.ConfigLoader;
+
 import java.sql.*;
 import java.util.Date;
 
@@ -20,8 +23,9 @@ public class DBConnection
 
     private DBConnection() throws SQLException
     {
-        _sqlCon = DriverManager.getConnection("jdbc:mysql://localhost/searchpp?"+
-        "user=spp&password=1234");
+        _sqlCon = DriverManager.getConnection("jdbc:mysql://" + ConfigLoader.getConfig("db", Api.clientID) +
+                "?user=" + ConfigLoader.getConfig("db", Api.accessKey) +
+                "&password=" + ConfigLoader.getConfig("db", Api.secretKey));
     }
 
     private boolean isOpen()

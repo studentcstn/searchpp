@@ -1,6 +1,5 @@
 package searchpp.model.products;
 
-import com.mysql.cj.xdevapi.JsonArray;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import searchpp.database.DBProduct;
@@ -26,6 +25,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
     private boolean _new = false;
     private boolean used = false;
 
+    private String title = null;
+    private String img = null;
+
     public ProductGroup(){}
     public ProductGroup(int gId)
     {
@@ -43,7 +45,10 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         if (!add)
             return false;
 
-        setProduct(product);
+        if (product.getClass() == AmazonProduct.class)
+            setData(product);
+
+        useProduct(product);
 
         return true;
     }
@@ -55,10 +60,18 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         if (!add)
             return false;
 
-        for (Product product : c)
-            setProduct(product);
+        for (Product product : c) {
+            if (product.getClass() == AmazonProduct.class)
+                setData(product);
+            useProduct(product);
+        }
 
         return true;
+    }
+
+    private void setData(Product product) {
+        title = product.getTitle();
+        img = product.getImgUrl();
     }
 
     public boolean saveToDatabase()
@@ -66,7 +79,7 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return DBProduct.saveProducts(this);
     }
 
-    private void setProduct(Product product) {
+    private void useProduct(Product product) {
         if (product.getPrice() < priceMin) {
             priceMin = product.getPrice();
             price = true;
@@ -88,12 +101,40 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
      * @param max max price in cent
      */
     public void setPrice(int min, int max) {
+        price = false;
+        priceMin = Double.MAX_VALUE;
+        priceMax = Double.MIN_VALUE;
+
+        _new = false;
+        used = false;
         for (int i = 0; i < size(); ++i) {
             if (get(i).getPrice() < min*0.01 || get(i).getPrice() > max*0.01) {
                 remove(i);
                 --i;
-            }
+            } else
+                useProduct(get(i));
         }
+    }
+
+    public boolean setUsed() {
+        if (!used)
+            return false;
+
+        price = false;
+        priceMin = Double.MAX_VALUE;
+        priceMax = Double.MIN_VALUE;
+
+        _new = false;
+        used = false;
+        for (int i = 0; i < size(); ++i) {
+            if (get(i).getCondition() == Condition.NEW) {
+                remove(i);
+                --i;
+            } else
+                useProduct(get(i));
+        }
+
+        return true;
     }
 
     @Override
@@ -114,16 +155,11 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
             object.put("price_max", priceMax);
         }
 
-        if (size() > 0) {
-            object.put("name", get(0).getTitle());
-            for (int i = 0; i < size(); ++i) {
-                if (get(i).getClass() == AmazonProduct.class) {
-                    object.put("rating", ((AmazonProduct) get(i)).getRating().getAverageRating());
-                    break;
-                }
-            }
-            object.put("img", get(0).getImgUrl());
-        }
+        if (title != null)
+            object.put("name", title);
+        if (img != null)
+            object.put("img", img);
+
         JSONArray array = new JSONArray();
         if (_new)
             array.add("NEW");
