@@ -22,7 +22,7 @@ public class Ratings {
         int gId = Integer.parseInt(productID);
         String asin = DBProduct.loadAmazonProduct(gId);
 
-        AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin);
+        AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin, true);
 
         if (amazonProduct.getRating() == null) {
             JSONObject object = new JSONObject();

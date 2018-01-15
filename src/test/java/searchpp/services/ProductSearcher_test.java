@@ -24,19 +24,19 @@ public class ProductSearcher_test {
     @Test
     public void searchAmazonProduct() {
         loadTestConfig();
-        ProductSearcher.searchAmazonProduct("B01CD5VC92");
+        ProductSearcher.searchAmazonProduct("B01CD5VC92", true);
     }
 
     @Test
     public void searchAmazonProductList() {
         loadTestConfig();
-        ProductSearcher.searchAmazonProductList("Raspberry pi");
+        ProductSearcher.searchAmazonProductList("Raspberry pi", true);
     }
 
     @Test
     public void searchAmazonProductListMinMaxPrice() {
         loadTestConfig();
-        ProductSearcher.searchAmazonProductList("Raspberry pi", 30,60);
+        ProductSearcher.searchAmazonProductList("Raspberry pi", true, 30,60);
     }
 
     @Test

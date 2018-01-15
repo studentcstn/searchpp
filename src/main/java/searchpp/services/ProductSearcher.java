@@ -29,15 +29,15 @@ public class ProductSearcher
     private static EbayRequestsHelper _ebayRequestsHelperSvcs = new EbayRequestsHelper("svcs.ebay.com");
     private static EbayRequestsHelper _ebayRequestsHelperOpenApi = new EbayRequestsHelper("open.api.ebay.com");
 
-    public static List<AmazonProduct> searchAmazonProductList(String searchString)
+    public static List<AmazonProduct> searchAmazonProductList(String searchString, boolean rating)
     {
         Map<String, String> params = new HashMap<>();
         params.put("Keywords", searchString);
 
-        return searchAmazon(params);
+        return searchAmazon(params, rating);
     }
 
-    public static List<AmazonProduct> searchAmazonProductList(String searchString, double minPrice, double maxPrice)
+    public static List<AmazonProduct> searchAmazonProductList(String searchString, boolean rating, double minPrice, double maxPrice)
     {
         Map<String, String> params = new HashMap<>();
         params.put("Keywords", searchString);
@@ -52,10 +52,10 @@ public class ProductSearcher
         params.put("MinimumPrice", Integer.toString((int)minPrice*100));
         params.put("MaximumPrice", Integer.toString((int)maxPrice*100));
 
-        return searchAmazon(params);
+        return searchAmazon(params, rating);
     }
 
-    public static AmazonProduct searchAmazonProduct(String amazonASIN)
+    public static AmazonProduct searchAmazonProduct(String amazonASIN, boolean rating)
     {
         String requestUrl;
 
@@ -69,14 +69,14 @@ public class ProductSearcher
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 
         System.out.println(requestUrl);
-        List<AmazonProduct> products = parseAmazonRequest(requestUrl);
+        List<AmazonProduct> products = parseAmazonRequest(requestUrl, rating);
         if(products.size() < 1)
             return null;
         else
             return products.get(0);
     }
 
-    private static List<AmazonProduct> searchAmazon(Map<String, String> params)
+    private static List<AmazonProduct> searchAmazon(Map<String, String> params, boolean rating)
     {
         String requestUrl;
 
@@ -92,13 +92,13 @@ public class ProductSearcher
             params.put("ItemPage", Integer.toString(i));
             requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
             System.out.println(requestUrl);
-            products.addAll(parseAmazonRequest(requestUrl));
+            products.addAll(parseAmazonRequest(requestUrl, rating));
         }
 
         return products;
     }
 
-    private static List<AmazonProduct> parseAmazonRequest(String requestUrl)
+    private static List<AmazonProduct> parseAmazonRequest(String requestUrl, boolean rating)
     {
         List<AmazonProduct> products = new ArrayList<>();
 
@@ -161,7 +161,12 @@ public class ProductSearcher
 
                     String productUrl = getTagValue(eElement, "DetailPageURL");
 
-                    if(asin.equals("") || title.equals("") || price == 0 || condition == null || ean == -1)
+                    String hasReviews = getTagValue(eElement, "HasReviews");
+                    boolean reviews = false;
+                    if (hasReviews.matches("true|false"))
+                        reviews = Boolean.parseBoolean(hasReviews);
+
+                    if(asin.equals("") || title.equals("") || price == 0 || condition == null || ean == -1 || !reviews)
                         continue;
 
                     product.setProductId(asin);
@@ -175,8 +180,10 @@ public class ProductSearcher
                     product.setImgUrl(imgUrl);
                     product.setProductUrl(productUrl);
 
-                    AmazonProductRating amazonProductRating = AmazonRating.getRating(product);
-                    product.setRating(amazonProductRating);
+                    if (rating) {
+                        AmazonProductRating amazonProductRating = AmazonRating.getRating(product);
+                        product.setRating(amazonProductRating);
+                    }
 
                     products.add(product);
 

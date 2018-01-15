@@ -53,9 +53,9 @@ public class Products {
         //look for amazon products
         List<AmazonProduct> amazonProductList;
         if (price)
-            amazonProductList = ProductSearcher.searchAmazonProductList(search, min * .01, max * 0.01);
+            amazonProductList = ProductSearcher.searchAmazonProductList(search, true, min * .01, max * 0.01);
         else
-            amazonProductList = ProductSearcher.searchAmazonProductList(search);
+            amazonProductList = ProductSearcher.searchAmazonProductList(search, true);
 
         // no products, return
         if (amazonProductList.size() == 0) {
@@ -113,9 +113,8 @@ public class Products {
             //remove all products out of price range
             if (price)
                 products.setPrice(min, max);
-            if (used)
-                if (!products.setUsed())
-                    continue;
+            if (!used)
+                products.removeUsed();
             array.add(products.getJsonObject());
         }
         JSONObject object = new JSONObject();

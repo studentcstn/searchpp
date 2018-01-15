@@ -40,7 +40,7 @@ public class ProductId {
         int gId = Integer.parseInt(productID);
         String asin = DBProduct.loadAmazonProduct(gId);
 
-        AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin);
+        AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin, false);
 
         ProductGroup productGroup = new ProductGroup(gId);
         productGroup.add(amazonProduct);
@@ -48,8 +48,8 @@ public class ProductId {
 
         if (price)
             productGroup.setPrice(min, max);
-        if (used)
-            productGroup.setUsed();
+        if (!used)
+            productGroup.removeUsed();
 
         JSONArray array = productGroup.getJsonList();
         JSONObject object = new JSONObject();

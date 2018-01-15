@@ -44,7 +44,7 @@ public class DBProduct
                     case "amazon":
                         AmazonProduct aproduct;
                         //Fehlt: Fehler
-                        aproduct = ProductSearcher.searchAmazonProduct(pid);
+                        aproduct = ProductSearcher.searchAmazonProduct(pid, false);
                         aproduct.setGlobalId(gId);
                         products.add(aproduct);
                         break;

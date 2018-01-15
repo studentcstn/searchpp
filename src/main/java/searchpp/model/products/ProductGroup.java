@@ -116,9 +116,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         }
     }
 
-    public boolean setUsed() {
+    public void removeUsed() {
         if (!used)
-            return false;
+            return;
 
         price = false;
         priceMin = Double.MAX_VALUE;
@@ -127,14 +127,12 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         _new = false;
         used = false;
         for (int i = 0; i < size(); ++i) {
-            if (get(i).getCondition() == Condition.NEW) {
+            if (get(i).getCondition() != Condition.NEW) {
                 remove(i);
                 --i;
             } else
                 useProduct(get(i));
         }
-
-        return true;
     }
 
     @Override

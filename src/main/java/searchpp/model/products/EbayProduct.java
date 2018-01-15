@@ -23,5 +23,10 @@ public class EbayProduct extends Product
         return _listingType;
     }
 
-
+    @Override
+    public JSONObject getJsonObject() {
+        JSONObject object = super.getJsonObject();
+        object.put("listingType", _listingType.toString());
+        return object;
+    }
 }
