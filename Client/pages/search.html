@@ -37,18 +37,19 @@
 				</form>	
 				<div class="col-xs-12">
 				<div ng-repeat="item in result.data">
-					<div class="col-xs-2">
-						<img src="{{item.img}}" width="100" height="100"/>
-					</div>
-					<div class="col-xs-10">
-						<h5 class="row">
+					<div class="col-xs-12">
+						<h4 class="row">
 								<p>{{item.name}}</p>
-						</h5>
-						<div class="col-xs-12">
+						</h4>
+						<div class="col-xs-3">
+						<img src="{{item.img}}" width="100"/>
+						</div>
+						<div class="col-xs-6">
 							<p class="col-xs-12">Bewertung: {{item.rating}} Sterne</p>
 							<p class="col-xs-12">Preis von {{item.price_min}} € bis {{item.price_max}} €</p>
-							
-							<button class="col-xs-12 col-sm-6 col-sm-offset-6 col-md-4 col-md-offset-8 btn btn-danger" ng-click="showDetails(item)">Ansehen</span></button>			
+						</div>
+						<div class="col-xs-3">
+							<button class="col-xs-12 btn btn-danger" ng-click="showDetails(item)">Ansehen</span></button>			
 						</div>
 					</div>
 					<hr>

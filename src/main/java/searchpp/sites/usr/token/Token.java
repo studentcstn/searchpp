@@ -102,7 +102,7 @@ public class Token {
 
         try {
             // TODO temporary redirect
-            response.sendRedirect("http://localhost:8080/myapp/apikey?token=" + u.getToken());
+            response.sendRedirect("http://localhost:8080/index.html#/?token=" + u.getToken());
         } catch(IOException e) {
             // TODO useful error message
             System.out.println("Something went wrong: " + e);

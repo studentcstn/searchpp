@@ -24,10 +24,8 @@
 		
 		<script src="js/singleApp.js"></script>
 		
-		<script src="js/controller/mainCtrl.js"></script>
-		<script src="js/controller/userCtrl.js"></script>
-		<script src="js/controller/dozentLoginCtrl.js"></script>
 		<script src="js/controller/searchCtrl.js"></script>
+		<script src="js/controller/watchedProductCtrl.js"></script>
 		<script src="js/controller/productDetailCtrl.js"></script>
 		
 		<script>
@@ -50,7 +48,7 @@
 		
 	</head>
 
-	<body ng-controller="mainCtrl">
+	<body ng-controller="searchCtrl">
 	
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="container">
@@ -68,14 +66,12 @@
 				</div>
 				
 				
-				<div class="nav navbar-nav navbar-right"  ng-controller="userCtrl">
+				<div class="nav navbar-nav navbar-right">
 					<ul class="nav navbar-nav" >
-						<li class="dropdown" ng-hide="dozIsLoggedIn"><a class="dropdown-toggle" role="button" href="#/Dozent/Login"><span style="margin-left: 1.5em;">Anmelden</span><span class="caret"></span></a></li>
-						<li class="dropdown" ng-show="dozIsLoggedIn"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span style="margin-left: 1.5em;">{{user.name}}</span><span class="caret"></span></a>
+						<li class="dropdown" ng-hide="userIsLoggedIn"><a class="dropdown-toggle" role="button" ng-click="login()"><span style="margin-left: 1.5em;">Anmelden</span><span class="caret"></span></a></li>
+						<li class="dropdown" ng-show="userIsLoggedIn"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span style="margin-left: 1.5em;">Extras</span><span class="caret"></span></a>
 							<ul class="dropdown-menu">
-								<li><a href="#/Dozent/Termine">Beobachtungsliste</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="#/" ng-click="logout()">Abmelden</a></li>
+								<li><a href="#/usr/watchedProducts">Beobachtungsliste</a></li>
 							</ul>
 						</li>
 					</ul>
