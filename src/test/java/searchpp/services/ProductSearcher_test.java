@@ -36,7 +36,7 @@ public class ProductSearcher_test {
     @Test
     public void searchAmazonProductListMinMaxPrice() {
         loadTestConfig();
-        ProductSearcher.searchAmazonProductList("Raspberry pi", true, 30,60);
+        ProductSearcher.searchAmazonProductList("Raspberry pi", true, 300,600);
     }
 
     @Test

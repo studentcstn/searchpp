@@ -208,12 +208,15 @@ public class ProductSearcher
                 System.err.println("ParserConfigurationException");
             } catch (IOException e)
             {
+                System.err.print("Error during request, trying again... ");
+                long time = (long) (Math.random() * 5000 + 5000);
+                System.err.println("Try again in " + time + " ms");
                 try
                 {
-                    Thread.sleep(10000);
+                    Thread.sleep(time);
                 } catch (InterruptedException e1)
                 {}
-                System.err.println("Error during request, trying again...");
+
             } catch (SAXException e)
             {
                 System.err.println("SAXException");

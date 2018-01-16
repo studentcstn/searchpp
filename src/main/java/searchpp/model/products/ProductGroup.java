@@ -28,6 +28,8 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
     private String title = null;
     private String img = null;
 
+    private double averageRating = Double.NaN;
+
     public ProductGroup(){}
     public ProductGroup(int gId)
     {
@@ -46,7 +48,7 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
             return false;
 
         if (product.getClass() == AmazonProduct.class)
-            setData(product);
+            setData((AmazonProduct) product);
 
         useProduct(product);
 
@@ -62,16 +64,18 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
 
         for (Product product : c) {
             if (product.getClass() == AmazonProduct.class)
-                setData(product);
+                setData((AmazonProduct) product);
             useProduct(product);
         }
 
         return true;
     }
 
-    private void setData(Product product) {
+    private void setData(AmazonProduct product) {
         title = product.getTitle();
         img = product.getImgUrl();
+        if (product.getRating() != null)
+            averageRating = product.getRating().getAverageRating();
     }
 
     public boolean saveToDatabase()
@@ -147,6 +151,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
     public JSONObject getJsonObject() {
         JSONObject object = new JSONObject();
         object.put("product_id", productID);
+
+        if (!Double.isNaN(averageRating))
+            object.put("rating", averageRating);
 
         if (price) {
             object.put("price_min", priceMin);
