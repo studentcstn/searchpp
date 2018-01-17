@@ -28,7 +28,7 @@ public class DBProduct
             return null;
         }
     }
-    public static List<Product> loadSiteProducts(int gId)
+    /*public static List<Product> loadSiteProducts(int gId)
     {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT site_id, platform FROM product_to_site WHERE product_id = " + gId + ";";
@@ -63,7 +63,7 @@ public class DBProduct
 
         }
         return products;
-    }
+    }*/
 
     public static boolean saveProducts(ProductGroup group)
     {
@@ -107,11 +107,11 @@ public class DBProduct
         }
     }
 
-    public static boolean addToPriceHistory(Product p, PriceHistory ph)
+    public static boolean addToPriceHistory(int gid, PriceHistory ph)
     {
         boolean result = false;
         String sql = "INSERT INTO site_price_history(site_id, price, date) " +
-                "VALUES ('" + p.getProductId() + "', " + ph.getPrice() + ", ?);";
+                "VALUES ('" + gid + "', " + ph.getPrice() + ", ?);";
         try
         {
             result = DBConnection.getConnection().executeDateParameter(sql, ph.getDate());
@@ -123,29 +123,51 @@ public class DBProduct
         return result;
     }
 
-    public static List<Product> loadAllWatchedProducts()
+    public static ProductGroup loadProductGroup(int gid)
     {
-        List<Product> products = new ArrayList<>();
+        try
+        {
+            AmazonProduct prod = ProductSearcher.searchAmazonProduct(DBProduct.loadAmazonProduct(gid), false);
+            ProductGroup grp = new ProductGroup();
+            grp.setGlobalId(gid);
+            grp.add(prod);
+            grp.addAll(ProductSearcher.searchEbayProductList(Long.toString(prod.getEan())));
+            return grp;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static List<ProductGroup> loadAllWatchedProducts()
+    {
+        List<ProductGroup> groups = new ArrayList<>();
         String sql = "SELECT DISTINCT product_id FROM usr_product_watch;";
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
             while (result.next())
             {
-                products.addAll(DBProduct.loadSiteProducts(result.getInt(1)));
+                int gid = result.getInt(1);
+                ProductGroup grp = loadProductGroup(gid);
+                if(grp != null)
+                {
+                    groups.add(grp);
+                }
             }
         }
         catch (SQLException ex)
         {
             //Log Error
         }
-        return products;
+        return groups;
     }
 
-    public static List<PriceHistory> loadPriceHistory(Product p)
+    public static List<PriceHistory> loadPriceHistory(int productId)
     {
         ArrayList<PriceHistory> ph = new ArrayList<>();
-        String sql = "SELECT price, date FROM site_price_history WHERE site_id = '" + p.getProductId() + "';";
+        String sql = "SELECT price, date FROM site_price_history WHERE product_id = " + productId +";";
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);

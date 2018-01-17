@@ -13,29 +13,13 @@ import java.util.List;
 public class DbUser_test
 {
     @Test
-    public void CreateUser()
-    {
-        User u = DBUser.createUser("test@test.de");
-        Assert.assertNotNull(u);
-        u = DBUser.createUser("test@test.de");
-        Assert.assertNull(u);
-    }
-
-    @Test
-    public void LoadUser()
-    {
-        User u = DBUser.loadUser("test@test.de");
-        Assert.assertNotNull(u);
-    }
-
-    @Test
     public void LoadNotExistingUser()
     {
-        User u = DBUser.loadUser("iwas");
+        User u = DBUser.loadUserByToken("abc123");
         Assert.assertNull(u);
     }
 
-    @Test
+    /*@Test
     public void LoadWatchedProductsWhenEmpty()
     {
         User u = DBUser.loadUser("test@test.de");
@@ -84,5 +68,5 @@ public class DbUser_test
         Assert.assertTrue(u.removeWatchedProduct(product));
         u.loadWatchedProducts();
         Assert.assertTrue(u.getWatchedProducts().isEmpty());
-    }
+    }*/
 }

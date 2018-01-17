@@ -29,13 +29,13 @@ ALTER TABLE product_to_site ADD UNIQUE (product_id, site_id);
 
 /* price history for side id's */
 CREATE TABLE site_price_history (
-    site_id VARCHAR(255) NOT NULL,
+    product_id int unsigned NOT NULL,
     price DECIMAL(7,2) NOT NULL,
     date DATETIME NOT NULL,
 
-    FOREIGN KEY (site_id) REFERENCES product_to_site(site_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-ALTER TABLE site_price_history ADD UNIQUE (site_id, date);
+ALTER TABLE site_price_history ADD UNIQUE (product_id, date);
 
 /* watched products from users */
 CREATE TABLE usr_product_watch (

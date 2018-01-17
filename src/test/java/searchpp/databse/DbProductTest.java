@@ -64,7 +64,7 @@ public class DbProductTest
         //Assert.assertTrue(id != -1);
     }
 
-    @Test
+    /*@Test
     public void loadProductsExisting()
     {
         loadConfig();
@@ -102,5 +102,5 @@ public class DbProductTest
         product.setProductId("B011N78DMA");
         List<PriceHistory> ph = DBProduct.loadPriceHistory(product);
         Assert.assertFalse(ph.isEmpty());
-    }
+    }*/
 }

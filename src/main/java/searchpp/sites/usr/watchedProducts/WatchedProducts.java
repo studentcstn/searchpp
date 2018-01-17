@@ -6,6 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import searchpp.database.DBUser;
 import searchpp.model.products.Product;
+import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
 
 import javax.ws.rs.*;
@@ -24,33 +25,42 @@ public class WatchedProducts
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String get(@PathParam("userToken") long userToken)
+    public String get(@PathParam("userToken") String userToken)
     {
-        //todo get user with userToken from db / load WatchedProducts with userToken
-        //Email?
-        User user = DBUser.loadUser("");
-        List<Product> products = DBUser.loadWatchedProducts(user);
-
+        User user = DBUser.loadUserByToken(userToken);
         JSONArray array = new JSONArray();
-        for(Product p : products)
-            array.add(p.getJsonObject());
-
+        if (user != null)
+        {
+            List<ProductGroup> watchedGroups = DBUser.loadWatchedProducts(user);
+            //convert to json
+            for (ProductGroup products : watchedGroups) {
+                array.add(products.getJsonObject());
+            }
+        }
         JSONObject object = new JSONObject();
-        object.put("elements", products.size());
         object.put("data", array);
+        object.put("elements", array.size());
 
         return object.toJSONString();
     }
 
     @POST
-    public void post(@PathParam("userToken") long userToken, @QueryParam("product_id") long product_id, @QueryParam("date_to") Date date_to, @QueryParam("date_from") Date date_from)
+    public void post(@PathParam("userToken") String userToken, @QueryParam("product_id") int product_id, @QueryParam("date_to") Date date_to, @QueryParam("date_from") Date date_from)
     {
-        //todo save product_id to user with userToken
+        User user = DBUser.loadUserByToken(userToken);
+        if (user != null)
+        {
+            DBUser.addWatchedProduct(user, product_id, date_from, date_to);
+        }
     }
 
     @DELETE
-    public void delete(@PathParam("userToken") long userToken)
+    public void delete(@PathParam("userToken") String userToken)
     {
-        //todo remove all watched products from user with userToken
+        User user = DBUser.loadUserByToken(userToken);
+        if (user != null)
+        {
+            DBUser.removeAllWatchedProducts(user);
+        }
     }
 }

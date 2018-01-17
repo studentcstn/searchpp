@@ -185,6 +185,20 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return array;
     }
 
+    public double getMinPrice()
+    {
+        if(size() == 0) return Double.NaN;
+        double min = get(0).getPrice();
+        for(Product p : this)
+        {
+            if(p.getPrice() < min)
+            {
+                min = p.getPrice();
+            }
+        }
+        return min;
+    }
+
     public void setGlobalId(int globalId)
     {
         this.productID = globalId;

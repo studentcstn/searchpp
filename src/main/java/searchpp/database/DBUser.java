@@ -1,38 +1,21 @@
 package searchpp.database;
 
 import com.mysql.cj.api.xdevapi.SqlStatement;
+import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.Product;
+import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
+import searchpp.services.ProductSearcher;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DBUser
 {
-    public static User loadUser(String email)
-    {
-        try
-        {
-            String sql = "SELECT id, email FROM users WHERE email = '" + email + "';";
-            ResultSet result = DBConnection.getConnection().query(sql);
-            if (result.first())
-            {
-                return new User(result.getInt(1), result.getString(2));
-            }
-            else
-            {
-                return null;
-            }
-        }
-        catch(SQLException e)
-        {
-            return null;
-        }
-    }
-
     public static User loadUserByToken(String token)
     {
         try
@@ -49,24 +32,6 @@ public class DBUser
             }
         }
         catch(SQLException e)
-        {
-            return null;
-        }
-    }
-
-    public static User createUser(String email)
-    {
-        try
-        {
-            String sql = "INSERT INTO users(email) VALUES ('" + email + "');";
-            int id = DBConnection.getConnection().insert(sql);
-            if (id == -1)
-            {
-                return null;
-            }
-            return new User(id, email);
-        }
-        catch(SQLException ex)
         {
             return null;
         }
@@ -102,29 +67,35 @@ public class DBUser
         }
     }
 
-    public static List<Product> loadWatchedProducts(User u)
+    public static List<ProductGroup> loadWatchedProducts(User u)
     {
-        List<Product> products = new ArrayList<>();
-        String sql = "SELECT product_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
+        List<ProductGroup> groups = new ArrayList<>();
+        String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
             while (result.next())
             {
-                products.addAll(DBProduct.loadSiteProducts(result.getInt(1)));
+                int gid = result.getInt(1);
+                ProductGroup grp = DBProduct.loadProductGroup(gid);
+                if(grp != null)
+                {
+                    groups.add(grp);
+                }
             }
         }
         catch (SQLException ex)
         {
             //Log Error
         }
-        return products;
+        return groups;
     }
 
-    public static boolean addWatchedProduct(User u, Product p)
+    public static boolean addWatchedProduct(User u, int gid, Date from, Date to)
     {
+        //todo Add dates
         boolean result = false;
-        String sql = "INSERT INTO usr_product_watch(user_id, product_id) VALUES ("+u.getId()+", " + p.getGlobalId() + ");";
+        String sql = "INSERT INTO usr_product_watch(user_id, product_id) VALUES ("+u.getId()+", " + gid + ");";
         try
         {
             result = DBConnection.getConnection().execute(sql);
@@ -136,11 +107,32 @@ public class DBUser
         return result;
     }
 
-    public static boolean removeWatchedProduct(User u, Product p)
+    public static boolean changeWatchedProduct(User u, int gid, Date from, Date to)
+    {
+        //todo Implement Update; Add dates
+        return false;
+    }
+
+    public static boolean removeWatchedProduct(User u, int gid)
     {
         boolean result = false;
         String sql = "DELETE FROM usr_product_watch WHERE user_id = "
-                + u.getId() + " AND product_id = " + p.getGlobalId() + ";";
+                + u.getId() + " AND product_id = " + gid + ";";
+        try
+        {
+            result = DBConnection.getConnection().execute(sql);
+        }
+        catch(SQLException ex)
+        {
+
+        }
+        return result;
+    }
+
+    public static boolean removeAllWatchedProducts(User u)
+    {
+        boolean result = false;
+        String sql = "DELETE FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
         try
         {
             result = DBConnection.getConnection().execute(sql);
