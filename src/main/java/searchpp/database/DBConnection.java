@@ -4,6 +4,7 @@ import searchpp.model.config.Api;
 import searchpp.utils.ConfigLoader;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class DBConnection
@@ -65,6 +66,25 @@ public class DBConnection
             return true;
         }
         catch(SQLException ex)
+        {
+            return false;
+        }
+    }
+
+    public boolean executeLocalDateParameter(String sql, LocalDate... date)
+    {
+        PreparedStatement stmt;
+        try
+        {
+            stmt = _sqlCon.prepareStatement(sql);
+            for(int i = 1; i <= date.length; ++i)
+            {
+                stmt.setDate(i, java.sql.Date.valueOf(date[i-1]));
+            }
+            stmt.executeUpdate();
+            return true;
+        }
+        catch (Exception ex)
         {
             return false;
         }

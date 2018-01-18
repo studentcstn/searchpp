@@ -28,42 +28,6 @@ public class DBProduct
             return null;
         }
     }
-    /*public static List<Product> loadSiteProducts(int gId)
-    {
-        ArrayList<Product> products = new ArrayList<>();
-        String sql = "SELECT site_id, platform FROM product_to_site WHERE product_id = " + gId + ";";
-        try
-        {
-            ResultSet result = DBConnection.getConnection().query(sql);
-            while (result.next())
-            {
-                String plattform = result.getString(2);
-                String pid = result.getString(1);
-                switch (plattform)
-                {
-                    case "amazon":
-                        AmazonProduct aproduct;
-                        //Fehlt: Fehler
-                        aproduct = ProductSearcher.searchAmazonProduct(pid, false);
-                        aproduct.setGlobalId(gId);
-                        products.add(aproduct);
-                        break;
-                    case "ebay":
-                        EbayProduct eproduct = new EbayProduct();
-                        eproduct.setProductId(pid);
-                        eproduct = ProductSearcher.searchEbayProduct(eproduct);
-                        eproduct.setGlobalId(gId);
-                        products.add(eproduct);
-                        break;
-                }
-            }
-        }
-        catch(SQLException ex)
-        {
-
-        }
-        return products;
-    }*/
 
     public static boolean saveProducts(ProductGroup group)
     {
@@ -143,7 +107,7 @@ public class DBProduct
     public static List<ProductGroup> loadAllWatchedProducts()
     {
         List<ProductGroup> groups = new ArrayList<>();
-        String sql = "SELECT DISTINCT product_id FROM usr_product_watch;";
+        String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE date_to >= CURRENT_TIMESTAMP;";
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);

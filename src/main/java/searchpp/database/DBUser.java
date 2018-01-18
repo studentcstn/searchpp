@@ -10,6 +10,7 @@ import searchpp.services.ProductSearcher;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -69,6 +70,7 @@ public class DBUser
 
     public static List<ProductGroup> loadWatchedProducts(User u)
     {
+        //todo: add DAtes
         List<ProductGroup> groups = new ArrayList<>();
         String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
         try
@@ -91,14 +93,14 @@ public class DBUser
         return groups;
     }
 
-    public static boolean addWatchedProduct(User u, int gid, Date from, Date to)
+    public static boolean addWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
     {
-        //todo Add dates
         boolean result = false;
-        String sql = "INSERT INTO usr_product_watch(user_id, product_id) VALUES ("+u.getId()+", " + gid + ");";
+        String sql = "INSERT INTO usr_product_watch(user_id, product_id, date_from, date_to)" +
+                " VALUES ("+u.getId()+", " + gid + ", ?, ?);";
         try
         {
-            result = DBConnection.getConnection().execute(sql);
+            result = DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
         }
         catch(SQLException ex)
         {
@@ -107,9 +109,19 @@ public class DBUser
         return result;
     }
 
-    public static boolean changeWatchedProduct(User u, int gid, Date from, Date to)
+    public static boolean changeWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
     {
-        //todo Implement Update; Add dates
+        boolean result = false;
+        String sql = "UPDATE usr_product_watch SET date_from = ?, date_to = ? WHERE user_id = "
+                + u.getId() + " AND product_id = " + gid + ";";
+        try
+        {
+            result = DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
+        }
+        catch(SQLException ex)
+        {
+            //todo: log error
+        }
         return false;
     }
 
