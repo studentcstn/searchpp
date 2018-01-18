@@ -12,7 +12,6 @@ public class User
     private String _token;
     private String _accessToken;
     private String _refreshToken;
-    private List<Product> _watchedProducts;
 
     public int getId()
     {
@@ -39,11 +38,6 @@ public class User
         return _refreshToken;
     }
 
-    public List<Product> getWatchedProducts()
-    {
-        return _watchedProducts;
-    }
-
     public User(int id, String email)
     {
         this._id = id;
@@ -57,24 +51,5 @@ public class User
         this._token = token;
         this._accessToken = accessToken;
         this._refreshToken = refreshToken;
-    }
-
-    public boolean addWatchedProduct(Product p)
-    {
-        boolean result = DBUser.addWatchedProduct(this, p);
-        loadWatchedProducts();
-        return result;
-    }
-
-    public boolean removeWatchedProduct(Product p)
-    {
-        boolean result = DBUser.removeWatchedProduct(this, p);
-        loadWatchedProducts();
-        return result;
-    }
-
-    public void loadWatchedProducts()
-    {
-        _watchedProducts = DBUser.loadWatchedProducts(this);
     }
 }
