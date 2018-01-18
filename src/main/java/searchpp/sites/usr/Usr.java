@@ -37,7 +37,6 @@ public class Usr {
             .append("&approval_prompt=force");
 
         try {
-            System.out.println(url.toString());
             response.sendRedirect(url.toString());
         } catch(IOException e) {
             // TODO useful error message

@@ -1,4 +1,5 @@
 searchpp.conf
+searchpp_google.json
 target/
 /src/test/java/searchpp/services/searchpp.conf
 s
