@@ -9,9 +9,11 @@ import searchpp.model.products.Product;
 import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.MessageBodyReader;
 import java.util.Date;
 import java.util.List;
 
@@ -45,8 +47,9 @@ public class WatchedProducts
     }
 
     @POST
-    public void post(@PathParam("userToken") String userToken, @QueryParam("product_id") int product_id, @QueryParam("date_to") Date date_to, @QueryParam("date_from") Date date_from)
+    public void post(@PathParam("userToken") String userToken, @QueryParam("date_to") Date date_to, @QueryParam("date_from") Date date_from)
     {
+        int product_id = Integer.parseInt(request.getParameter("product_id"));
         User user = DBUser.loadUserByToken(userToken);
         if (user != null)
         {
