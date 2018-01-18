@@ -25,7 +25,7 @@ window.routes =
 	{
 		controller: 'watchedProductCtrl',
 		templateUrl: 'pages/watched.html',
-		requireLogin: false
+		requireLogin: true
 	}
 };
 

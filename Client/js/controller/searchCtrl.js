@@ -1,6 +1,6 @@
-/*Controller für die Übersicht der Sprechstunden eines Studenten (Route: #/Student/Termine)*/
 app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $http, baseUrl)
 {	
+	$scope.isSending = false;
 	if($rootScope.productList !== undefined)
 		$scope.result = $rootScope.productList;
 	
@@ -18,10 +18,8 @@ app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $
 	
 	$scope.search = function(product)
 	{
-		/*Fehleranzeige in der View zurücksetzen*/
 		if($scope.productSearch.$valid)
 		{
-			/*Kopie der Anfrage anlegen, dass nichts in dem Formular verändert wird*/
 			var request = {
 				search_text: product.name
 			};
@@ -33,14 +31,9 @@ app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $
 			if("used" in product)
 				request.used = product.used;
 			$rootScope.request = request;
-			console.log(product);
-			console.log(request);
-			/*Anzeige, dass die Daten versendet werden anzeigen*/
+			
 			$scope.isSending = true;
 
-			//POST /Student/<email>/Termine/
-			console.log(baseUrl + "/products");
-			console.log(request);
 			$http.get(baseUrl + "/products" , {params : request})
 			.success(function (data)
 			{	
@@ -48,14 +41,15 @@ app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $
 				console.log("Result!!");
 				console.log(data);
 				console.log($scope.result);
-				/*Bestätigungsdialog*/
+				$scope.isSending = false;
 				
 			})
 			.error(function (error, status)
 			{
 				console.log(error);
 				console.log(status);
-				console.log("Error!");
+				console.log("Error!!");
+				$scope.isSending = false;
 			});
 		}
 	}
