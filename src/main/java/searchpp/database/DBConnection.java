@@ -24,10 +24,14 @@ public class DBConnection
 
     private DBConnection() throws SQLException
     {
+        openConnection();
+    }
+
+    private void openConnection() throws SQLException
+    {
         _sqlCon = DriverManager.getConnection("jdbc:mysql://" + ConfigLoader.getConfig("db", Api.clientID) +
-                "?user=" + ConfigLoader.getConfig("db", Api.accessKey) +
-                "&password=" + ConfigLoader.getConfig("db", Api.secretKey) +
-                "&useLegacyDatetimeCode=false&serverTimezone=CET");
+                                                      "?user=" + ConfigLoader.getConfig("db", Api.accessKey) +
+                                                      "&password=" + ConfigLoader.getConfig("db", Api.secretKey));
     }
 
     private boolean isOpen()
