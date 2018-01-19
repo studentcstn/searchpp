@@ -8,12 +8,13 @@ import org.json.simple.parser.JSONParser;
 import searchpp.database.DBUser;
 import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
+import searchpp.services.Calendar;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStreamReader;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.List;
 
 @Path("usr/{userToken}/watchedProducts")
@@ -65,6 +66,18 @@ public class WatchedProducts
                 if (user != null)
                 {
                     DBUser.addWatchedProduct(user, product_id, date_from, date_to);
+
+                    String eventId = Calendar.insert(
+                        user,
+                        ZonedDateTime.of(date_from, LocalTime.now(), ZoneId.of("Europe/Berlin")),
+                        ZonedDateTime.of(date_to, LocalTime.now(), ZoneId.of("Europe/Berlin")),
+                        String.format("product_id %d", product_id),
+                        String.format("Überwachung des Produkts mit der ID %d", product_id)
+                    );
+                    if (eventId == null) {
+                        // TODO
+                        System.out.println("Insert failed");
+                    }
                 }
             }
             else
