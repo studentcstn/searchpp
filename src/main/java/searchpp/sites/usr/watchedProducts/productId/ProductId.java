@@ -47,14 +47,14 @@ public class ProductId {
     }
 
     @PUT
-    public void put(@PathParam("userToken") String userToken) {
+    public void put(@PathParam("userToken") String userToken, @PathParam("productId") int product_id) {
+        boolean wasSuccessful = false;
         try
         {
             JSONParser parser = new JSONParser();
             JSONObject result = (JSONObject) parser.parse(new InputStreamReader(request.getInputStream()));
-            if(result.containsKey("product_id") && result.containsKey("date_to"))
+            if(result.containsKey("date_to"))
             {
-                int product_id = (int)(long)result.get("product_id");
                 LocalDate date_to = LocalDate.parse((String)result.get("date_to"));
                 LocalDate date_from = LocalDate.now();
                 if(result.containsKey("date_from"))
@@ -64,28 +64,31 @@ public class ProductId {
                 User user = DBUser.loadUserByToken(userToken);
                 if (user != null)
                 {
-                    DBUser.changeWatchedProduct(user, product_id, date_from, date_to);
+                    wasSuccessful = DBUser.changeWatchedProduct(user, product_id, date_from, date_to);
                 }
             }
-            else
-            {
-                //todo: error
-            }
-
         }
         catch(Exception ex)
         {
-            //todo: error
             System.err.println(ex.getMessage());
+        }
+        if(!wasSuccessful)
+        {
+            throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }
 
     @DELETE
     public void delete(@PathParam("userToken") String userToken, @PathParam("productId") int productId) {
+        boolean wasSuccessful = false;
         User user = DBUser.loadUserByToken(userToken);
         if (user != null)
         {
-            DBUser.removeWatchedProduct(user, productId);
+            wasSuccessful = DBUser.removeWatchedProduct(user, productId);
+        }
+        if(!wasSuccessful)
+        {
+            throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }
 }

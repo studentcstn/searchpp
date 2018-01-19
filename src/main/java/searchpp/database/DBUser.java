@@ -70,7 +70,6 @@ public class DBUser
 
     public static List<ProductGroup> loadWatchedProducts(User u)
     {
-        //todo: add DAtes
         List<ProductGroup> groups = new ArrayList<>();
         String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
         try

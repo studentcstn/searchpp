@@ -74,7 +74,7 @@ public class DBProduct
     public static boolean addToPriceHistory(int gid, PriceHistory ph)
     {
         boolean result = false;
-        String sql = "INSERT INTO site_price_history(site_id, price, date) " +
+        String sql = "INSERT INTO site_price_history(product_id, price, date) " +
                 "VALUES ('" + gid + "', " + ph.getPrice() + ", ?);";
         try
         {
@@ -137,7 +137,7 @@ public class DBProduct
             ResultSet result = DBConnection.getConnection().query(sql);
             while (result.next())
             {
-                ph.add(new PriceHistory(result.getDate(2), result.getDouble(1)));
+                ph.add(new PriceHistory(result.getTimestamp(2), result.getDouble(1)));
             }
         }
         catch(SQLException ex)

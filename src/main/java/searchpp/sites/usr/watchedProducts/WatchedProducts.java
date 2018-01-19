@@ -49,6 +49,7 @@ public class WatchedProducts
     @POST
     public void post(@PathParam("userToken") String userToken)
     {
+        boolean wasSuccessful = false;
         try
         {
             JSONParser parser = new JSONParser();
@@ -65,8 +66,7 @@ public class WatchedProducts
                 User user = DBUser.loadUserByToken(userToken);
                 if (user != null)
                 {
-                    DBUser.addWatchedProduct(user, product_id, date_from, date_to);
-
+                    wasSuccessful = DBUser.addWatchedProduct(user, product_id, date_from, date_to);
                     String eventId = Calendar.insert(
                         user,
                         ZonedDateTime.of(date_from, LocalTime.now(), ZoneId.of("Europe/Berlin")),
@@ -80,26 +80,30 @@ public class WatchedProducts
                     }
                 }
             }
-            else
-            {
-                //todo: error
-            }
 
         }
         catch(Exception ex)
         {
-            //todo: error
             System.err.println(ex.getMessage());
+        }
+        if(!wasSuccessful)
+        {
+            throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }
 
     @DELETE
     public void delete(@PathParam("userToken") String userToken)
     {
+        boolean wasSuccessful = false;
         User user = DBUser.loadUserByToken(userToken);
         if (user != null)
         {
-            DBUser.removeAllWatchedProducts(user);
+            wasSuccessful = DBUser.removeAllWatchedProducts(user);
+        }
+        if(!wasSuccessful)
+        {
+            throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }
 }

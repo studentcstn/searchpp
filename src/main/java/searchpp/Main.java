@@ -53,7 +53,7 @@ public class Main {
                 + "%s\nHit enter to stop it...", /*BASE_URI*/ "http://localhost:8080"));
         PriceHistoryService phs = new PriceHistoryService();
         Timer t = new Timer();
-        //t.scheduleAtFixedRate(phs, 0, 15*1000);
+        t.scheduleAtFixedRate(phs, 0, 15*1000);
         System.in.read();
         t.cancel();
         server.stop();
