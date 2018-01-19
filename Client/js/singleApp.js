@@ -26,6 +26,18 @@ window.routes =
 		controller: 'watchedProductCtrl',
 		templateUrl: 'pages/watched.html',
 		requireLogin: true
+	},
+	"/usr/watchedProducts/history" :
+	{
+		controller: 'historyCtrl',
+		templateUrl: 'pages/history.html',
+		requireLogin: true
+	},
+	"/usr/watchedProducts/changeDate" :
+	{
+		controller: 'changeDateCtrl',
+		templateUrl: 'pages/changeDate.html',
+		requireLogin: true
 	}
 };
 

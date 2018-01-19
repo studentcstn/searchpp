@@ -27,6 +27,8 @@
 		<script src="js/controller/searchCtrl.js"></script>
 		<script src="js/controller/watchedProductCtrl.js"></script>
 		<script src="js/controller/productDetailCtrl.js"></script>
+		<script src="js/controller/changeDateCtrl.js"></script>
+		<script src="js/controller/historyCtrl.js"></script>
 		
 		<script>
 			// Passt den Abstand der Seite zur Navbar an (wichtig wenn Mobile und User eingelogt)
@@ -72,6 +74,8 @@
 						<li class="dropdown" ng-show="userIsLoggedIn"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span style="margin-left: 1.5em;">Extras</span><span class="caret"></span></a>
 							<ul class="dropdown-menu">
 								<li><a href="#/usr/watchedProducts">Beobachtungsliste</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#/" ng-click="logout()">Abmelden</a></li>
 							</ul>
 						</li>
 					</ul>

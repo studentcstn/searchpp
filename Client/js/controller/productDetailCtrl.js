@@ -1,5 +1,12 @@
 app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http, baseUrl)
-{	
+{
+	$scope.logout = function()
+	{
+		$rootScope.user = undefined;
+		$rootScope.$broadcast("userChange", $rootScope.user);
+		$window.location.href = baseUrl + "#/";
+	};
+
 	$scope.toWebsite = function(item)
 	{		
 		$window.open(item.origin_url, '_blank');
@@ -37,7 +44,7 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 				console.log("Error!!");
 			});
 		}
-		}
+	}
 	
 	$scope.getData = function()
 	{
