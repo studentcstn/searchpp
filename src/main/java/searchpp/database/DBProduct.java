@@ -13,18 +13,25 @@ public class DBProduct
     public static String loadAmazonProduct(int gIDd)
     {
         String sql = "SELECT site_id FROM product_to_site WHERE platform = 'amazon'" +
-                "AND product_id = " + gIDd + ";";
+                " AND product_id = " + gIDd + ";";
         try
         {
+            String ret = null;
             ResultSet result = DBConnection.getConnection().query(sql);
+            if(result == null)
+            {
+                return null;
+            }
             if(result.next())
             {
-                return result.getString(1);
+                ret = result.getString(1);
             }
-            return null;
+            result.close();
+            return ret;
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR: DBProduct.loadAmazonProduct: " + ex.getMessage());
             return null;
         }
     }
@@ -38,6 +45,10 @@ public class DBProduct
             String query = "SELECT product_id FROM product_to_site WHERE platform = 'amazon'" +
                     " AND site_id = '" + group.get(0).getProductId() + "';";
             ResultSet result = DBConnection.getConnection().query(query);
+            if(result == null)
+            {
+                return false;
+            }
             if(result.next())
             {
                 id = result.getInt(1);
@@ -47,6 +58,8 @@ public class DBProduct
                 sql = "INSERT INTO products() VALUES();";
                 id = DBConnection.getConnection().insert(sql);
             }
+
+            result.close();
 
             for (Product product : group) {
                 String site = null;
@@ -67,41 +80,26 @@ public class DBProduct
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR: DBProduct.saveProducts: " + ex.getMessage());
             return false;
         }
     }
 
     public static boolean addToPriceHistory(int gid, PriceHistory ph)
     {
-        boolean result = false;
         String sql = "INSERT INTO site_price_history(product_id, price, date) " +
                 "VALUES ('" + gid + "', " + ph.getPrice() + ", ?);";
-        try
-        {
-            result = DBConnection.getConnection().executeDateParameter(sql, ph.getDate());
-        }
-        catch(SQLException ex)
-        {
-
-        }
-        return result;
+        return DBConnection.getConnection().executeDateParameter(sql, ph.getDate());
     }
 
     public static ProductGroup loadProductGroup(int gid)
     {
-        try
-        {
-            AmazonProduct prod = ProductSearcher.searchAmazonProduct(DBProduct.loadAmazonProduct(gid), false);
-            ProductGroup grp = new ProductGroup();
-            grp.setGlobalId(gid);
-            grp.add(prod);
-            grp.addAll(ProductSearcher.searchEbayProductList(Long.toString(prod.getEan())));
-            return grp;
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
+        AmazonProduct prod = ProductSearcher.searchAmazonProduct(DBProduct.loadAmazonProduct(gid), false);
+        ProductGroup grp = new ProductGroup();
+        grp.setGlobalId(gid);
+        grp.add(prod);
+        grp.addAll(ProductSearcher.searchEbayProductList(Long.toString(prod.getEan())));
+        return grp;
     }
 
     public static List<ProductGroup> loadAllWatchedProducts()
@@ -111,6 +109,10 @@ public class DBProduct
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
+            if(result == null)
+            {
+                return groups;
+            }
             while (result.next())
             {
                 int gid = result.getInt(1);
@@ -120,10 +122,11 @@ public class DBProduct
                     groups.add(grp);
                 }
             }
+            result.close();
         }
         catch (SQLException ex)
         {
-            //Log Error
+            System.err.println("ERR: DBProduct.loadAllWatchedProducts: " + ex.getMessage());
         }
         return groups;
     }
@@ -135,14 +138,19 @@ public class DBProduct
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
+            if(result == null)
+            {
+                return ph;
+            }
             while (result.next())
             {
                 ph.add(new PriceHistory(result.getTimestamp(2), result.getDouble(1)));
             }
+            result.close();
         }
         catch(SQLException ex)
         {
-
+            System.err.println("ERR: DBProduct.loadPriceHistory: " + ex.getMessage());
         }
         return ph;
     }

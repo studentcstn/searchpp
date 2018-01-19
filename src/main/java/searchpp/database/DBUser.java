@@ -21,50 +21,48 @@ public class DBUser
     {
         try
         {
+            User user = null;
             String sql = "SELECT id, email, token, access_token, refresh_token FROM users WHERE token = '" + token + "';";
             ResultSet result = DBConnection.getConnection().query(sql);
+            if(result == null)
+            {
+                return user;
+            }
             if (result.first())
             {
-                return new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5));
+                user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5));
             }
-            else
-            {
-                return null;
-            }
+            result.close();
+            return user;
         }
-        catch(SQLException e)
+        catch(SQLException ex)
         {
+            System.err.println("ERR: DBUser.loadUserByToken: " + ex.getMessage());
             return null;
         }
     }
 
     public static User createUserOrUpdate(String email, String token, String accessToken, String refreshToken)
     {
-        try
-        {
-            PreparedStatement stmt = DBConnection
-                .getConnection()
-                .prepareStatement(
-                "INSERT INTO users (email, token, access_token, refresh_token) VALUES (?,?,?,?) " +
+        String sql = "INSERT INTO users (email, token, access_token, refresh_token) VALUES (?,?,?,?) " +
                 "ON DUPLICATE KEY UPDATE email=VALUES(email), token=VALUES(token), " +
-                "access_token=VALUES(access_token), refresh_token=VALUES(refresh_token)"
-            );
+                "access_token=VALUES(access_token), refresh_token=VALUES(refresh_token);";
+        int id = DBConnection.getConnection().insert(sql, email, token, accessToken, refreshToken);
 
-            stmt.setString(1, email);
-            stmt.setString(2, token);
-            stmt.setString(3, accessToken);
-            stmt.setString(4, refreshToken);
-
-            int id = stmt.executeUpdate();
-            if (id == -1) {
-                return null;
-            }
-
-            return new User(id, email, token, accessToken, refreshToken);
-        }
-        catch(SQLException ex)
+        //Error occurred
+        if (id == -1)
         {
             return null;
+        }
+        //User already in db
+        else if (id == -2)
+        {
+            return loadUserByToken(token);
+        }
+        //User inserted
+        else
+        {
+            return new User(id, email, token, accessToken, refreshToken);
         }
     }
 
@@ -75,6 +73,10 @@ public class DBUser
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
+            if(result == null)
+            {
+                return groups;
+            }
             while (result.next())
             {
                 int gid = result.getInt(1);
@@ -84,74 +86,40 @@ public class DBUser
                     groups.add(grp);
                 }
             }
+            result.close();
         }
         catch (SQLException ex)
         {
-            //Log Error
+            System.err.println("ERR: DBUser.loadWatchedProducts: " + ex.getMessage());
         }
         return groups;
     }
 
     public static boolean addWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
     {
-        boolean result = false;
         String sql = "INSERT INTO usr_product_watch(user_id, product_id, date_from, date_to)" +
                 " VALUES ("+u.getId()+", " + gid + ", ?, ?);";
-        try
-        {
-            result = DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
-        }
-        catch(SQLException ex)
-        {
-
-        }
-        return result;
+        return DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
     }
 
     public static boolean changeWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
     {
-        boolean result = false;
         String sql = "UPDATE usr_product_watch SET date_from = ?, date_to = ? WHERE user_id = "
                 + u.getId() + " AND product_id = " + gid + ";";
-        try
-        {
-            result = DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
-        }
-        catch(SQLException ex)
-        {
-            //todo: log error
-        }
-        return result;
+        return DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
     }
 
     public static boolean removeWatchedProduct(User u, int gid)
     {
-        boolean result = false;
         String sql = "DELETE FROM usr_product_watch WHERE user_id = "
                 + u.getId() + " AND product_id = " + gid + ";";
-        try
-        {
-            result = DBConnection.getConnection().execute(sql);
-        }
-        catch(SQLException ex)
-        {
-
-        }
-        return result;
+        return DBConnection.getConnection().execute(sql);
     }
 
     public static boolean removeAllWatchedProducts(User u)
     {
         boolean result = false;
         String sql = "DELETE FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
-        try
-        {
-            result = DBConnection.getConnection().execute(sql);
-        }
-        catch(SQLException ex)
-        {
-
-        }
-        return result;
+        return DBConnection.getConnection().execute(sql);
     }
 }

@@ -20,17 +20,17 @@ public abstract class Product implements JsonObject
     /**
      * Title of product
      */
-    private String _title; //todo default title
+    private String _title;
 
     /**
      * {@link Condition} of product
      */
-    private Condition _condition; //todo default condition
+    private Condition _condition;
 
     /**
      * Price
      */
-    private double _price; //todo default price
+    private double _price;
 
     private String _imgUrl;
 

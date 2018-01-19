@@ -33,7 +33,6 @@ public class PriceHistory implements JsonObject
         JSONObject priceHistory = new JSONObject();
         priceHistory.put("date", getDate().toString());
         priceHistory.put("price", getPrice());
-
         return priceHistory;
     }
 }

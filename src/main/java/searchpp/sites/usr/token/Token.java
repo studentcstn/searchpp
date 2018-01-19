@@ -9,6 +9,7 @@ import searchpp.model.user.User;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -100,10 +101,18 @@ public class Token {
 
         User u = DBUser.createUserOrUpdate(email, token, accessToken, refreshToken);
 
-        try {
+        if(u == null)
+        {
+            throw new WebApplicationException(javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE);
+        }
+
+        try
+        {
             // TODO temporary redirect
             response.sendRedirect("http://localhost:8080/index.html#/?token=" + u.getToken());
-        } catch(IOException e) {
+        }
+        catch(IOException e)
+        {
             // TODO useful error message
             System.out.println("Something went wrong: " + e);
         }

@@ -11,7 +11,7 @@ public class DBConnection
 {
     private static DBConnection _connection;
 
-    public static DBConnection getConnection() throws SQLException
+    public static DBConnection getConnection()
     {
         if(_connection == null || !_connection.isOpen())
         {
@@ -22,25 +22,36 @@ public class DBConnection
 
     private Connection _sqlCon;
 
-    private DBConnection() throws SQLException
+    private DBConnection()
     {
         openConnection();
     }
 
-    private void openConnection() throws SQLException
+    private void openConnection()
     {
-        _sqlCon = DriverManager.getConnection("jdbc:mysql://" + ConfigLoader.getConfig("db", Api.clientID) +
-                                                      "?user=" + ConfigLoader.getConfig("db", Api.accessKey) +
-                                                      "&password=" + ConfigLoader.getConfig("db", Api.secretKey));
+        try
+        {
+            _sqlCon = DriverManager.getConnection("jdbc:mysql://" + ConfigLoader.getConfig("db", Api.clientID) +
+                                                          "?user=" + ConfigLoader.getConfig("db", Api.accessKey) +
+                                                          "&password=" + ConfigLoader.getConfig("db", Api.secretKey));
+        }
+        catch(SQLException ex)
+        {
+            System.err.println("FATAL ERR: DBConnection.openConnection");
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+            //Todo Exit Program?
+        }
     }
 
     private boolean isOpen()
     {
         try {
-            return _sqlCon == null || _sqlCon.isClosed();
+            return !(_sqlCon == null || _sqlCon.isClosed());
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR DBConnection.isOpen: +" + ex.getMessage());
             return false;
         }
     }
@@ -52,10 +63,12 @@ public class DBConnection
         {
             stmt = _sqlCon.createStatement();
             stmt.executeUpdate(sql);
+            stmt.close();
             return true;
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR DBConnection.execute: +" + ex.getMessage());
             return false;
         }
     }
@@ -68,10 +81,12 @@ public class DBConnection
             stmt = _sqlCon.prepareStatement(sql);
             stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
             stmt.executeUpdate();
+            stmt.close();
             return true;
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR DBConnection.executeDateParameter: +" + ex.getMessage());
             return false;
         }
     }
@@ -87,10 +102,12 @@ public class DBConnection
                 stmt.setDate(i, java.sql.Date.valueOf(date[i-1]));
             }
             stmt.executeUpdate();
+            stmt.close();
             return true;
         }
         catch (Exception ex)
         {
+            System.err.println("ERR DBConnection.executeLocalDateParameter: +" + ex.getMessage());
             return false;
         }
     }
@@ -108,16 +125,42 @@ public class DBConnection
             {
                 id = key.getInt(1);
             }
+            key.close();
+            stmt.close();
             return id;
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR DBConnection.insert: +" + ex.getMessage());
             return -1;
         }
     }
 
-    public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return _sqlCon.prepareStatement(sql);
+    public int insert(String sql, String... parameter)
+    {
+        PreparedStatement stmt;
+        try
+        {
+            stmt = _sqlCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            for(int i = 0; i < parameter.length; ++i)
+            {
+                stmt.setString(i+1, parameter[i]);
+            }
+            int id = -2;
+            ResultSet key = stmt.getGeneratedKeys();
+            if(key.first())
+            {
+                id = key.getInt(1);
+            }
+            key.close();
+            stmt.close();
+            return id;
+        }
+        catch(SQLException ex)
+        {
+            System.err.println("ERR DBConnection.insert: +" + ex.getMessage());
+            return -1;
+        }
     }
 
     public ResultSet query(String sql)
@@ -126,11 +169,13 @@ public class DBConnection
         try
         {
             stmt = _sqlCon.createStatement();
+            stmt.closeOnCompletion();
             ResultSet res = stmt.executeQuery(sql);
             return res;
         }
         catch(SQLException ex)
         {
+            System.err.println("ERR DBConnection.query: +" + ex.getMessage());
             return null;
         }
     }

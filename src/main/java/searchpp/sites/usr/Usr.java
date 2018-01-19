@@ -36,9 +36,11 @@ public class Usr {
             .append("&access_type=offline")
             .append("&approval_prompt=force");
 
-        try {
+        try
+        {
             response.sendRedirect(url.toString());
-        } catch(IOException e) {
+        } catch(IOException e)
+        {
             // TODO useful error message
             System.out.println("Something went wrong: " + e);
         }
