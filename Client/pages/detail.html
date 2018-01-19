@@ -32,8 +32,9 @@
 					</form>	
 				</div>
 				<div class="col-xs-12">
-				<div class="alert alert-warning" ng-show="productError" role="alert">Produkte konnte nicht abgerufen werden.</div>
-				<div ng-repeat="item in result.data | orderBy: 'price'">
+				<hr>
+				<div class="alert alert-warning" ng-show="productError" role="alert">Produkte konnten nicht abgerufen werden.</div>
+				<div class="col-xs-12" ng-repeat="item in result.data | orderBy: 'price'">
 					<div class="col-xs-12">
 						<h4 class="row">
 								<p>{{item.name}}</p>
@@ -54,8 +55,7 @@
 							</div>
 						</div>
 					</div>
-					<hr>
-					<hr>
+					<hr class="col-xs-12">
 				</div>
 				</div>
 			</div>

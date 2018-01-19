@@ -71,6 +71,11 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 			.success(function (data)
 			{	
 				$scope.result = data;
+				if(data.elements == 0)
+				{
+					$scope.isEmpty = true;
+					console.log("Field is empty")
+				}
 				console.log("Result!!");
 				console.log(data);			
 			})

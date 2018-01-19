@@ -9,7 +9,9 @@
 			<div class="panel-body">
 				<button class="col-xs-12 btn  btn-danger" ng-click="removeList()">Liste leeren</span></button>	
 				<div class="col-xs-12">
-					<div ng-repeat="item in result.data">
+					<hr>
+					<div class="alert alert-success col-xs-12" ng-show="isEmpty" role="alert">Es sind keine Produkte in der Beobachtungsliste</div>	
+					<div class="col-xs-12" ng-repeat="item in result.data">
 						<div class="col-xs-12">
 							<h4 class="row">
 									<p>{{item.name}}</p>
@@ -19,16 +21,21 @@
 							</div>
 							<div class="col-xs-6">
 								<p class="col-xs-12">Preis von {{item.price_min}} € bis {{item.price_max}} €</p>
+								<p class="col-xs-12">Beobachten von {{item.date_from}} bis {{item.date_to}}</p>
 							</div>
 							<div class="col-xs-3">
 								<button class="col-xs-12 btn btn-primary" ng-click="showDetails(item)">Ansehen</span></button>			
-								<button class="col-xs-12 btn btn-danger" ng-click="remove(item)">Entfernen</span></button>			
+								<button class="col-xs-12 btn btn-danger" ng-click="remove(item)">Entfernen</span></button>				
+							</div>	
+							<div class="col-xs-12">
+								<p></p>
+							</div>
+							<div class="col-xs-12">
 								<button class="col-xs-12 btn btn-secondary" ng-click="getHistory(item)">Preisverlauf</span></button>	
-								<button class="col-xs-12 btn btn-primary" ng-click="changeDate(item)">Datum ändern</span></button>		
-							</div>		
+								<button class="col-xs-12 btn btn-primary" ng-click="changeDate(item)">Datum ändern</span></button>	
+							</div>
 						</div>
-						<hr>
-						<hr>
+						<hr class="col-xs-12">
 					</div>
 				</div>
 			</div>
