@@ -26,8 +26,7 @@ public class DBConnection
     {
         _sqlCon = DriverManager.getConnection("jdbc:mysql://" + ConfigLoader.getConfig("db", Api.clientID) +
                 "?user=" + ConfigLoader.getConfig("db", Api.accessKey) +
-                "&password=" + ConfigLoader.getConfig("db", Api.secretKey) +
-                "&useLegacyDatetimeCode=false&serverTimezone=CET");
+                "&password=" + ConfigLoader.getConfig("db", Api.secretKey));
     }
 
     private boolean isOpen()
