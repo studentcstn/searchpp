@@ -4,7 +4,7 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 	{
 		$rootScope.user = undefined;
 		$rootScope.$broadcast("userChange", $rootScope.user);
-		$window.location.href = baseUrl + "#/";
+		$window.location.href = "#/";
 	};
 
 	$scope.toWebsite = function(item)

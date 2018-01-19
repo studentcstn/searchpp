@@ -5,7 +5,7 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
     {
         $rootScope.user = undefined;
         $rootScope.$broadcast("userChange", $rootScope.user);
-        $window.location.href = baseUrl + "#/";
+        $window.location.href = "#/";
     };
 
 	$scope.showDetails = function(item)

@@ -20,7 +20,7 @@ app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $
     {
         $rootScope.user = undefined;
         $rootScope.$broadcast("userChange", $rootScope.user);
-        $window.location.href = baseUrl + "#/";
+        $window.location.href = "#/";
     };
 	
 	$scope.search = function(product)

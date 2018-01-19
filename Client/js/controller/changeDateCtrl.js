@@ -4,7 +4,7 @@ app.controller("changeDateCtrl", function ($rootScope, $scope, $window, $http, b
 	{
 		$rootScope.user = undefined;
 		$rootScope.$broadcast("userChange", $rootScope.user);
-		$window.location.href = baseUrl + "#/";
+		$window.location.href = "#/";
 	};
 
 	$scope.showDetails = function(item)
