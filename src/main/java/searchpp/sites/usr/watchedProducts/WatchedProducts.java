@@ -1,28 +1,19 @@
 package searchpp.sites.usr.watchedProducts;
 
-import com.google.api.client.json.Json;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import searchpp.database.DBUser;
-import searchpp.model.products.Product;
 import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Local;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.MessageBodyReader;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Executable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Path("usr/{userToken}/watchedProducts")
