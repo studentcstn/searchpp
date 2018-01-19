@@ -81,6 +81,7 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 			})
 			.error(function (error, status)
 			{
+				$scope.sendError = status;
 				console.log(error);
 				console.log(status);
 				console.log("Error!!");

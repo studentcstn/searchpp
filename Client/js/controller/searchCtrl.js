@@ -56,6 +56,7 @@ app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $
 				console.log(error);
 				console.log(status);
 				console.log("Error!!");
+				$scope.sendError = status;
 				$scope.isSending = false;
 			});
 		}

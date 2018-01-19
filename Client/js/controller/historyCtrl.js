@@ -28,6 +28,7 @@ app.controller("historyCtrl", function ($rootScope, $scope, $window, $http, base
 			})
 			.error(function (error, status)
 			{
+				$scope.sendError = status;
 				console.log(error);
 				console.log(status);
 				console.log("Error!!");
