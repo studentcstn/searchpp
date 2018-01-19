@@ -33,7 +33,8 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 		$http.delete(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts")
 		.success(function ()
 		{	
-			console.log("Result!!");	
+			console.log("Result!!");				
+			$scope.getData();
 		})
 		.error(function (error, status)
 		{
@@ -42,7 +43,6 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 			console.log("Error!!");
 		});
 
-		$scope.getData();
 	}
 	
 	$scope.remove = function(item)
