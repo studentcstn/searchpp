@@ -100,6 +100,7 @@ public class ProductSearcher
 
     private static List<AmazonProduct> parseAmazonRequest(String requestUrl, boolean rating)
     {
+        long time = 0;
         List<AmazonProduct> products = new ArrayList<>();
 
         for(int n = 0; n < 5; n++)
@@ -208,8 +209,9 @@ public class ProductSearcher
                 System.err.println("ParserConfigurationException");
             } catch (IOException e)
             {
-                System.err.print("Error during request, trying again... ");
-                long time = (long) (Math.random() * 5000 + 5000);
+                System.err.println("Error during request: " + e.getMessage());
+                //long time = (long) (Math.random() * 5000 + 5000);
+                time += 1000;
                 System.err.println("Try again in " + time + " ms");
                 try
                 {

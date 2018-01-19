@@ -50,7 +50,7 @@ public class Main {
         final HttpServer server = startServer();
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("Client"), "/");
         System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
+                + "%s\nHit enter to stop it...", /*BASE_URI*/ "http://localhost:8080"));
         PriceHistoryService phs = new PriceHistoryService();
         Timer t = new Timer();
         //t.scheduleAtFixedRate(phs, 0, 15*1000);
