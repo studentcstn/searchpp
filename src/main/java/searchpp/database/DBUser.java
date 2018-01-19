@@ -69,7 +69,7 @@ public class DBUser
     public static List<ProductGroup> loadWatchedProducts(User u)
     {
         List<ProductGroup> groups = new ArrayList<>();
-        String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
+        String sql = "SELECT DISTINCT product_id, date_from, date_to FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
@@ -81,6 +81,8 @@ public class DBUser
             {
                 int gid = result.getInt(1);
                 ProductGroup grp = DBProduct.loadProductGroup(gid);
+                grp.setDateFrom(result.getDate(2));
+                grp.setDateTo(result.getDate(3));
                 if(grp != null)
                 {
                     groups.add(grp);

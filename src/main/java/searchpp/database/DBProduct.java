@@ -57,24 +57,14 @@ public class DBProduct
             {
                 sql = "INSERT INTO products() VALUES();";
                 id = DBConnection.getConnection().insert(sql);
-            }
-
-            result.close();
-
-            for (Product product : group) {
-                String site = null;
-                if (product instanceof AmazonProduct) {
-                    site = "amazon";
-                } else if (product instanceof EbayProduct) {
-                    site = "ebay";
-                }
-                if (site != null) {
+                if (group.get(0) instanceof AmazonProduct)
+                {
                     sql = "INSERT INTO product_to_site(product_id, site_id, platform) " +
-                            "VALUES (" + id + ", '" + product.getProductId() + "', '" + site + "');";
+                            "VALUES (" + id + ", '" + group.get(0).getProductId() + "', 'amazon');";
                     DBConnection.getConnection().execute(sql);
                 }
             }
-
+            result.close();
             group.setGlobalId(id);
             return true;
         }

@@ -6,8 +6,10 @@ import searchpp.database.DBProduct;
 import searchpp.model.json.JsonList;
 import searchpp.model.json.JsonObject;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * ProductGroup
@@ -28,6 +30,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
     private String title = null;
     private String img = null;
 
+    private Date _from;
+    private Date _to;
+
     private double averageRating = Double.NaN;
 
     public ProductGroup(){}
@@ -38,6 +43,22 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
 
     public int getProductID() {
         return productID;
+    }
+
+    /*
+    Use to store the from date for watched products
+     */
+    public void setDateFrom(Date from)
+    {
+        _from = from;
+    }
+
+    /*
+    Use to store the to date for watched products
+     */
+    public void setDateTo(Date to)
+    {
+        _to = to;
     }
 
     @Override
@@ -151,6 +172,15 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
     public JSONObject getJsonObject() {
         JSONObject object = new JSONObject();
         object.put("product_id", productID);
+
+        if(_from != null)
+        {
+            object.put("date_from", _from.toString());
+        }
+        if(_to != null)
+        {
+            object.put("date_to", _to.toString());
+        }
 
         if (!Double.isNaN(averageRating))
             object.put("rating", averageRating);
