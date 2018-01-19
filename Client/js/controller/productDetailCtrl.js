@@ -35,10 +35,13 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 			$http.post(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts", request)
 			.success(function ()
 			{	
-				console.log("Success!!");					
+				console.log("Success!!");	
+				$scope.isAdded = true;
 			})
 			.error(function (error, status)
 			{
+				$scope.isSending = false;
+				$scope.sendError = status;
 				console.log(error);
 				console.log(status);
 				console.log("Error!!");
@@ -73,6 +76,7 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 			})
 			.error(function (error, status)
 			{
+				$scope.ratingError = true;
 				console.log(error);
 				console.log(status);
 				console.log("Error!!");
@@ -88,6 +92,7 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 			})
 			.error(function (error, status)
 			{
+				$scope.productError = true;
 				console.log(error);
 				console.log(status);
 				console.log("Error!!");

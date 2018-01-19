@@ -4,9 +4,16 @@ app.controller("historyCtrl", function ($rootScope, $scope, $window, $http, base
 	{
 		$rootScope.user = undefined;
 		$rootScope.$broadcast("userChange", $rootScope.user);
-		$window.location.href = baseUrl + "#/";
+		$window.location.href = "#/";
 	};
 
+	$scope.showDetails = function(item)
+	{
+		$rootScope.productDetail = item;
+		$window.location.href = '#/product';
+	}
+	
+	
 	$scope.getData = function()
 	{
 		if($rootScope.productHistory !== undefined)

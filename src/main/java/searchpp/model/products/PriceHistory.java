@@ -31,7 +31,7 @@ public class PriceHistory implements JsonObject
     @Override
     public JSONObject getJsonObject() {
         JSONObject priceHistory = new JSONObject();
-        priceHistory.put("date", getDate());
+        priceHistory.put("date", getDate().toString());
         priceHistory.put("price", getPrice());
 
         return priceHistory;

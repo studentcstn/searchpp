@@ -40,8 +40,8 @@ public class ProductId {
             }
         }
         JSONObject object = new JSONObject();
-        object.put("data", array);
         object.put("elements", array.size());
+        object.put("data", array);
 
         return object.toJSONString();
     }

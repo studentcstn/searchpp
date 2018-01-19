@@ -121,7 +121,7 @@ public class DBUser
         {
             //todo: log error
         }
-        return false;
+        return result;
     }
 
     public static boolean removeWatchedProduct(User u, int gid)

@@ -21,6 +21,11 @@
 								<button class="col-xs-12 btn btn-primary" ng-click="showDetails(productSetDate)">Ansehen</span></button>				
 							</div>
 				</div>
+				<div class="col-xs-12">
+					<div ng-repeat="item in result.data">
+						<p class="col-xs-12">{{item.date}} - {{item.price}}€</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>	
