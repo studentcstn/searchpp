@@ -150,6 +150,7 @@ public class DBConnection
                 stmt.setString(i+1, parameter[i]);
             }
             int id = -2;
+            stmt.execute();
             ResultSet key = stmt.getGeneratedKeys();
             if(key.first())
             {
