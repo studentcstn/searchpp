@@ -41,6 +41,7 @@ public class ProductId
                 }
             }
 
+            //get asin from database
             int gId = Integer.parseInt(productID);
             String asin = DBProduct.loadAmazonProduct(gId);
             if(asin == null)
@@ -48,17 +49,21 @@ public class ProductId
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
 
+            //get amazon product without rating
             AmazonProduct amazonProduct = ProductSearcher.searchAmazonProduct(asin, false);
 
+            //build product group, add ebay products
             ProductGroup productGroup = new ProductGroup(gId);
             productGroup.add(amazonProduct);
             productGroup.addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProduct.getEan())));
 
+            //control for price and used
             if (price)
                 productGroup.setPrice(min, max);
             if (!used)
                 productGroup.removeUsed();
 
+            //convert to json
             JSONArray array = productGroup.getJsonList();
             JSONObject object = new JSONObject();
             object.put("product_id", productGroup.getProductID());

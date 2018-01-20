@@ -2,7 +2,6 @@ package searchpp.localservices;
 
 import searchpp.database.DBProduct;
 import searchpp.model.products.PriceHistory;
-import searchpp.model.products.Product;
 import searchpp.model.products.ProductGroup;
 
 import java.util.Date;

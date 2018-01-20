@@ -1,10 +1,5 @@
 package searchpp.model.user;
 
-import searchpp.database.DBUser;
-import searchpp.model.products.Product;
-
-import java.util.List;
-
 public class User
 {
     private int _id;

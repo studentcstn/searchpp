@@ -2,3 +2,20 @@ Plot zuordnung:
 
 productRating = allRatings + allRatings * (allRatings * 0.25 * (averageRating - 3.) * (averageRating - 3.) * (averageRating - 3.));
      y        =      z     +     z      * (     z     * 0.25 *                                (x-3)^3                            );
+
+Bei der Bewertung wird davon ausgegangen, dass mehr Bewertungen einen genauern Überblick über das Produkt bedeuted.
+So mit werden Produkte mit eine Durchschnitsbewertung von 1.0 als wirklich schlecht und mit 5.0 als wirklich gut betrachtet.
+Bei wenigen bewertungen kann jedoch nichts über das Produkt gesagt werden.
+
+y = z + z * ( z * a * ( x - b ) ^3 )
+
+y - Produktbewertung
+z - Anzahl aller Bewertungen
+x - Durschnittliche bewertung
+a - Faktor < 1 um den Bereich mit wenigen bewertungen abzuflachen.
+    Wird benötigt wenn das Ergebinss gerundet wird.
+    Empfehlung: 0.25
+b - Beschreibt die Durchschnitsbewertung, welche neutral bewertet werden soll
+    Empfehlung: 3
+
+a und b sind Erfahrungswerte und müssen gegebenen falls angepasst werden.

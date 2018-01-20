@@ -3,6 +3,8 @@ package searchpp.database;
 import searchpp.model.config.Api;
 import searchpp.utils.ConfigLoader;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Date;
@@ -40,7 +42,8 @@ public class DBConnection
             System.err.println("FATAL ERR: DBConnection.openConnection");
             System.err.println(ex.getMessage());
             ex.printStackTrace();
-            //Todo Exit Program?
+
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 

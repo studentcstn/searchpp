@@ -35,134 +35,59 @@ securitySchemes:
     type: OAuth 2.0
     description: Google OAuth 2.0
 
-/user:
-  get:
-    description: Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0
-
-  /token:
-    description: Rückgabe von OAuth 2.0 speichern und Login (evtl. Neuen Benutzer anlegen)
-
-  /watchedProducts:
-    description: Produktliste mit beobachteten Produkten
-    is: [ secured ]
-    securedBy: OAuth2.0
+/myapp:
+  /user:
     get:
-      description: Liste der beobachteten Produkte
-      responses:
-        200:
-          description: Erfolgreich
-          body:
-            application/json:
-              examples:
-                Elements_in_list:
-                  elements: 2,
-                  data:
-                    [
-                      {
-                        product_id: 12345,
-                        name: Produktname1,
-                        price_min: "1,23",
-                        price_max: "2,35",
-                        rating: "3,2",
-                        img: www.example.com/example,
-                        type: new
-                      },
-                      {
-                        product_id: 67890,
-                        name: Produktname2,
-                        price_min: "23,45",
-                        price_max: "50.99",
-                        rating: "4,8",
-                        img: www.example.com/example,
-                        type: used
-                      }
-                    ]
-                List_is_empty:
-                  elements: 0
-                  data: []
-        401:
-          description: Zugriff verweigert
-        500:
-          description: Interner Fehler
+      description: Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0
 
-    post:
-      description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
-      queryParameters:
-        date_from:
-          displayName: Zeitraum Beginn
-          type: date-only
-          description: Zeitraum Überwachung beginn
-          required: false
-        date_to:
-          displayName: Zeitraum Ende
-          type: date-only
-          description: Zeitraum Überwachung beginn
-          required: true
-        product_id:
-          displayName: Produkt ID
-          type: string
-          description: ID des Produkts / der Produktsammlung
-          required: true
-      responses:
-        200:
-          description: Erfolgreich
-        400:
-          description: Query Fehler
-        401:
-          description: Zugriff verweigert
-        500:
-          description: Interner Fehler
+    /token:
+      description: Rückgabe von OAuth 2.0 speichern und Login (evtl. Neuen Benutzer anlegen)
 
-    delete:
-      description: Liste leeren (Wird aus Datenbank gelöscht)
-      responses:
-        200:
-          description: Erfolgreich
-        401:
-          description: Zugriff verweigert
-        500:
-          description: Interner Fehler
-
-    /{productId}:
+    /watchedProducts:
+      description: Produktliste mit beobachteten Produkten
       is: [ secured ]
       securedBy: OAuth2.0
       get:
-        description: Daten für Preisverlauf (und Zeitraum)
+        description: Liste der beobachteten Produkte
         responses:
           200:
-            description: Anfrage war erfolgreich
+            description: Erfolgreich
             body:
               application/json:
-                example:
-                  product_id: 12345
-                  name: product name
-                  elements: 1
-                  data:
-                    [
-                      {
-                        origin_url: www.example.com,
-                        product_description: product description,
-                        price: "1,23",
-                        preisverlauf:
-                          {
-                            01012017: "1,00",
-                            02012017: "1,13",
-                            31012017: "1,09",
-                            05022017: "1,20",
-                          },
-                        rating: "4,1",
-                        type: new | used
-                      }
-                    ]
-          400:
-            description: Produkt nicht in Liste
-          #404:
-            #description: Produkt nicht gefunden
+                examples:
+                  Elements_in_list:
+                    elements: 2,
+                    data:
+                      [
+                        {
+                          product_id: 12345,
+                          name: Produktname1,
+                          price_min: "1,23",
+                          price_max: "2,35",
+                          rating: "3,2",
+                          img: www.example.com/example,
+                          type: new
+                        },
+                        {
+                          product_id: 67890,
+                          name: Produktname2,
+                          price_min: "23,45",
+                          price_max: "50.99",
+                          rating: "4,8",
+                          img: www.example.com/example,
+                          type: used
+                        }
+                      ]
+                  List_is_empty:
+                    elements: 0
+                    data: []
+          401:
+            description: Zugriff verweigert
           500:
             description: Interner Fehler
 
-      put:
-        description: Zeitraum ändern
+      post:
+        description: Neues Produkt beobachten (Mit Zeitraum, Plattform (ebay/amazon), Produkt-ID)
         queryParameters:
           date_from:
             displayName: Zeitraum Beginn
@@ -173,6 +98,11 @@ securitySchemes:
             displayName: Zeitraum Ende
             type: date-only
             description: Zeitraum Überwachung beginn
+            required: true
+          product_id:
+            displayName: Produkt ID
+            type: string
+            description: ID des Produkts / der Produktsammlung
             required: true
         responses:
           200:
@@ -185,7 +115,7 @@ securitySchemes:
             description: Interner Fehler
 
       delete:
-        description: Produkt nicht mehr beobachten (Wird aus Datenbank gelöscht)
+        description: Liste leeren (Wird aus Datenbank gelöscht)
         responses:
           200:
             description: Erfolgreich
@@ -194,65 +124,85 @@ securitySchemes:
           500:
             description: Interner Fehler
 
-/products:
-  get:
-    description: Nach Produkten für Suchbegriff suchen (und Preisspanne), Auswahl gebraucht / neu
-    queryParameters:
-      search_text:
-        displayName: Suchtext
-        type: string
-        required: true
-      price_min:
-        displayName: Preisspanne Start
-        type: number
-        required: false
-      price_max:
-        displayName: Preisspanne Ende
-        type: number
-        required: false
-      used:
-        displayName: Gebraucht
-        type: boolean
-        required: false
-    responses:
-      200:
-        description: Anfrage war erfolgreich
-        body:
-          application/json:
-            examples:
-              products_found:
-                elements: 2
-                data:
-                  [
-                    {
-                      product_id: 123456,
-                      name: Produktname,
-                      price_min: 1.23,
-                      price_max: 2.34,
-                      rating: 4.3,
-                      img: www.example.com/example,
-                      types: [new, used]
-                    }
-                    {
-                      product_id: 234567,
-                      name: Produktname,
-                      price_min: 12.34,
-                      price_max: 23.45,
-                      rating: 4.7,
-                      img: www.example.com/example,
-                      types: [new, used]
-                    }
-                  ]
-              no_products_found:
-                elements: 0
-                data: []
-      500:
-        description: Interner Fehler
+      /{productId}:
+        is: [ secured ]
+        securedBy: OAuth2.0
+        get:
+          description: Daten für Preisverlauf (und Zeitraum)
+          responses:
+            200:
+              description: Anfrage war erfolgreich
+              body:
+                application/json:
+                  example:
+                    product_id: 12345
+                    name: product name
+                    elements: 1
+                    data:
+                      [
+                        {
+                          origin_url: www.example.com,
+                          product_description: product description,
+                          price: "1,23",
+                          preisverlauf:
+                            {
+                              01012017: "1,00",
+                              02012017: "1,13",
+                              31012017: "1,09",
+                              05022017: "1,20",
+                            },
+                          rating: "4,1",
+                          type: new | used
+                        }
+                      ]
+            400:
+              description: Produkt nicht in Liste
+            #404:
+              #description: Produkt nicht gefunden
+            500:
+              description: Interner Fehler
 
-  /{productId}:
+        put:
+          description: Zeitraum ändern
+          queryParameters:
+            date_from:
+              displayName: Zeitraum Beginn
+              type: date-only
+              description: Zeitraum Überwachung beginn
+              required: false
+            date_to:
+              displayName: Zeitraum Ende
+              type: date-only
+              description: Zeitraum Überwachung beginn
+              required: true
+          responses:
+            200:
+              description: Erfolgreich
+            400:
+              description: Query Fehler
+            401:
+              description: Zugriff verweigert
+            500:
+              description: Interner Fehler
+
+        delete:
+          description: Produkt nicht mehr beobachten (Wird aus Datenbank gelöscht)
+          responses:
+            200:
+              description: Erfolgreich
+            401:
+              description: Zugriff verweigert
+            500:
+              description: Interner Fehler
+
+  /products:
     get:
-      description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
+      description: Nach Produkten für Suchbegriff suchen (und Preisspanne), Auswahl gebraucht / neu
       queryParameters:
+        search_text:
+          displayName: Suchtext
+          type: string
+          required: true
         price_min:
           displayName: Preisspanne Start
           type: number
@@ -270,55 +220,105 @@ securitySchemes:
           description: Anfrage war erfolgreich
           body:
             application/json:
-              example:
-                product_id: 12345
-                elements: 2,
-                data:
-                  [
-                    {
-                     origin_url: amazon,
-                     name: Produktname,
-                     price: 1.23,
-                     rating: 4.3,
-                     img: www.example.com/example,
-                     type: new | used
-                    }
-                    {
-                      origin_url: ebay,
-                      name: Produktname,
-                      price: 1.23,
-                      img: www.example.com/example,
-                      type: new | used
-                    }
-                  ]
-        404:
-          description: Produkt nicht gefunden
+              examples:
+                products_found:
+                  elements: 2
+                  data:
+                    [
+                      {
+                        product_id: 123456,
+                        name: Produktname,
+                        price_min: 1.23,
+                        price_max: 2.34,
+                        rating: 4.3,
+                        img: www.example.com/example,
+                        types: [new, used]
+                      }
+                      {
+                        product_id: 234567,
+                        name: Produktname,
+                        price_min: 12.34,
+                        price_max: 23.45,
+                        rating: 4.7,
+                        img: www.example.com/example,
+                        types: [new, used]
+                      }
+                    ]
+                no_products_found:
+                  elements: 0
+                  data: []
         500:
           description: Interner Fehler
-    /ratings:
+
+    /{productId}:
       get:
-        description: Bewertungen für das Produkt abrufen
+        description: Informationen für ein Produkt abrufen; mit Durchschnittsbewertung
+        queryParameters:
+          price_min:
+            displayName: Preisspanne Start
+            type: number
+            required: false
+          price_max:
+            displayName: Preisspanne Ende
+            type: number
+            required: false
+          used:
+            displayName: Gebraucht
+            type: boolean
+            required: false
         responses:
           200:
             description: Anfrage war erfolgreich
             body:
               application/json:
-                examples:
-                  ratings_available:
-                    elements: 5
-                    allRatings: 521
-                    data:
-                      [
-                        { rating: 5, percent: 83, url: url },
-                        { rating: 4, percent: 10, url: url },
-                        { rating: 3, percent: 4, url: url },
-                        { rating: 2, percent: 2, url: url },
-                        { rating: 1, percent: 1, url: url }
-                      ]
-                  no_ratings_available:
-                    elements: 0
-                    data: []
+                example:
+                  product_id: 12345
+                  elements: 2,
+                  data:
+                    [
+                      {
+                       origin_url: amazon,
+                       name: Produktname,
+                       price: 1.23,
+                       rating: 4.3,
+                       img: www.example.com/example,
+                       type: new | used
+                      }
+                      {
+                        origin_url: ebay,
+                        name: Produktname,
+                        price: 1.23,
+                        img: www.example.com/example,
+                        type: new | used
+                      }
+                    ]
           404:
             description: Produkt nicht gefunden
           500:
             description: Interner Fehler
+      /ratings:
+        get:
+          description: Bewertungen für das Produkt abrufen
+          responses:
+            200:
+              description: Anfrage war erfolgreich
+              body:
+                application/json:
+                  examples:
+                    ratings_available:
+                      elements: 5
+                      allRatings: 521
+                      data:
+                        [
+                          { rating: 5, percent: 83, url: url },
+                          { rating: 4, percent: 10, url: url },
+                          { rating: 3, percent: 4, url: url },
+                          { rating: 2, percent: 2, url: url },
+                          { rating: 1, percent: 1, url: url }
+                        ]
+            404:
+              description: Produkt nicht gefunden
+            500:
+              description: Interner Fehler
+            503:
+              description: no ratings available at this moment

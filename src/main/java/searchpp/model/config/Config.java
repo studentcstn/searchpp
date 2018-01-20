@@ -17,6 +17,9 @@ public final class Config {
         return name;
     }
 
+    /**
+     * Set/Get client id
+     */
     public String getClientID() {
         return clientID;
     }
@@ -25,6 +28,9 @@ public final class Config {
             this.clientID = clientID;
     }
 
+    /**
+     * Set/Get access key
+     */
     public String getAccessKey() {
         return accessKey;
     }
@@ -33,6 +39,9 @@ public final class Config {
             this.accessKey = accessKey;
     }
 
+    /**
+     * Set/Get secret key
+     */
     public String getSecretKey() {
         return secretKey;
     }
@@ -41,6 +50,11 @@ public final class Config {
             this.secretKey = secretKey;
     }
 
+
+    /**
+     * Set Config as final
+     * A final config can not be changed.
+     */
     public void setFinalConfig() {
         finalConfig = true;
     }

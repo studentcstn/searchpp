@@ -1,19 +1,14 @@
 package searchpp.sites.usr;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import searchpp.model.config.Api;
+import searchpp.utils.ConfigLoader;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
-
-import searchpp.model.config.Api;
-import searchpp.utils.ConfigLoader;
+import java.io.IOException;
 
 @Path("usr")
 public class Usr {

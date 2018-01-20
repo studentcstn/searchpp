@@ -1,10 +1,16 @@
 package searchpp.sites.usr.token;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import searchpp.database.DBUser;
+import searchpp.model.config.Api;
 import searchpp.model.user.User;
+import searchpp.utils.ConfigLoader;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,16 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.jsoup.*;
-
-import searchpp.model.config.Api;
-import searchpp.utils.ConfigLoader;
+import java.io.IOException;
 
 @Path("usr/token")
 public class Token {

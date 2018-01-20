@@ -2,7 +2,6 @@ package searchpp.services;
 
 import org.junit.Test;
 import searchpp.databse.DbProductTest;
-import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.EbayProduct;
 import searchpp.utils.ConfigLoader;
 

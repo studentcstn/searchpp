@@ -1,18 +1,12 @@
 package searchpp.database;
 
-import com.mysql.cj.api.xdevapi.SqlStatement;
-import searchpp.model.products.AmazonProduct;
-import searchpp.model.products.Product;
 import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
-import searchpp.services.ProductSearcher;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class DBUser

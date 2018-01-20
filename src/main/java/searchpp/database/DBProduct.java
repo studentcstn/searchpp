@@ -1,6 +1,8 @@
 package searchpp.database;
 
-import searchpp.model.products.*;
+import searchpp.model.products.AmazonProduct;
+import searchpp.model.products.PriceHistory;
+import searchpp.model.products.ProductGroup;
 import searchpp.services.ProductSearcher;
 
 import java.sql.ResultSet;

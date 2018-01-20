@@ -21,7 +21,7 @@ public class Products {
     @Produces(MediaType.APPLICATION_JSON)
     //                                                                       price in cent                     price in cent
     public String get(@QueryParam("search_text") String search, @QueryParam("price_min") int min, @QueryParam("price_max") int max, @QueryParam("used") boolean used) {
-        // no string, return
+        // no search string, return nothing found
         if (search == null) {
             JSONObject object = new JSONObject();
             object.put("data", new JSONArray());
@@ -83,6 +83,7 @@ public class Products {
         for (int i = amazonProductList.size() - 11; i >= 0; --i)
             amazonProductList.remove(i);
         //remove products without rating
+        //maybe useless
         while (amazonProductList.get(0).getRating() == null)
             amazonProductList.remove(0);
 
@@ -102,6 +103,7 @@ public class Products {
             productGroups[i].addAll(ProductSearcher.searchEbayProductList(Long.toString(amazonProductList.get(i).getEan())));
         }
 
+        //save groups to database
         for(ProductGroup grp : productGroups)
         {
             grp.saveToDatabase();
@@ -110,7 +112,7 @@ public class Products {
         //convert to json
         JSONArray array = new JSONArray();
         for (ProductGroup products : productGroups) {
-            //remove all products out of price range
+            //remove all products out of price range and used products
             if (price)
                 products.setPrice(min, max);
             if (!used)

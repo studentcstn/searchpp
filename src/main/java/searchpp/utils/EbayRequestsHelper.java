@@ -1,10 +1,5 @@
 package searchpp.utils;
 
-import searchpp.model.config.Api;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;

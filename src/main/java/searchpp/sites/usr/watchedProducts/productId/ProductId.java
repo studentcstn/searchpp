@@ -8,7 +8,6 @@ import org.json.simple.parser.JSONParser;
 import searchpp.database.DBProduct;
 import searchpp.database.DBUser;
 import searchpp.model.products.PriceHistory;
-import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
 
 import javax.ws.rs.*;
@@ -16,7 +15,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Path("usr/{userToken}/watchedProducts/{productId}")

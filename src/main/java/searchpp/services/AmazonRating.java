@@ -7,8 +7,6 @@ import org.jsoup.select.Elements;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.AmazonProductRating;
 
-import java.net.*;
-
 public class AmazonRating {
     private static String[] userAgents = {
             "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1",
@@ -102,47 +100,35 @@ public class AmazonRating {
                         + "&contextId=search&ref=acr_search__popover";
 
         System.out.println(requestUrl);
+        //try 10 times for product rating.
+        //It can happen that amazon identifies us as a robot.
         for (int n = 0; n < 10; ++n) {
 
-            /*
-            if (n != 0) {
-                try {
-                    Thread.sleep((long) (Math.random() * 250 + Math.random() * 250));
-                } catch (InterruptedException e) {}
-            }
-            */
-
-            String userAgent;
-            /*
-            if (n != 0)
-                userAgent = userAgents[(int) (Math.random() * userAgents.length)];
-            else
-                userAgent = userAgents[0];
-                */
-            userAgent = userAgents[(int) (Math.random() * userAgents.length)];
-            //userAgent = userAgents[n];
-            //String userAgent = userAgents[n];
-            System.out.println(userAgent);
+            String userAgent = userAgents[(int) (Math.random() * userAgents.length)];
+            System.out.println("User-Agent: " + userAgent);
 
             AmazonProductRating apr;
-
             Document document = null;
             try {
+                //download site
                 document = Jsoup.connect(requestUrl).header("User-Agent", userAgent).get();
 
-
+                //get elements with urls to ratings
                 Elements elements = document.getElementsByClass("a-link-normal");
+                //control for right document
                 if (elements.size() == 0)
                     continue;
 
                 apr = new AmazonProductRating(product);
 
+                //set title and urls to ratings
                 for (int i = 0; i < elements.size(); i += 2) {
                     Element element = elements.get(i);
 
                     apr.addUrl(element.attr("title"), element.attr("href"));
                 }
 
+                //get elements with starts and percentage
                 elements = document.getElementsByClass("a-size-small");
                 if (elements.size() == 0)
                     continue;
@@ -153,12 +139,14 @@ public class AmazonRating {
                     apr.addRating(elementStar.text(), elementPercent.text());
                 }
 
+                //get average rating
                 elements = document.getElementsByClass("a-size-base a-color-secondary");
                 if (elements.size() == 0)
                     continue;
                 Element element = elements.get(0);
                 apr.addAverageRating(element.text());
 
+                //get count of ratings
                 elements = document.getElementsByClass("a-size-small a-link-emphasis");
                 if (elements.size() == 0)
                     continue;

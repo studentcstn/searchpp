@@ -14,7 +14,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStreamReader;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Path("usr/{userToken}/watchedProducts")
@@ -29,10 +32,12 @@ public class WatchedProducts
     @Produces(MediaType.APPLICATION_JSON)
     public String get(@PathParam("userToken") String userToken)
     {
+        //get user form database
         User user = DBUser.loadUserByToken(userToken);
         JSONArray array = new JSONArray();
         if (user != null)
         {
+            //get watched products from database
             List<ProductGroup> watchedGroups = DBUser.loadWatchedProducts(user);
             //convert to json
             for (ProductGroup products : watchedGroups) {

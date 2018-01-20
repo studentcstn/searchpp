@@ -1,12 +1,8 @@
 package searchpp.databse;
 
-import org.junit.Assert;
 import org.junit.Test;
-import searchpp.database.DBProduct;
 import searchpp.model.products.AmazonProduct;
 import searchpp.model.products.EbayProduct;
-import searchpp.model.products.PriceHistory;
-import searchpp.model.products.Product;
 import searchpp.services.ProductSearcher;
 import searchpp.utils.ConfigLoader;
 
@@ -14,7 +10,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 

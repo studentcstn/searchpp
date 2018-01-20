@@ -102,12 +102,16 @@ public class AmazonProductRating implements Comparable<AmazonProductRating>, Jso
         }
     }
 
-    //internal rating
+    /**
+     * internal rating system
+     *
+     * The internal rating system is used for a simpler sorting of products.
+     * The rating works by assuming that many reviews say more about the product.
+     * Which also means that at a average rating of 1.0, the product is actually bad and actually good at 5.0.
+     * And with only a few reviews, nothing can be said about the product.
+     */
     private double productRating = Double.NaN;
     private void calcProductRating() {
-        //is a test. I do not know if it is working
-        //productRating = allRatings - allRatings * (1./25.) * (-(averageRating * averageRating) + 25.);
-        //better rating system
         productRating = allRatings + allRatings * (allRatings * 0.25 * (averageRating - 3.) * (averageRating - 3.) * (averageRating - 3.));
     }
     public double getInternProductRating() {

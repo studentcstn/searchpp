@@ -1,7 +1,5 @@
 package searchpp.model.products;
 
-import org.json.simple.JSONObject;
-
 /**
  * Created by Tobi on 04.12.2017.
  */

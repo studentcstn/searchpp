@@ -1,18 +1,24 @@
+# Associate Tag
 amazon_clientID=
+# Access Key
 amazon_accessKey=
+# Secret Key
 amazon_secretKey=
 
+# App ID (Client ID)
 ebay_clientID=
+# Dev ID
 ebay_accessKey=
+# App ID (Client ID)
 ebay_secretKey=
 
 google_clientID=
 google_secretKey=
 
-#address of database/schema
-#db_clientID=localhost/searchpp
+# address of database/schema
+# db_clientID=localhost/searchpp
 db_clientID=
-#username
+# username
 db_accessKey=
-#password
+# password
 db_secretKey=

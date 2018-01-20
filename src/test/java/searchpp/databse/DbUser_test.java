@@ -3,12 +3,7 @@ package searchpp.databse;
 import org.junit.Assert;
 import org.junit.Test;
 import searchpp.database.DBUser;
-import searchpp.model.products.AmazonProduct;
-import searchpp.model.products.Product;
 import searchpp.model.user.User;
-
-import java.awt.image.DataBufferUShort;
-import java.util.List;
 
 public class DbUser_test
 {

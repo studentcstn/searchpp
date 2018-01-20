@@ -3,10 +3,8 @@ package searchpp.model.json;
 import org.json.simple.JSONArray;
 
 /**
- * JsonList
- *
- * @version 1
+ * Return a JSONArray
  */
-public interface JsonList extends JsonItem {
+public interface JsonList {
     JSONArray getJsonList();
 }

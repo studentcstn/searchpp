@@ -2,6 +2,9 @@ package searchpp.model.json;
 
 import org.json.simple.JSONObject;
 
-public interface JsonObject extends JsonItem {
+/**
+ * Return a JSONObject
+ */
+public interface JsonObject {
     JSONObject getJsonObject();
 }

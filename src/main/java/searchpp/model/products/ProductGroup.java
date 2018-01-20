@@ -6,7 +6,6 @@ import searchpp.database.DBProduct;
 import searchpp.model.json.JsonList;
 import searchpp.model.json.JsonObject;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,7 +13,7 @@ import java.util.Date;
 /**
  * ProductGroup
  *
- * @version 1
+ * A collection of Amazon and eBay products
  */
 public class ProductGroup extends ArrayList<Product> implements JsonObject, JsonList {
 
@@ -45,22 +44,26 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return productID;
     }
 
-    /*
-    Use to store the from date for watched products
+    /**
+     * Use to store the from date for watched products
      */
     public void setDateFrom(Date from)
     {
         _from = from;
     }
 
-    /*
-    Use to store the to date for watched products
+    /**
+     * Use to store the to date for watched products
      */
     public void setDateTo(Date to)
     {
         _to = to;
     }
 
+    /**
+     * Add products to this group
+     * Amazon products are used for information about the group
+     */
     @Override
     public boolean add(Product product) {
         boolean add = super.add(product);
@@ -104,6 +107,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return DBProduct.saveProducts(this);
     }
 
+    /**
+     * If a product is used in this group, the minimum and maximum prices will be calculated
+     */
     private void useProduct(Product product) {
         if (product.getPrice() < priceMin) {
             priceMin = product.getPrice();
@@ -141,6 +147,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         }
     }
 
+    /**
+     * Remove all used (not NEW) products
+     */
     public void removeUsed() {
         if (!used)
             return;
@@ -168,6 +177,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return stringBuilder.toString();
     }
 
+    /**
+     * Return information about the group
+     */
     @Override
     public JSONObject getJsonObject() {
         JSONObject object = new JSONObject();
@@ -206,6 +218,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return object;
     }
 
+    /**
+     * Return all products in this group
+     */
     @Override
     public JSONArray getJsonList() {
         JSONArray array = new JSONArray();
