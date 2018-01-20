@@ -11,6 +11,11 @@ import java.util.List;
 
 public class DBUser
 {
+    /**
+     * Load a user from the db by token
+     * @param token the token to search for
+     * @return the loaded user or null, if no user was found
+     */
     public static User loadUserByToken(String token)
     {
         try
@@ -36,6 +41,14 @@ public class DBUser
         }
     }
 
+    /**
+     * Create a new user or update its token
+     * @param email the email of the user
+     * @param token the token
+     * @param accessToken the access token
+     * @param refreshToken the refresh token
+     * @return the user with the uid from db or null, if the request failed
+     */
     public static User createUserOrUpdate(String email, String token, String accessToken, String refreshToken)
     {
         String sql = "INSERT INTO users (email, token, access_token, refresh_token) VALUES (?,?,?,?) " +
@@ -79,6 +92,11 @@ public class DBUser
         }
     }
 
+    /**
+     * Load the watched products for a user
+     * @param u the user
+     * @return the watched products as List of ProductGroup for user u
+     */
     public static List<String> getEventIds(User u) {
         List<String> eventIds = new ArrayList<String>();
         String sql = "SELECT DISTINCT event_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
@@ -124,6 +142,14 @@ public class DBUser
         return groups;
     }
 
+    /**
+     * Add a watched product to a user
+     * @param u the user
+     * @param gid the global id of product
+     * @param from the date to start the pricehistory
+     * @param to the date to end the pricehistory
+     * @return true if successful, otherwise false
+     */
     public static boolean addWatchedProduct(User u, int gid, String eventId, LocalDate from, LocalDate to)
     {
         String sql = "INSERT INTO usr_product_watch(user_id, product_id, event_id, date_from, date_to)" +
@@ -137,12 +163,26 @@ public class DBUser
         return DBConnection.getConnection().insert(sql, eventId, from, to, u.getId(), gid) != -1;
     }
 
+    /**
+     * Change the from and to dates for a watched product for a user
+     * @param u the user
+     * @param gid the gid of watched product
+     * @param from the new from date
+     * @param to the new to date
+     * @return true if successful, otherwise false
+     */
     public static boolean changeWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
     {
         String sql = "UPDATE usr_product_watch SET date_from = ?, date_to = ? WHERE user_id = ? AND product_id = ?";
         return DBConnection.getConnection().insert(sql, from, to, u.getId(), gid) != -1;
     }
 
+    /**
+     * Remove a product of watchlist of a user
+     * @param u the user
+     * @param gid the global id to remove
+     * @return true if successful, otherwise false
+     */
     public static boolean removeWatchedProduct(User u, int gid)
     {
         String sql = "DELETE FROM usr_product_watch WHERE user_id = "
@@ -150,6 +190,11 @@ public class DBUser
         return DBConnection.getConnection().execute(sql);
     }
 
+    /**
+     * Clear the watchlist of a user
+     * @param u the user
+     * @return true if successful, otherwise false
+     */
     public static boolean removeAllWatchedProducts(User u)
     {
         boolean result = false;

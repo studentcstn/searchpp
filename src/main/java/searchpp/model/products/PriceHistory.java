@@ -5,6 +5,9 @@ import searchpp.model.json.JsonObject;
 
 import java.util.Date;
 
+/**
+ * Represents a price in pricehistory with price and date
+ */
 public class PriceHistory implements JsonObject
 {
     private Date _date;
@@ -15,10 +18,6 @@ public class PriceHistory implements JsonObject
         _price = price;
     }
 
-    public PriceHistory(double price)
-    {
-        _date = new Date();
-    }
     public Date getDate()
     {
         return _date;

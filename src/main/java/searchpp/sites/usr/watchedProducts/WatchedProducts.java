@@ -29,6 +29,11 @@ public class WatchedProducts
     @Context
     Response response;
 
+    /**
+     * Load the list of watched products for a user
+     * @param userToken the token of the user
+     * @return the watched products as json
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String get(@PathParam("userToken") String userToken)
@@ -52,6 +57,10 @@ public class WatchedProducts
         return object.toJSONString();
     }
 
+    /**
+     * Add a product to watchlist
+     * @param userToken the token of the user
+     */
     @POST
     public void post(@PathParam("userToken") String userToken)
     {
@@ -59,11 +68,15 @@ public class WatchedProducts
         try
         {
             JSONParser parser = new JSONParser();
+            //Load body parameters
             JSONObject result = (JSONObject) parser.parse(new InputStreamReader(request.getInputStream()));
+            //Check, if product_id and date_to was submitted
             if(result.containsKey("product_id") && result.containsKey("date_to"))
             {
                 int product_id = (int)(long)result.get("product_id");
+                //Parse the date
                 LocalDate date_to = LocalDate.parse((String)result.get("date_to"));
+                //Use now() if no date_from was submitted
                 LocalDate date_from = LocalDate.now();
                 if(result.containsKey("date_from"))
                 {
@@ -83,7 +96,7 @@ public class WatchedProducts
                             String.format("Überwachung des Produkts: (%d) %s", product_id, group.get(0).getTitle())
                         );
                         if (eventId != null) {
-                            DBUser.changeWatchedProduct(user, product_id, eventId, date_from, date_to);
+                            wasSuccessful = DBUser.changeWatchedProduct(user, product_id, eventId, date_from, date_to);
                         }
                     }
                 }
@@ -96,10 +109,15 @@ public class WatchedProducts
         }
         if(!wasSuccessful)
         {
+            //throw 400 if the request was not successful
             throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }
 
+    /**
+     * Delete the watchlist of a user
+     * @param userToken the token of the user
+     */
     @DELETE
     public void delete(@PathParam("userToken") String userToken)
     {
@@ -118,6 +136,7 @@ public class WatchedProducts
         }
         if(!wasSuccessful)
         {
+            //throw 400 if the request was not successful
             throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }

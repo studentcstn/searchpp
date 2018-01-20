@@ -30,6 +30,12 @@ public class ProductId {
     @Context
     Response response;
 
+    /**
+     * Load the pricehistory for a watched product for a user
+     * @param userToken the token that identifies the user
+     * @param productId the global id of the product
+     * @return the pricehistory as json
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String get(@PathParam("userToken") String userToken, @PathParam("productId") int productId) {
@@ -49,12 +55,18 @@ public class ProductId {
         return object.toJSONString();
     }
 
+    /**
+     * Change the from and to date of a watched product
+     * @param userToken the token of the user
+     * @param product_id the global id of watched product
+     */
     @PUT
     public void put(@PathParam("userToken") String userToken, @PathParam("productId") int product_id) {
         boolean wasSuccessful = false;
         try
         {
             JSONParser parser = new JSONParser();
+            //Load the body parameters
             JSONObject result = (JSONObject) parser.parse(new InputStreamReader(request.getInputStream()));
             if(result.containsKey("date_to"))
             {
@@ -89,10 +101,16 @@ public class ProductId {
         }
         if(!wasSuccessful)
         {
+            //throw 400 if the request was not successful
             throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }
 
+    /**
+     * Remove a watched product
+     * @param userToken the token of the user
+     * @param productId the global id to remove
+     */
     @DELETE
     public void delete(@PathParam("userToken") String userToken, @PathParam("productId") int productId) {
         boolean wasSuccessful = false;
@@ -107,6 +125,7 @@ public class ProductId {
         }
         if(!wasSuccessful)
         {
+            //throw 400 if the request was not successful
             throw new WebApplicationException(javax.ws.rs.core.Response.Status.BAD_REQUEST);
         }
     }

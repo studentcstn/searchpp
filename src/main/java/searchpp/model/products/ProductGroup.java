@@ -185,6 +185,9 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         JSONObject object = new JSONObject();
         object.put("product_id", productID);
 
+        //Add date_to
+        //date_to and date_from are not null if the productgroup was loaded
+        //for watchlist
         if(_from != null)
         {
             object.put("date_from", _from.toString());
@@ -230,6 +233,10 @@ public class ProductGroup extends ArrayList<Product> implements JsonObject, Json
         return array;
     }
 
+    /**
+     * Load the minimal price of the products in ProductGroup
+     * @return the minimal price, NaN if the list is empty
+     */
     public double getMinPrice()
     {
         if(size() == 0) return Double.NaN;

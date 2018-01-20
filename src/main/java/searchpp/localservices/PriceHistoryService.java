@@ -11,14 +11,22 @@ import java.util.TimerTask;
 public class PriceHistoryService extends TimerTask
 {
     @Override
+    /**
+     * Execute the task. Load all watched products, load the price and save it to the db
+     */
     public void run()
     {
         Date dt = new Date();
         List<ProductGroup> groups = DBProduct.loadAllWatchedProducts();
         for(ProductGroup pg : groups)
         {
-            PriceHistory ph = new PriceHistory(dt, pg.getMinPrice());
-            DBProduct.addToPriceHistory(pg.getProductID(), ph);
+            double min = pg.getMinPrice();
+            //Only save price if there is one
+            if (min != Double.NaN)
+            {
+                PriceHistory ph = new PriceHistory(dt, min);
+                DBProduct.addToPriceHistory(pg.getProductID(), ph);
+            }
         }
     }
 }
