@@ -6,6 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import searchpp.database.DBUser;
+import searchpp.database.DBProduct;
 import searchpp.model.products.ProductGroup;
 import searchpp.model.user.User;
 import searchpp.services.Calendar;
@@ -71,17 +72,19 @@ public class WatchedProducts
                 User user = DBUser.loadUserByToken(userToken);
                 if (user != null)
                 {
-                    wasSuccessful = DBUser.addWatchedProduct(user, product_id, date_from, date_to);
-                    String eventId = Calendar.insert(
-                        user,
-                        ZonedDateTime.of(date_from, LocalTime.now(), ZoneId.of("Europe/Berlin")),
-                        ZonedDateTime.of(date_to, LocalTime.now(), ZoneId.of("Europe/Berlin")),
-                        String.format("product_id %d", product_id),
-                        String.format("Überwachung des Produkts mit der ID %d", product_id)
-                    );
-                    if (eventId == null) {
-                        // TODO
-                        System.out.println("Insert failed");
+                    wasSuccessful = DBUser.addWatchedProduct(user, product_id, "", date_from, date_to);
+                    if (wasSuccessful) {
+                        ProductGroup group = DBProduct.loadProductGroup(product_id);
+                        String eventId = Calendar.insert(
+                            user,
+                            ZonedDateTime.of(date_from, LocalTime.now(), ZoneId.of("Europe/Berlin")),
+                            ZonedDateTime.of(date_to, LocalTime.now(), ZoneId.of("Europe/Berlin")),
+                            String.format("(%d) %s", product_id, group.get(0).getTitle()),
+                            String.format("Überwachung des Produkts: (%d) %s", product_id, group.get(0).getTitle())
+                        );
+                        if (eventId != null) {
+                            DBUser.changeWatchedProduct(user, product_id, eventId, date_from, date_to);
+                        }
                     }
                 }
             }
@@ -105,6 +108,13 @@ public class WatchedProducts
         if (user != null)
         {
             wasSuccessful = DBUser.removeAllWatchedProducts(user);
+            if (wasSuccessful) {
+                for (String eventId: DBUser.getEventIds(user)) {
+                    if (eventId != "") {
+                        Calendar.delete(user, eventId);
+                    }
+                }
+            }
         }
         if(!wasSuccessful)
         {

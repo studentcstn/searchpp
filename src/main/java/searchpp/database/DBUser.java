@@ -60,6 +60,39 @@ public class DBUser
         }
     }
 
+    public static String getEventId(User u, int productId) {
+        String sql = String.format(
+            "SELECT event_id FROM usr_product_watch WHERE user_id = '%d' AND product_id = '%d'",
+            u.getId(),
+            productId
+        );
+        ResultSet result = DBConnection.getConnection().query(sql);
+        try {
+            if (result != null && result.next()) {
+                return result.getString(1);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            System.err.println("ERR: DBUser.getEventId: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static List<String> getEventIds(User u) {
+        List<String> eventIds = new ArrayList<String>();
+        String sql = "SELECT DISTINCT event_id FROM usr_product_watch WHERE user_id = " + u.getId() + ";";
+        try {
+            ResultSet result = DBConnection.getConnection().query(sql);
+            while (result.next()) {
+                eventIds.add(result.getString(1));
+            }
+        } catch (SQLException ex) {
+            System.err.println("ERR: DBUser.getAllEventIds: " + ex.getMessage());
+        }
+        return eventIds;
+    }
+
     public static List<ProductGroup> loadWatchedProducts(User u)
     {
         List<ProductGroup> groups = new ArrayList<>();
@@ -91,18 +124,23 @@ public class DBUser
         return groups;
     }
 
-    public static boolean addWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
+    public static boolean addWatchedProduct(User u, int gid, String eventId, LocalDate from, LocalDate to)
     {
-        String sql = "INSERT INTO usr_product_watch(user_id, product_id, date_from, date_to)" +
-                " VALUES ("+u.getId()+", " + gid + ", ?, ?);";
-        return DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
+        String sql = "INSERT INTO usr_product_watch(user_id, product_id, event_id, date_from, date_to)" +
+                " VALUES (?, ?, ?, ?, ?);";
+        return DBConnection.getConnection().insert(sql, u.getId(), gid, eventId, from, to) != -1;
+    }
+
+    public static boolean changeWatchedProduct(User u, int gid, String eventId, LocalDate from, LocalDate to)
+    {
+        String sql = "UPDATE usr_product_watch SET event_id = ?, date_from = ?, date_to = ? WHERE user_id = ? AND product_id = ?";
+        return DBConnection.getConnection().insert(sql, eventId, from, to, u.getId(), gid) != -1;
     }
 
     public static boolean changeWatchedProduct(User u, int gid, LocalDate from, LocalDate to)
     {
-        String sql = "UPDATE usr_product_watch SET date_from = ?, date_to = ? WHERE user_id = "
-                + u.getId() + " AND product_id = " + gid + ";";
-        return DBConnection.getConnection().executeLocalDateParameter(sql, from, to);
+        String sql = "UPDATE usr_product_watch SET date_from = ?, date_to = ? WHERE user_id = ? AND product_id = ?";
+        return DBConnection.getConnection().insert(sql, from, to, u.getId(), gid) != -1;
     }
 
     public static boolean removeWatchedProduct(User u, int gid)

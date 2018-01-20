@@ -76,45 +76,6 @@ public class DBConnection
         }
     }
 
-    public boolean executeDateParameter(String sql, Date date)
-    {
-        PreparedStatement stmt;
-        try
-        {
-            stmt = _sqlCon.prepareStatement(sql);
-            stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
-            stmt.executeUpdate();
-            stmt.close();
-            return true;
-        }
-        catch(SQLException ex)
-        {
-            System.err.println("ERR DBConnection.executeDateParameter: +" + ex.getMessage());
-            return false;
-        }
-    }
-
-    public boolean executeLocalDateParameter(String sql, LocalDate... date)
-    {
-        PreparedStatement stmt;
-        try
-        {
-            stmt = _sqlCon.prepareStatement(sql);
-            for(int i = 1; i <= date.length; ++i)
-            {
-                stmt.setDate(i, java.sql.Date.valueOf(date[i-1]));
-            }
-            stmt.executeUpdate();
-            stmt.close();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            System.err.println("ERR DBConnection.executeLocalDateParameter: +" + ex.getMessage());
-            return false;
-        }
-    }
-
     public int insert(String sql)
     {
         Statement stmt;
@@ -139,7 +100,7 @@ public class DBConnection
         }
     }
 
-    public int insert(String sql, String... parameter)
+    public int insert(String sql, Object... parameter)
     {
         PreparedStatement stmt;
         try
@@ -147,10 +108,26 @@ public class DBConnection
             stmt = _sqlCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             for(int i = 0; i < parameter.length; ++i)
             {
-                stmt.setString(i+1, parameter[i]);
+                if (parameter[i] instanceof String) {
+                    stmt.setString(i+1, (String)parameter[i]);
+                } else if (parameter[i] instanceof LocalDate) {
+                    LocalDate date = (LocalDate)parameter[i];
+                    stmt.setDate(i+1, java.sql.Date.valueOf(date));
+                } else if (parameter[i] instanceof Date) {
+                    Date date = (Date)parameter[i];
+                    stmt.setTimestamp(i+1, new java.sql.Timestamp(date.getTime()));
+                } else if (parameter[i] instanceof Integer) {
+                    stmt.setInt(i+1, (Integer)parameter[i]);
+                } else if (parameter[i] instanceof Float) {
+                    stmt.setFloat(i+1, (Float)parameter[i]);
+                } else if (parameter[i] instanceof Double) {
+                    stmt.setDouble(i+1, (Double)parameter[i]);
+                } else {
+                    throw new IllegalArgumentException("Unkown type");
+                }
             }
             int id = -2;
-            stmt.execute();
+            stmt.executeUpdate();
             ResultSet key = stmt.getGeneratedKeys();
             if(key.first())
             {

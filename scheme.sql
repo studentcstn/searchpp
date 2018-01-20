@@ -41,6 +41,7 @@ ALTER TABLE site_price_history ADD UNIQUE (product_id, date);
 CREATE TABLE usr_product_watch (
     user_id INT UNSIGNED NOT NULL,
     product_id INT UNSIGNED NOT NULL,
+    event_id VARCHAR(255) NULL,
     date_from DATE NOT NULL,
     date_to DATE NOT NULL ,
 

@@ -5,8 +5,10 @@ import org.glassfish.grizzly.http.server.Response;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import searchpp.services.Calendar;
 import searchpp.database.DBProduct;
 import searchpp.database.DBUser;
+import searchpp.model.products.ProductGroup;
 import searchpp.model.products.PriceHistory;
 import searchpp.model.user.User;
 
@@ -15,6 +17,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Path("usr/{userToken}/watchedProducts/{productId}")
@@ -62,7 +67,19 @@ public class ProductId {
                 User user = DBUser.loadUserByToken(userToken);
                 if (user != null)
                 {
+                    String eventId = DBUser.getEventId(user, product_id);
                     wasSuccessful = DBUser.changeWatchedProduct(user, product_id, date_from, date_to);
+                    if (wasSuccessful && eventId != null && eventId != "") {
+                        ProductGroup group = DBProduct.loadProductGroup(product_id);
+                        Calendar.update(
+                            user,
+                            ZonedDateTime.of(date_from, LocalTime.now(), ZoneId.of("Europe/Berlin")),
+                            ZonedDateTime.of(date_to, LocalTime.now(), ZoneId.of("Europe/Berlin")),
+                            String.format("(%d) %s", product_id, group.get(0).getTitle()),
+                            String.format("Überwachung des Produkts: (%d) %s", product_id, group.get(0).getTitle()),
+                            eventId
+                        );
+                    }
                 }
             }
         }
@@ -82,7 +99,11 @@ public class ProductId {
         User user = DBUser.loadUserByToken(userToken);
         if (user != null)
         {
+            String eventId = DBUser.getEventId(user, productId);
             wasSuccessful = DBUser.removeWatchedProduct(user, productId);
+            if (wasSuccessful && eventId != null && eventId != "") {
+                Calendar.delete(user, eventId);
+            }
         }
         if(!wasSuccessful)
         {

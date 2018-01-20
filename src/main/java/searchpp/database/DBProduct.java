@@ -79,9 +79,8 @@ public class DBProduct
 
     public static boolean addToPriceHistory(int gid, PriceHistory ph)
     {
-        String sql = "INSERT INTO site_price_history(product_id, price, date) " +
-                "VALUES ('" + gid + "', " + ph.getPrice() + ", ?);";
-        return DBConnection.getConnection().executeDateParameter(sql, ph.getDate());
+        String sql = "INSERT INTO site_price_history(product_id, price, date) VALUES (?, ?, ?);";
+        return DBConnection.getConnection().insert(sql, gid, ph.getPrice(), ph.getDate()) >= 0;
     }
 
     public static ProductGroup loadProductGroup(int gid)
@@ -146,6 +145,4 @@ public class DBProduct
         }
         return ph;
     }
-
-
 }

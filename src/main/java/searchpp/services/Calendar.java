@@ -21,9 +21,20 @@ public class Calendar {
         return json;
     }
 
-    public static String insert(User user, ZonedDateTime start, ZonedDateTime end, String title, String description) {
-        String url = "https://www.googleapis.com/calendar/v3/calendars/primary/events?" +
-                    "access_token=" + user.getAccessToken();
+    private static String insertUpdate(String eventId, User user, ZonedDateTime start, ZonedDateTime end, String title, String description) {
+        String url;
+        if (eventId == null) {
+            url = String.format(
+                "https://www.googleapis.com/calendar/v3/calendars/primary/events?access_token=%s",
+                user.getAccessToken()
+            );
+        } else {
+            url = String.format(
+                "https://www.googleapis.com/calendar/v3/calendars/primary/events/%s?access_token=%s",
+                eventId,
+                user.getAccessToken()
+            );
+        }
 
         String responseBody = null;
 
@@ -36,16 +47,24 @@ public class Calendar {
         event.put("summary", title);
         event.put("description", description);
 
+        Connection.Method method;
+        if (eventId == null) {
+            method = Connection.Method.POST;
+        } else {
+            method = Connection.Method.PUT;
+            event.put("eventId", eventId);
+        }
+
         try {
             responseBody = Jsoup.connect(url)
                 .ignoreContentType(true)
-                .method(Connection.Method.POST)
+                .method(method)
                 .header("Content-Type", "application/json")
                 .requestBody(event.toString())
                 .execute()
                 .body();
         } catch (IOException e) {
-            System.err.println("Calendar: event insert: " + e.getMessage());
+            System.err.println("Calendar: event insert/udpate: " + e.getMessage());
             return null;
         }
 
@@ -53,10 +72,39 @@ public class Calendar {
         try {
             response = (JSONObject)new JSONParser().parse(responseBody);
         } catch (ParseException e) {
-            System.err.println("Calendar: event insert: parse response: " + e.getMessage());
+            System.err.println("Calendar: event insert/update: parse response: " + e.getMessage());
             return null;
         }
 
         return (String)response.get("id");
+   }
+
+    public static String insert(User user, ZonedDateTime start, ZonedDateTime end, String title, String description) {
+        return insertUpdate(null, user, start, end, title, description);
+    }
+
+    public static String update(User user, ZonedDateTime start, ZonedDateTime end, String title, String description, String eventId) {
+        return insertUpdate(eventId, user, start, end, title, description);
+    }
+
+    public static boolean delete(User user, String eventId) {
+        String url = String.format(
+            "https://www.googleapis.com/calendar/v3/calendars/primary/events/%s?access_token=%s",
+            eventId,
+            user.getAccessToken()
+        );
+
+        try {
+            Jsoup.connect(url)
+                .ignoreContentType(true)
+                .method(Connection.Method.DELETE)
+                .header("Content-Type", "application/json")
+                .execute();
+        } catch (IOException e) {
+            System.err.println("Calendar: event delete: " + e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 }
