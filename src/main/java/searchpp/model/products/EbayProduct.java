@@ -23,6 +23,10 @@ public class EbayProduct extends Product
         return _listingType;
     }
 
+    /**
+     * Creates JSON Object from product
+     * @return the JSON Object
+     */
     @Override
     public JSONObject getJsonObject() {
         JSONObject object = super.getJsonObject();

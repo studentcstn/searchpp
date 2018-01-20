@@ -1,3 +1,4 @@
+//The controller for the changeDate.html page
 app.controller("changeDateCtrl", function ($rootScope, $scope, $window, $http, baseUrl)
 {
 	$scope.logout = function()
@@ -31,7 +32,8 @@ app.controller("changeDateCtrl", function ($rootScope, $scope, $window, $http, b
 				request.date_from = param.date_from
 			
 			$scope.isSending = true;
-			
+
+			//PUT /usr/{token}/watchedProducts/{productId}
 			$http.put(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts/" + $scope.productSetDate.product_id, request)
 			.success(function ()
 			{	

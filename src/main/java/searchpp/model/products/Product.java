@@ -32,8 +32,14 @@ public abstract class Product implements JsonObject
      */
     private double _price;
 
+    /**
+     * Url of product image
+     */
     private String _imgUrl;
 
+    /**
+     * Url to product on website
+     */
     private String _productUrl;
 
     public Product()
@@ -102,6 +108,10 @@ public abstract class Product implements JsonObject
         _productUrl = productUrl;
     }
 
+    /**
+     * Creates JSON Object from product
+     * @return the JSON Object
+     */
     @Override
     public JSONObject getJsonObject() {
         JSONObject object = new JSONObject();

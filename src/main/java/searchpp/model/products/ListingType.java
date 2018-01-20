@@ -3,6 +3,10 @@ package searchpp.model.products;
 /**
  * Created by Tobi on 04.12.2017.
  */
+
+/**
+ * The listing type of a product
+ */
 public enum ListingType
 {
     //ListingType from ebay (https://developer.ebay.com/devzone/finding/callref/types/ListingInfo.html and http://developer.ebay.com/devzone/shopping/docs/callref/types/ListingTypeCodeType.html)

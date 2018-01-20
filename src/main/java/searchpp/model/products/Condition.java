@@ -3,6 +3,10 @@ package searchpp.model.products;
 /**
  * Created by Tobi on 04.12.2017.
  */
+
+/**
+ * The condition of a product
+ */
 public enum Condition
 {
     //Condition ID from ebay (https://developer.ebay.com/devzone/finding/callref/Enums/conditionIdList.html)

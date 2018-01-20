@@ -1,3 +1,4 @@
+//The controller for the history.html page
 app.controller("historyCtrl", function ($rootScope, $scope, $window, $http, baseUrl)
 {
 	$scope.logout = function()
@@ -18,11 +19,12 @@ app.controller("historyCtrl", function ($rootScope, $scope, $window, $http, base
 	{
 		if($rootScope.productHistory !== undefined)
 		{
+		    //GET /usr/{token}/watchedProducts/{productId}
 			$http.get(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts/" + $scope.productHistory.product_id)
 			.success(function (data)
 			{	
 				$scope.result = data;
-				console.log("Result!!");
+				console.log("Success!!");
 				console.log(data);
 				
 			})

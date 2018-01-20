@@ -6,10 +6,23 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 
+/**
+ * From the amazon example at https://aws.amazon.com/de/code/product-advertising-api-signed-requests-sample-code-java-rest-query/?tag=code%23keywords%23product-advertising-api
+ * Minor changes with abstarct class and subclasses to support ebay request
+ */
 public abstract class RequestsHelper
 {
+    /**
+     * The charset
+     */
     protected final String UTF8_CHARSET = "UTF-8";
 
+    /**
+     * Abstract method for subclasses
+     * @param params The Map with the parameter
+     * @param requestUri The destination uri
+     * @return The generated request url
+     */
     public abstract String generateRequest(Map<String, String> params, String requestUri);
 
     /**

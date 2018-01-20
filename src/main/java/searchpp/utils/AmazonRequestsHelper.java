@@ -32,7 +32,10 @@
  import java.text.SimpleDateFormat;
  import java.util.*;
 
- /**
+/**
+ * From the amazon example at https://aws.amazon.com/de/code/product-advertising-api-signed-requests-sample-code-java-rest-query/?tag=code%23keywords%23product-advertising-api
+ * Minor changes to support ebay request
+ *
  * This class contains all the logic for signing requests
  * to the Amazon Product Advertising API.
  */

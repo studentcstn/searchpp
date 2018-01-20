@@ -1,3 +1,4 @@
+//The controller for the detail.html page
 app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http, baseUrl)
 {
 	$scope.logout = function()
@@ -31,7 +32,7 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 				request.date_from = param.date_from
 			
 			$scope.isSending = true;
-			
+			//POST /usr/{token}/watchedProducts
 			$http.post(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts", request)
 			.success(function ()
 			{	
@@ -53,8 +54,6 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 	{
 		if($rootScope.productDetail !== undefined)
 		{
-			console.log($rootScope.productDetail);
-			console.log($rootScope.productDetail.product_id);
 			if($rootScope.request !== undefined)
 			{
 				var request = {};
@@ -65,12 +64,12 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 				if ("used" in  $rootScope.request)
 					request.used =  $rootScope.request.used;
 			}
-
+			//GET /products/{productId}
 			$http.get(baseUrl + "/products/" + $rootScope.productDetail.product_id, {params : request})
 			.success(function (data)
 			{	
 				$scope.result = data;
-				console.log("Result!!");
+				console.log("Success!!");
 				console.log(data);
 				
 			})
@@ -81,12 +80,12 @@ app.controller("productDetailCtrl", function ($rootScope, $scope, $window, $http
 				console.log(status);
 				console.log("Error!!");
 			});
-			
+			//GET /products/{productId}/ratings
 			$http.get(baseUrl + "/products/" + $rootScope.productDetail.product_id + "/ratings")
 			.success(function (data)
 			{	
 				$scope.rating = data;
-				console.log("Result!!");
+				console.log("Success!!");
 				console.log(data);
 				
 			})

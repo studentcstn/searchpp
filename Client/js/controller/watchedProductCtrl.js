@@ -1,4 +1,4 @@
-/*Controller für die Übersicht der Sprechstunden eines Studenten (Route: #/Student/Termine)*/
+//The controller for the watchedProduct.html page
 app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $http, baseUrl)
 {
     $scope.logout = function()
@@ -29,11 +29,12 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 
 	
 	$scope.removeList = function(item)
-	{		
+	{
+		//DELETE /usr/{token}/watchedProducts
 		$http.delete(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts")
 		.success(function ()
 		{	
-			console.log("Result!!");				
+			console.log("Success!!");
 			$scope.getData();
 		})
 		.error(function (error, status)
@@ -47,11 +48,11 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 	
 	$scope.remove = function(item)
 	{
-		console.log(item);
+		//DELETE /usr/{token}/watchedProducts/{productId}
 		$http.delete(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts/" + item.product_id)
 		.success(function ()
 		{	
-			console.log("Result!!");	
+			console.log("Success!!");
 		})
 		.error(function (error, status)
 		{
@@ -67,6 +68,7 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 	{
 		if($rootScope.user !== undefined)
 		{
+			//GET /usr/{token}/watchedProducts
 			$http.get(baseUrl + "/usr/" + $rootScope.user + "/watchedProducts")
 			.success(function (data)
 			{	
@@ -74,9 +76,8 @@ app.controller("watchedProductCtrl", function ($rootScope, $scope, $window, $htt
 				if(data.elements == 0)
 				{
 					$scope.isEmpty = true;
-					console.log("Field is empty")
 				}
-				console.log("Result!!");
+				console.log("Success!!");
 				console.log(data);			
 			})
 			.error(function (error, status)

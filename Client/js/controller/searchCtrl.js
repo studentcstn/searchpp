@@ -1,3 +1,4 @@
+//The controller for the search.html page
 app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $http, baseUrl)
 {	
 	$scope.isSending = false;
@@ -40,14 +41,13 @@ app.controller("searchCtrl", function ($rootScope, $scope, $window, $location, $
 			$rootScope.request = request;
 			
 			$scope.isSending = true;
-
+			//GET /products
 			$http.get(baseUrl + "/products" , {params : request})
 			.success(function (data)
 			{	
 				$rootScope.productList = $scope.result = data;
-				console.log("Result!!");
+				console.log("Success!!");
 				console.log(data);
-				console.log($scope.result);
 				$scope.isSending = false;
 				
 			})

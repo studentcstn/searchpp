@@ -7,10 +7,25 @@ import org.json.simple.JSONObject;
  */
 public class AmazonProduct extends Product
 {
+    /**
+     * Sales rank of a product from amazon
+     */
     private int _salesRank;
+    /**
+     * EAN of the product
+     */
     private long _ean;
+    /**
+     * Manufacturer of the product
+     */
     private String _manufacturer;
+    /**
+     * Model of the product
+     */
     private String _model;
+    /**
+     * The rating from amazon
+     */
     private AmazonProductRating _rating;
 
     public AmazonProduct() {}
@@ -64,6 +79,10 @@ public class AmazonProduct extends Product
         return getRating().getInternProductRating() + " " + super.toString();
     }
 
+    /**
+     * Creates JSON Object from product
+     * @return the JSON Object
+     */
     @Override
     public JSONObject getJsonObject(){
         JSONObject object = super.getJsonObject();

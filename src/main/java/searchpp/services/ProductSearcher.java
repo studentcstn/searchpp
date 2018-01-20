@@ -25,10 +25,25 @@ import java.util.Map;
  */
 public class ProductSearcher
 {
+    /**
+     * The request helper for amazon
+     */
     private static AmazonRequestsHelper _amazonRequestsHelper = new AmazonRequestsHelper("ecs.amazonaws.de");
+    /**
+     * The request helper for ebay (for multiple products)
+     */
     private static EbayRequestsHelper _ebayRequestsHelperSvcs = new EbayRequestsHelper("svcs.ebay.com");
+    /**
+     * The request helper for ebay (for single product)
+     */
     private static EbayRequestsHelper _ebayRequestsHelperOpenApi = new EbayRequestsHelper("open.api.ebay.com");
 
+    /**
+     * Searches for multiple products, that refer to the searchString on amazon
+     * @param searchString The string for what you are looking for
+     * @param rating Defines if a rating should be retrieved from amazon
+     * @return A list of Amazon Products
+     */
     public static List<AmazonProduct> searchAmazonProductList(String searchString, boolean rating)
     {
         Map<String, String> params = new HashMap<>();
@@ -37,6 +52,14 @@ public class ProductSearcher
         return searchAmazon(params, rating);
     }
 
+    /**
+     * Searches for multiple products, that refer to the searchString with a minimum and maximum price on amazon
+     * @param searchString The string for what you are looking for
+     * @param rating Defines if a rating should be retrieved from amazon
+     * @param minPrice The minimum price of the products in euro
+     * @param maxPrice The maximum price of the products in euro
+     * @return A list of AmazonProducts within minimum and maximum price
+     */
     public static List<AmazonProduct> searchAmazonProductList(String searchString, boolean rating, double minPrice, double maxPrice)
     {
         Map<String, String> params = new HashMap<>();
@@ -55,6 +78,12 @@ public class ProductSearcher
         return searchAmazon(params, rating);
     }
 
+    /**
+     * Searches for a single product on amazon with the amazon ASIN
+     * @param amazonASIN The ID of a specified amazon product
+     * @param rating Defines if a rating should be retrieved from amazon
+     * @return A single AmazonProduct
+     */
     public static AmazonProduct searchAmazonProduct(String amazonASIN, boolean rating)
     {
         String requestUrl;
@@ -66,6 +95,7 @@ public class ProductSearcher
         params.put("ResponseGroup", "Images, ItemAttributes, ItemIds, OfferListings, OfferSummary, Reviews, SalesRank");
         params.put("ItemId", amazonASIN);
 
+        //Get the signed url for the request
         requestUrl = _amazonRequestsHelper.generateRequest(params, "/onca/xml");
 
         System.out.println(requestUrl);
@@ -76,6 +106,12 @@ public class ProductSearcher
             return products.get(0);
     }
 
+    /**
+     * Internal method to get multiple AmazonProducts
+     * @param params The map with the parameter of a request
+     * @param rating Defines if a rating should be retrieved from amazon
+     * @return A list of AmazonProducts
+     */
     private static List<AmazonProduct> searchAmazon(Map<String, String> params, boolean rating)
     {
         String requestUrl;
@@ -87,6 +123,7 @@ public class ProductSearcher
 
         List<AmazonProduct> products = new ArrayList<>();
 
+        //Generate multiple request (amazon returns 10 products per page and you can request 5 pages)
         for(int i = 1; i <= 5; i++)
         {
             params.put("ItemPage", Integer.toString(i));
@@ -98,21 +135,30 @@ public class ProductSearcher
         return products;
     }
 
+    /**
+     * Internal method that parses the XML document that comes from amazon
+     * @param requestUrl The Url of the amazon request
+     * @param rating Defines if a rating should be retrieved from amazon
+     * @return A list of AmazonProducts
+     */
     private static List<AmazonProduct> parseAmazonRequest(String requestUrl, boolean rating)
     {
         long time = 0;
         List<AmazonProduct> products = new ArrayList<>();
 
+        //Generate up to 5 request if amazon returns 503 RequestThrottled - You are submitting requests too quickly. Please retry your requests at a slower rate.
         for(int n = 0; n < 5; n++)
         {
             try
             {
+                //Parse the request
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document doc = db.parse(requestUrl);
 
                 NodeList itemList = doc.getElementsByTagName("Item");
 
+                //get all the items in the answer
                 for (int i = 0; i < itemList.getLength(); i++)
                 {
                     AmazonProduct product = new AmazonProduct();
@@ -120,56 +166,72 @@ public class ProductSearcher
 
                     Element eElement = (Element) item;
 
+                    //ignore Kindle eBooks (many required tags are missing)
                     if(getTagValue(eElement, "Format").equals("Kindle eBook"))
                         continue;
 
+                    //get the ASIN
                     String asin = getTagValue(eElement, "ASIN");
 
+                    //get the title
                     String title = getTagValue(eElement, "Title");
 
                     Element eCondtion = (Element) eElement.getElementsByTagName("OfferAttributes").item(0);
                     if(eCondtion == null)
                         continue;
 
+                    //get the condition
                     Condition condition = Condition.getProductCondition(getTagValue(eCondtion, "Condition"));
 
                     Element ePrice = (Element) eElement.getElementsByTagName("LowestNewPrice").item(0);
                     if(ePrice == null)
                         continue;
 
+                    //get the price
                     String sPrice = getTagValue(ePrice, "Amount");
                     double price = 0;
                     if(!sPrice.equals(""))
                         price = Double.parseDouble(sPrice) / 100;
 
+                    //get the sales rank
                     String rank = getTagValue(eElement, "SalesRank");
                     int salesRank = -1;
                     if (!rank.equals(""))
                         salesRank = Integer.parseInt(rank);
 
+                    //get the ean
                     String eanElement = getTagValue(eElement, "EAN");
                     long ean = -1;
                     if (eanElement.matches("[0-9]+"))
                         ean = Long.parseLong(eanElement);
+
+                    //get the manufacturer
                     String manufacturer = getTagValue(eElement, "Manufacturer");
+
+                    //get the model
                     String model = getTagValue(eElement, "Model");
 
                     Element eImage = (Element) eElement.getElementsByTagName("LargeImage").item(0);
                     if(eImage == null)
                         continue;
 
+                    //get the image url
                     String imgUrl = getTagValue(eImage, "URL");
 
+                    //get the webpage url
                     String productUrl = getTagValue(eElement, "DetailPageURL");
 
+                    //check if product has amazon ratings
                     String hasReviews = getTagValue(eElement, "HasReviews");
                     boolean reviews = false;
                     if (hasReviews.matches("true|false"))
                         reviews = Boolean.parseBoolean(hasReviews);
 
+                    //skip all products that match the if condition
                     if(asin.equals("") || title.equals("") || price == 0 || condition == null || ean == -1 || !reviews)
                         continue;
 
+                    //set the attributes
                     product.setProductId(asin);
                     product.setTitle(title);
                     product.setCondition(condition);
@@ -181,13 +243,16 @@ public class ProductSearcher
                     product.setImgUrl(imgUrl);
                     product.setProductUrl(productUrl);
 
+                    //if defined get the rating
                     if (rating) {
                         AmazonProductRating amazonProductRating = AmazonRating.getRating(product);
                         product.setRating(amazonProductRating);
                     }
 
+                    //add the products to the list
                     products.add(product);
 
+                    //for debugging
                     System.out.println("ASIN: " + product.getProductId());
                     System.out.println("EAN: " + product.getEan());
                     System.out.println("SalesRank: " + product.getSalesRank());
@@ -209,6 +274,7 @@ public class ProductSearcher
                 System.err.println("ParserConfigurationException");
             } catch (IOException e)
             {
+                //amazon returned 503 try again in some time
                 System.err.println("Error during request: " + e.getMessage());
                 //long time = (long) (Math.random() * 5000 + 5000);
                 time += 1000;
@@ -228,6 +294,11 @@ public class ProductSearcher
         return products;
     }
 
+    /**
+     * Searches for multiple products, that refer to the searchString on ebay
+     * @param searchString The string for what you are looking for
+     * @return A list of EbayProducts
+     */
     public static List<EbayProduct> searchEbayProductList(String searchString)
     {
         Map<String, String> params = new HashMap<>();
@@ -237,6 +308,13 @@ public class ProductSearcher
         return searchEbay(params);
     }
 
+    /**
+     * Searches for multiple products, that refer to the searchString with a minimum and maximum price on ebay
+     * @param searchString The string for what you are looking for
+     * @param minPrice The minimum price of the products in euro
+     * @param maxPrice The maximum price of the products in euro
+     * @return A list of EbayProducts within minimum and maximum price
+     */
     public static List<EbayProduct> searchEbayProductList(String searchString, double minPrice, double maxPrice)
     {
         Map<String, String> params = new HashMap<>();
@@ -258,6 +336,11 @@ public class ProductSearcher
         return searchEbay(params);
     }
 
+    /**
+     * Internal method to get multiple EbayProducts
+     * @param params The map with the parameter of a request
+     * @return A list of EbayProducts
+     */
     private static List<EbayProduct> searchEbay(Map<String, String> params)
     {
         String requestUrl;
@@ -275,14 +358,21 @@ public class ProductSearcher
         return parseEbayProductList(requestUrl);
     }
 
+    /**
+     * Internal method that parses the XML document that comes from ebay
+     * @param requestUrl The Url of the ebay request
+     * @return A list of EbayProducts
+     */
     private static List<EbayProduct> parseEbayProductList(String requestUrl)
     {
         List<EbayProduct> products = new ArrayList<>();
 
+        //if request fails (shouldn't happen)
         for(int n = 0; n < 5; n++)
         {
             try
             {
+                //same as parseAmazonRequest with other tags
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document doc = db.parse(requestUrl);
@@ -327,6 +417,7 @@ public class ProductSearcher
 
                     products.add(product);
 
+                    //for debugging
                     System.out.println("ItemId: " + product.getProductId());
                     System.out.println("Title: " + product.getTitle());
                     System.out.println("Price: " + product.getPrice());
@@ -352,6 +443,11 @@ public class ProductSearcher
         return products;
     }
 
+    /**
+     * Searches for a single product on ebay with the ebay ID
+     * @param product The EbayProduct with the ID of ebay set
+     * @return A single EbayProduct
+     */
     public static EbayProduct searchEbayProduct(EbayProduct product)
     {
         String requestUrl;
@@ -370,6 +466,11 @@ public class ProductSearcher
         return parseEbayProduct(requestUrl);
     }
 
+    /**
+     * Internal method that parses the XML document that comes from ebay
+     * @param requestUrl The Url of the ebay request
+     * @return A single EbayProduct
+     */
     private static EbayProduct parseEbayProduct(String requestUrl)
     {
         EbayProduct product = new EbayProduct();
@@ -378,6 +479,7 @@ public class ProductSearcher
         {
             try
             {
+                //Same as parseAmazonRequest with other tags
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document doc = db.parse(requestUrl);
@@ -416,6 +518,7 @@ public class ProductSearcher
                     product.setImgUrl(imgUrl);
                     product.setProductUrl(productUrl);
 
+                    //for debugging
                     System.out.println("ItemId: " + product.getProductId());
                     System.out.println("Title: " + product.getTitle());
                     System.out.println("Price: " + product.getPrice());
@@ -442,7 +545,12 @@ public class ProductSearcher
         return null;
     }
 
-
+    /**
+     * Internal method to get the value of a tag in an element
+     * @param eElement The element with the tag/value pair
+     * @param tag The tag to search for
+     * @return The value of the tag
+     */
     private static String getTagValue(Element eElement, String tag)
     {
         String ret = "";
