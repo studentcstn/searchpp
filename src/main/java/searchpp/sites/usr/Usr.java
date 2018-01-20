@@ -1,5 +1,11 @@
 package searchpp.sites.usr;
 
+import java.io.IOException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import searchpp.model.config.Api;
@@ -31,13 +37,11 @@ public class Usr {
             .append("&access_type=offline")
             .append("&approval_prompt=force");
 
-        try
-        {
+        try {
             response.sendRedirect(url.toString());
-        } catch(IOException e)
-        {
-            // TODO useful error message
-            System.out.println("Something went wrong: " + e);
+        } catch(IOException e) {
+            response.setStatus(500);
+            System.err.println("ERR: usr: redirect to google oauth2: " + e.getMessage());
         }
     }
 }

@@ -53,7 +53,7 @@ public class Calendar {
         try {
             response = (JSONObject)new JSONParser().parse(responseBody);
         } catch (ParseException e) {
-            System.err.println("Calendar: event insert parse response: " + e.getMessage());
+            System.err.println("Calendar: event insert: parse response: " + e.getMessage());
             return null;
         }
 
