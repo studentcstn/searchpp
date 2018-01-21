@@ -22,7 +22,7 @@ public class PriceHistoryService extends TimerTask
         {
             double min = pg.getMinPrice();
             //Only save price if there is one
-            if (min != Double.NaN)
+            if (!Double.isNaN(min))
             {
                 PriceHistory ph = new PriceHistory(dt, min);
                 DBProduct.addToPriceHistory(pg.getProductID(), ph);

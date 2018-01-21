@@ -130,7 +130,7 @@ public class DBProduct
     public static List<ProductGroup> loadAllWatchedProducts()
     {
         List<ProductGroup> groups = new ArrayList<>();
-        String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE date_from >= CURRENT_TIMESTAMP AND date_to >= CURRENT_TIMESTAMP;";
+        String sql = "SELECT DISTINCT product_id FROM usr_product_watch WHERE date_from <= CURRENT_TIMESTAMP AND date_to >= CURRENT_TIMESTAMP;";
         try
         {
             ResultSet result = DBConnection.getConnection().query(sql);
