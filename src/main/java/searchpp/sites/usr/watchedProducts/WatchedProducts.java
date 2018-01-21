@@ -125,9 +125,10 @@ public class WatchedProducts
         User user = DBUser.loadUserByToken(userToken);
         if (user != null)
         {
+            List<String> eventIds = DBUser.getEventIds(user);
             wasSuccessful = DBUser.removeAllWatchedProducts(user);
             if (wasSuccessful) {
-                for (String eventId: DBUser.getEventIds(user)) {
+                for (String eventId: eventIds) {
                     if (eventId != "") {
                         Calendar.delete(user, eventId);
                     }
