@@ -1,0 +1,46 @@
+\documentclass[12pt]{scrreprt}
+\usepackage{a4wide}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ngerman}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{lmodern}
+\usepackage{pst-all}
+\usepackage{icomma}
+\usepackage{hyperref}
+
+% Keine Einrückungen bei neuen Absätzen
+\setlength{\parindent}{0mm}
+
+% Seitenstil
+\pagestyle{plain}
+
+
+\begin{document}
+\begin{titlepage}
+\begin{center}
+{\large Hochschule Hof} \\[0.65cm]
+Wintersemester 2017/2018 \\
+\vspace*{2.5cm} {\large Studienarbeit}\\[0.65cm]
+in RESTful Webservices \\
+\vspace{2.5cm} 
+{\textbf{Search++}} \\
+\vspace{4cm} von \\[0.65cm]
+Christian Deinlein, Thomas Herpich, Sebastian Pahl, Christian P�hlmann, Tobias Wirth\\
+\end{center}
+\end{titlepage}
+
+%leere Seite
+\newpage
+\mbox{} \thispagestyle{empty}
+%Inhaltsverzeichnis
+\renewcommand{\thepage}{\roman{page}} \setcounter{tocdepth}{1}
+\tableofcontents \pagebreak
+
+\include{Architektur}
+\include{FremdeWebservices}
+\include{Client}
+
+\end{document}

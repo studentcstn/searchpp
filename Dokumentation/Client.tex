@@ -1,0 +1,3 @@
+\chapter{Client}
+\section{Verwendete Frameworks}
+Für das Design des Clients wurde Bootstrap verwendet. Für die Webanwendung wurde das Framework AngularJS benutzt. Der Client wurde mithilfe von AngularJS bzw. ngRoute als Singlepage-Application aufgebaut. Dabei besitzt jede View einen eigenen Controller, der bei der Navigation aktiviert wird. Im Controller werden je nach Seite Daten geladen oder nach Benutzereingabe abgerufen. Seitenübergreifende Daten werden nur im \$rootScope gespeichert, weshalb ein Neuladen der Seite alle Informationen löscht. Wenn sich ein Benutzer über Google anmeldet, wird er wieder auf die Startseite weitergeleitet und der Token in der URL übergeben. Dieser wird dann im \$rootScope gespeichert und an die Anfragen angehängt.
