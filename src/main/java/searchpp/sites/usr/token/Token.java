@@ -34,8 +34,8 @@ public class Token {
         String redirectUri = "http://localhost:8080/myapp/usr/token";
 
         if (request.getParameter("error") != null) {
-            // TODO log
-            System.out.println(request.getParameter("error"));
+            response.setStatus(500);
+            System.err.println("ERR: user/token: error: " + request.getParameter("error"));
             return;
         }
 
@@ -55,8 +55,8 @@ public class Token {
                 .execute()
                 .body();
         } catch (IOException e) {
-            // TODO log and response
-            System.out.println(e);
+            response.setStatus(500);
+            System.err.println("ERR: user/token: error get access token");
             return;
         }
 
@@ -64,8 +64,9 @@ public class Token {
         try {
             jsonObject = (JSONObject) new JSONParser().parse(body);
         } catch (ParseException e) {
-            // TODO log and response
-            throw new RuntimeException("Unable to parse json " + body);
+            response.setStatus(500);
+            System.err.println("ERR: user/token: unable to parse access token response: " + e.getMessage());
+            return;
         }
 
         String accessToken = (String)jsonObject.get("access_token");
@@ -80,16 +81,16 @@ public class Token {
                 .execute()
                 .body();
         } catch (IOException e) {
-            // TODO log and response
-            System.out.println(e);
+            response.setStatus(500);
+            System.err.println("ERR: user/token: unable to get user information with new access token: " + e.getMessage());
             return;
         }
 
         try {
             jsonObject = (JSONObject) new JSONParser().parse(json);
         } catch (ParseException e) {
-            // TODO log and response
-            System.out.println(e);
+            response.setStatus(500);
+            System.err.println("ERR: user/token: unable to parse user information response: " + e.getMessage());
             return;
         }
 
@@ -98,20 +99,16 @@ public class Token {
 
         User u = DBUser.createUserOrUpdate(email, token, accessToken, refreshToken);
 
-        if(u == null)
-        {
+        if(u == null) {
             throw new WebApplicationException(javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE);
         }
 
-        try
-        {
-            // TODO temporary redirect
+        try {
             response.sendRedirect("http://localhost:8080/index.html#/?token=" + u.getToken());
-        }
-        catch(IOException e)
-        {
-            // TODO useful error message
-            System.out.println("Something went wrong: " + e);
+        } catch(IOException e) {
+            response.setStatus(500);
+            System.err.println("ERR: user/token: unable to redirect to index.html: " + e.getMessage());
+            return;
         }
     }
 }

@@ -4,3 +4,10 @@ target/
 /src/test/java/searchpp/services/searchpp.conf
 s
 t
+Dokumentation/*.aux
+Dokumentation/Dokumentation.fdb_latexmk
+Dokumentation/Dokumentation.fls
+Dokumentation/Dokumentation.log
+Dokumentation/Dokumentation.out
+Dokumentation/Dokumentation.toc
+

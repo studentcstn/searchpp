@@ -71,5 +71,26 @@ Wichtig ist es bei den Anfragen noch die Global-ID bzw. Site-ID festzulegen. Die
 Die Verwendung von Ebay ist sehr einfach, vor allem im Vergleich mit Amazon. Man kann direkt ein Konto anlegen, ohne spezielle Anforderungen zu erfüllen oder sich zunächst zu bewerben. Die Anfragen müssen ebenfalls nicht bearbeitet werden und können so direkt von Browser aus gestellt und getestet werden. Die Anzahl der Anfragen ist unbegrenzt.
 
 Bei der Dokumentation sind keine Fehler aufgefallen und es wurden viele Beispiele eingearbeitet.
-\section{Google}
 
+\section{Google}
+Bei Google wurde die OAuth2- (Login) und die Calendar-API verwendet. Es gibt für die Schnittstellen Implementierungen in verschiedenen Programmiersprachen, u. a.  in Java. Allerdings sind die Java-Implementierung umständlich zu verwenden, deshalb wurden die APIs direkt per REST-Schnittstelle angesprochen. Dies ist im Rahmen einer Studienarbeit vertretbar, sollte aber für ein "echtes" Projekt vermieten werden, wegen Fehler und Sicherheit.
+
+Die REST-Schnittstelle ist einfach zu verstehen und anzuwenden. Vorgehen Allgemein:
+
+\begin{itemize}
+    \item Client-ID und Secret-Key erzeugen über Google-Konto 
+    \item RedirectUrls eintragen
+\end{itemize}
+
+Vorgehen Login:
+
+\begin{itemize}
+    \item Client-ID und Scope (hier z.B. calendar und openid) mitgeben 
+    \item Benutzer wird aufgefordert sich einzuloggen und den Zugriff beschränkt
+        auf Scope zuzulassen
+    \item Danach bekommt man einen Code mit dem man einen Access Token
+        beantragen kann
+    \item Hat man einen Account Token kann man die Informationen des Benutzer
+        abfragen
+    \item Danach ist der Benutzer angemeldet
+\end{itemize}
