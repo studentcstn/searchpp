@@ -2,34 +2,34 @@
 In diesem Kapitel wird die Verbindung zu fremden Webservices, Erfahrungen damit und eventuelle Probleme beschrieben.
 
 \section{Amazon}
-Von Amazon wurde die Amazon Product Advertising API verwendet. Diese API wurde ausgesucht um Produktpreise, Produktinformationen und Bewertungen abzurufen. Leider mussten wir feststellen, dass Amazon die Produktbewertungen über die API nicht weitergibt. Genaueres dazu bei den Erfahrungen.
+Von Amazon wurde die Amazon Product Advertising API verwendet. Diese API wurde ausgesucht um Produktpreise, Produktinformationen und Bewertungen abzurufen. Leider mussten wir feststellen, dass Amazon die Produktbewertungen ï¿½ber die API nicht weitergibt. Genaueres dazu bei den Erfahrungen.
 
 \subsection{Verbindung}
-Um die API zu verwenden wird ein Amazon Partnernet Account benötigt. Hat man dort ein Konto kann man sich einen Access Key generieren lassen. Dieser wird für Anfragen an die API benötigt. Um diese erfolgreich zu stellen, muss man folgende Schritte beachten um die Anfrage zu signieren:
+Um die API zu verwenden wird ein Amazon Partnernet Account benï¿½tigt. Hat man dort ein Konto kann man sich einen Access Key generieren lassen. Dieser wird fï¿½r Anfragen an die API benï¿½tigt. Um diese erfolgreich zu stellen, muss man folgende Schritte beachten um die Anfrage zu signieren:
 
 \begin{itemize}
-	\item Zeitstempel an die URL anhängen
+	\item Zeitstempel an die URL anhï¿½ngen
 	\item Kodierung von ',' und ':' in RFC 3986 Spezifikation
 	\item Parameter/Wert Paare am '\&'-Zeichen Teilen
 	\item Parameter/Wert Paare nach Byte-Wert sortieren
-	\item Paare wieder mit '\&' zusammenfügen
-	\item 3 weitere Zeilen vor dem String anhängen
-	\item Die Anfrage mit SHA256 über den AWS Secret Key verschlüsseln
+	\item Paare wieder mit '\&' zusammenfï¿½gen
+	\item 3 weitere Zeilen vor dem String anhï¿½ngen
+	\item Die Anfrage mit SHA256 ï¿½ber den AWS Secret Key verschlï¿½sseln
 	\item '+' und '=' Kodieren
-	\item Berechneten Schlüssel als Signatur an Anfrage anhängen
+	\item Berechneten Schlï¿½ssel als Signatur an Anfrage anhï¿½ngen
 \end{itemize}
 Genaueres ist \href{https://docs.aws.amazon.com/AWSECommerceService/latest/DG/rest-signature.html}{hier} beschrieben.
 
-Um einzelne Produkte über die ASIN (eindeutige ID für jedes Produkt auf Amazon) zu suchen wurde in der Anfrage für den Parameter "'Operation"' der Wert "'ItemLookup"' und für "'IdType"' der Wert "'ASIN"' angegeben. Für mehrere Produkte wurde für "'Operation"' der Wert "'ItemSearch"' verwendet. Der "'SearchIndex"' legt fest in welcher Kategorie die Produkte gesucht werden sollen. Mit der "'ResponseGroup"' kann die Antwort von Amazon eingeschränkt werden, um uninteressante Werte auszulassen.
+Um einzelne Produkte ï¿½ber die ASIN (eindeutige ID fï¿½r jedes Produkt auf Amazon) zu suchen wurde in der Anfrage fï¿½r den Parameter "'Operation"' der Wert "'ItemLookup"' und fï¿½r "'IdType"' der Wert "'ASIN"' angegeben. Fï¿½r mehrere Produkte wurde fï¿½r "'Operation"' der Wert "'ItemSearch"' verwendet. Der "'SearchIndex"' legt fest in welcher Kategorie die Produkte gesucht werden sollen. Mit der "'ResponseGroup"' kann die Antwort von Amazon eingeschrï¿½nkt werden, um uninteressante Werte auszulassen.
 
-Für das Projekt waren folgende Werte von Amazon interessant:
+Fï¿½r das Projekt waren folgende Werte von Amazon interessant:
 
 \begin{itemize}
 	\item ASIN - Die ID des Produkts auf Amazon
 	\item Title - Der Produkttitel
 	\item Condition - Artikelzustand
-	\item LowestNewPrice - Der günstigste Preis für ein neues Produkt
-	\item SalesRank - Ähnlich wie Bestseller, Produkte mit geringen SalesRank wurden häufiger verkauft
+	\item LowestNewPrice - Der gï¿½nstigste Preis fï¿½r ein neues Produkt
+	\item SalesRank - ï¿½hnlich wie Bestseller, Produkte mit geringen SalesRank wurden hï¿½ufiger verkauft
 	\item Manufacturer - Hersteller des Produkts
 	\item Model - Modellbezeichnung des Produkts
 	\item LargeImage - URL zu einem Produktfoto
@@ -38,22 +38,22 @@ Für das Projekt waren folgende Werte von Amazon interessant:
 \end{itemize}
 
 \subsection{Erfahrungen und Probleme}
-Wie bereits erwähnt gibt Amazon keine Bewertung über seine API weiter. Dieses war jedoch der Hauptgrund für uns Amazon zu verwenden. Da es auch keine andere API gibt, die kostenlos Bewertungen oder Testberichte von Produkten liefert, haben wir beschlossen, die Bewertungen von der Website direkt auszulesen. Da Amazon nach einigen Abfragen der Bewertungen mit dem gleichen User-Agent Captchas sendet, wurde eine Liste mit vielen User-Agents hinterlegt, die zufällig verwendet werden. Sollten dennoch Captchas zurückkommen wird das Produkt ignoriert, weshalb sich die Produktliste manchmal unterscheidet.
+Wie bereits erwï¿½hnt gibt Amazon keine Bewertung ï¿½ber seine API weiter. Dieses war jedoch der Hauptgrund fï¿½r uns Amazon zu verwenden. Da es auch keine andere API gibt, die kostenlos Bewertungen oder Testberichte von Produkten liefert, haben wir beschlossen, die Bewertungen von der Website direkt auszulesen. Da Amazon nach einigen Abfragen der Bewertungen mit dem gleichen User-Agent Captchas sendet, wurde eine Liste mit vielen User-Agents hinterlegt, die zufï¿½llig verwendet werden. Sollten dennoch Captchas zurï¿½ckkommen wird das Produkt ignoriert, weshalb sich die Produktliste manchmal unterscheidet.
 \\\\
-Ein weiteres Problem ist, dass Amazon bei mehreren, aufeinanderfolgenden Anfragen manchmal den Fehler 503 mit der Information "'You are submitting requests too quickly. Please retry your requests at a slower rate."' zurückliefert. Diese tritt vor allem bei der Suche nach mehreren Produkten auf. Mit einer Anfrage bekommt man nur 10 Ergebnisse geliefert, man kann aber pro Anfrage eine Seitenzahl angeben. Diese kann bei der Suche in allen Kategorien maximal 5 sein. Um also 50 Ergebnisse zu erhalten müssen 5 Abfragen nacheinander erfolgen. Dabei bremst Amazon, durch den Fehler, die Anfragen teilweise stark aus.
+Ein weiteres Problem ist, dass Amazon bei mehreren, aufeinanderfolgenden Anfragen manchmal den Fehler 503 mit der Information "'You are submitting requests too quickly. Please retry your requests at a slower rate."' zurï¿½ckliefert. Diese tritt vor allem bei der Suche nach mehreren Produkten auf. Mit einer Anfrage bekommt man nur 10 Ergebnisse geliefert, man kann aber pro Anfrage eine Seitenzahl angeben. Diese kann bei der Suche in allen Kategorien maximal 5 sein. Um also 50 Ergebnisse zu erhalten mï¿½ssen 5 Abfragen nacheinander erfolgen. Dabei bremst Amazon, durch den Fehler, die Anfragen teilweise stark aus.
 \\\\
-Die Dokumentation auf der Website könnte von der Navigation und Gliederung auch besser strukturiert sein. An manchen Stellen werden Beispiele beschrieben, die entweder nicht mehr funktionieren oder deren Funktion sonst nicht beschrieben wird.
+Die Dokumentation auf der Website kï¿½nnte von der Navigation und Gliederung auch besser strukturiert sein. An manchen Stellen werden Beispiele beschrieben, die entweder nicht mehr funktionieren oder deren Funktion sonst nicht beschrieben wird.
 
 \section{Ebay}
-Von Ebay wurde die Finding API verwendet. Die API wurde ausgesucht, um weitere Preise und Angebote zu Produkten zu finden, die nach dem Algorithmus als "'empfohlen"' eingestuft wurden. Dazu zählen auch B-Ware und Gebrauchte Produkte (sofern der Benutzer das möchte), die entweder als Auktion oder als Sofortkauf angeboten werden.
+Von Ebay wurde die Finding API verwendet. Die API wurde ausgesucht, um weitere Preise und Angebote zu Produkten zu finden, die nach dem Algorithmus als "'empfohlen"' eingestuft wurden. Dazu zï¿½hlen auch B-Ware und Gebrauchte Produkte (sofern der Benutzer das mï¿½chte), die entweder als Auktion oder als Sofortkauf angeboten werden.
 
 \subsection{Verbindung}
-Zur Verwendung der API wird ebenfalls ein Key benötigt. Dafür kann man sich einfach ein neues Ebay Konto anlegen, oder ein bestehendes verwenden. Mit einem Konto kann man sich dann Keys für den Sandbox Modus oder den Production Modus generieren lassen. Der Sandbox Modus ermöglicht es dem Benutzer mit einem virtuellen Kapital virtuelle Produkte zu kaufen. Dieser wurde von uns aber nicht benutzt.
-Für eine erfolgreiche Anfrage muss lediglich die App-ID, die mit dem Key generiert wurde angegeben werden.
+Zur Verwendung der API wird ebenfalls ein Key benï¿½tigt. Dafï¿½r kann man sich einfach ein neues Ebay Konto anlegen, oder ein bestehendes verwenden. Mit einem Konto kann man sich dann Keys fï¿½r den Sandbox Modus oder den Production Modus generieren lassen. Der Sandbox Modus ermï¿½glicht es dem Benutzer mit einem virtuellen Kapital virtuelle Produkte zu kaufen. Dieser wurde von uns aber nicht benutzt.
+Fï¿½r eine erfolgreiche Anfrage muss lediglich die App-ID, die mit dem Key generiert wurde angegeben werden.
 \\\\
-Leider konnten die Anfragen für eine Liste von Produkten und die Anfrage für ein einzelnes Produkt nicht über die selbe API erreicht werden. Beide API liefern jedoch ähnliche Antworten, die sich eigentlich nur durch Groß-/Kleinschreibung der Attribute unterscheiden.
+Leider konnten die Anfragen fï¿½r eine Liste von Produkten und die Anfrage fï¿½r ein einzelnes Produkt nicht ï¿½ber die selbe API erreicht werden. Beide API liefern jedoch ï¿½hnliche Antworten, die sich eigentlich nur durch Groï¿½-/Kleinschreibung der Attribute unterscheiden.
 
-Folgende Informationen waren für das Projekt von Interesse:
+Folgende Informationen waren fï¿½r das Projekt von Interesse:
 
 \begin{itemize}
 	\item ItemId - Die ID des Produkts auf Ebay
@@ -65,11 +65,28 @@ Folgende Informationen waren für das Projekt von Interesse:
 	\item ViewItemURL - URL zur Produktseite auf Ebay
 \end{itemize}
 
-Wichtig ist es bei den Anfragen noch die Global-ID bzw. Site-ID festzulegen. Diese gibt nämlich an ob die Produkte z.B. auf ebay.de oder auf ebay.com gesucht werden.
+Wichtig ist es bei den Anfragen noch die Global-ID bzw. Site-ID festzulegen. Diese gibt nï¿½mlich an ob die Produkte z.B. auf ebay.de oder auf ebay.com gesucht werden.
 
 \subsection{Erfahrungen und Probleme}
-Die Verwendung von Ebay ist sehr einfach, vor allem im Vergleich mit Amazon. Man kann direkt ein Konto anlegen, ohne spezielle Anforderungen zu erfüllen oder sich zunächst zu bewerben. Die Anfragen müssen ebenfalls nicht bearbeitet werden und können so direkt von Browser aus gestellt und getestet werden. Die Anzahl der Anfragen ist unbegrenzt.
+Die Verwendung von Ebay ist sehr einfach, vor allem im Vergleich mit Amazon. Man kann direkt ein Konto anlegen, ohne spezielle Anforderungen zu erfï¿½llen oder sich zunï¿½chst zu bewerben. Die Anfragen mï¿½ssen ebenfalls nicht bearbeitet werden und kï¿½nnen so direkt von Browser aus gestellt und getestet werden. Die Anzahl der Anfragen ist unbegrenzt.
 
 Bei der Dokumentation sind keine Fehler aufgefallen und es wurden viele Beispiele eingearbeitet.
 \section{Google}
+
+\chapter{Bewertung}
+FÃ¼r den einfacheren Vergleich von Produkten wird die Bewertung, durchschnittliche Bewertung und Anzahl an Bewertungen, in einen einzigen wert umgerechnet.
+FÃ¼r Bewertungen wurde folgende Funktion entworfen:
+y = z + z * ( z * a * ( x - b ) ^3 )
+
+y - Produkt Bewertung
+z - Anzahl aller Bewertungen
+x - Durchschnittliche Bewertung
+a - Faktor <= 1 um den Bereich mit wenigen Bewertungen ab zu flachen.
+    Wird benÃ¶tigt wenn das Ergebnis gerundet wird.
+    Empfehlung: 0.25
+b - Beschreibt die Durchschnitts Bewertung, welche neutral bewertet werden soll
+    Empfehlung: 3
+
+a und b sind Erfahrungswerte und mÃ¼ssen gegebenen falls angepasst werden.
+
 

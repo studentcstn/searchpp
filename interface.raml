@@ -39,9 +39,21 @@ securitySchemes:
   /user:
     get:
       description: Auslieferung einer HTML-Seite mit Redirect zu Google OAuth 2.0
+      responses:
+        200:
+          description: Erfolgreich
+        500:
+          description: Interner Fehler
 
     /token:
       description: Rückgabe von OAuth 2.0 speichern und Login (evtl. Neuen Benutzer anlegen)
+      responses:
+        200:
+          description: Erfolgreich
+        500:
+          description: Interner Fehler
+        503:
+          description: Service unavailable
 
     /watchedProducts:
       description: Produktliste mit beobachteten Produkten
@@ -60,15 +72,19 @@ securitySchemes:
                     data:
                       [
                         {
+                          date_from: "2018-01-24",
+                          date_to: "2018-01-31",
                           product_id: 12345,
                           name: Produktname1,
                           price_min: "1,23",
                           price_max: "2,35",
                           rating: "3,2",
                           img: www.example.com/example,
-                          type: new
+                          type: [NEW, USED]
                         },
                         {
+                          date_from: "2018-01-24",
+                          date_to: "2018-01-31",
                           product_id: 67890,
                           name: Produktname2,
                           price_min: "23,45",
@@ -81,8 +97,6 @@ securitySchemes:
                   List_is_empty:
                     elements: 0
                     data: []
-          401:
-            description: Zugriff verweigert
           500:
             description: Interner Fehler
 
@@ -109,8 +123,6 @@ securitySchemes:
             description: Erfolgreich
           400:
             description: Query Fehler
-          401:
-            description: Zugriff verweigert
           500:
             description: Interner Fehler
 
@@ -119,8 +131,6 @@ securitySchemes:
         responses:
           200:
             description: Erfolgreich
-          401:
-            description: Zugriff verweigert
           500:
             description: Interner Fehler
 
@@ -135,30 +145,20 @@ securitySchemes:
               body:
                 application/json:
                   example:
-                    product_id: 12345
-                    name: product name
-                    elements: 1
                     data:
                       [
                         {
-                          origin_url: www.example.com,
-                          product_description: product description,
-                          price: "1,23",
-                          preisverlauf:
-                            {
-                              01012017: "1,00",
-                              02012017: "1,13",
-                              31012017: "1,09",
-                              05022017: "1,20",
-                            },
-                          rating: "4,1",
-                          type: new | used
+                          date: "2018-01-01 01:01:01.0",
+                          price: 30.9
+                        }
+                        {
+                          date: "2018-01-01 02:01:01.0",
+                          price: 30.8
                         }
                       ]
+                    elements: 2
             400:
               description: Produkt nicht in Liste
-            #404:
-              #description: Produkt nicht gefunden
             500:
               description: Interner Fehler
 
@@ -180,8 +180,6 @@ securitySchemes:
               description: Erfolgreich
             400:
               description: Query Fehler
-            401:
-              description: Zugriff verweigert
             500:
               description: Interner Fehler
 
@@ -190,8 +188,6 @@ securitySchemes:
           responses:
             200:
               description: Erfolgreich
-            401:
-              description: Zugriff verweigert
             500:
               description: Interner Fehler
 
