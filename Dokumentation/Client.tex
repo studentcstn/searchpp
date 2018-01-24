@@ -1,26 +1,42 @@
 \chapter{Client}
 \section{Verwendete Frameworks}
-Fï¿½r das Design des Clients wurde Bootstrap verwendet. Fï¿½r die Webanwendung wurde das Framework AngularJS benutzt. Der Client wurde mithilfe von AngularJS bzw. ngRoute als Singlepage-Application aufgebaut. Dabei besitzt jede View einen eigenen Controller, der bei der Navigation aktiviert wird. Im Controller werden je nach Seite Daten geladen oder nach Benutzereingabe abgerufen. Seitenï¿½bergreifende Daten werden nur im \$rootScope gespeichert, weshalb ein Neuladen der Seite alle Informationen lï¿½scht. Wenn sich ein Benutzer ï¿½ber Google anmeldet, wird er wieder auf die Startseite weitergeleitet und der Token in der URL ï¿½bergeben. Dieser wird dann im \$rootScope gespeichert und an die Anfragen angehï¿½ngt.
+Für das Design des Clients wurde Bootstrap verwendet. Für die Webanwendung wurde
+das Framework AngularJS benutzt. Der Client wurde mithilfe von AngularJS bzw.
+ngRoute als Singlepage-Application aufgebaut. Dabei besitzt jede View einen
+eigenen Controller, der bei der Navigation aktiviert wird. Im Controller werden
+je nach Seite Daten geladen oder nach Benutzereingabe abgerufen.
+Seitenübergreifende Daten werden nur im \$rootScope gespeichert, weshalb ein
+Neuladen der Seite alle Informationen löscht. Wenn sich ein Benutzer über Google
+anmeldet, wird er wieder auf die Startseite weitergeleitet und der Token in der
+URL übergeben. Dieser wird dann im \$rootScope gespeichert und an die Anfragen
+angehängt.
 
-\chapter{Projektverzeichniss}
+\chapter{Quellcode Funktion}
 
-\section{Server}
-Beim Abruf von Amazon Produkt Bewertungen kann es passieren, dass Amazon das System als Roboter erkennt und zeigt ein Captcha an.
-Mit vielen verschieden User-Agends wird versucht, diese zu umgehen und trotzdem an Daten zu kommen.
+Im Verzeichnis `Client` ist der Quellcode des Clients.
+\\
+Im Verzeichnis `src/main/java/searchpp` befindet sich der Quellcode des Servers,
+unten aufgeführt ist die Zuordnung der Vezeichnisse zu Funktionen:
 
-
-Der Aufbau von Search++ ist wie folgt:
-
+\begin{lstlisting}
 Main          - Start des Servers
-/database     - Verbindung zur Datenbank, so wie abspeichern und laden von Daten.
-/localservice - Price history service fÃ¼r regelmÃ¤ÃŸige preis abfragen von beobachteten Produkten.
+/database     - Verbindung zur Datenbank, so wie abspeichern 
+                und laden von Daten.
+/localservice - Price history service für regelmäßige Preis 
+                abfragen von beobachteten Produkten.
 /model
-  /config     - Zum laden und verwenden von Zugangs Daten zu den verschieden APIs
-  /json       - interfaces fÃ¼r Json Konvertierung
-  /products   - Klassen fÃ¼r Produkte und Bewertungen
+  /config     - Zum Laden und verwenden von Zugangsdaten 
+                zu den verschieden APIs
+  /json       - Interfaces für Json Konvertierung
+  /products   - Klassen für Produkte und Bewertungen
   /user       - Nutzer
-/services     - Programmcode zum Download von Produktinformation und Bewertung, so wie Zugriff auf Google Kalender
+/services     - Programmcode zum Download von Produkt- 
+                information und Bewertung, so wie Zugriff 
+                auf Google Kalender
 /sites        - Restfull Schnittstellen
-/utils        - Hilfsprogramme fÃ¼r Zugriff auf APIs und Konfigurationen
+/utils        - Hilfsprogramme für Zugriff auf APIs und 
+                Konfigurationen
+\end{lstlisting}
 
-Im root Verzeichnis der Software liegt noch die seachpp.conf. In dieser stehen die Zugangs Daten zu den APIs.
+Im root Verzeichnis der Software liegt noch die seachpp.conf. In dieser stehen
+die Zugangsdaten zu den APIs.
