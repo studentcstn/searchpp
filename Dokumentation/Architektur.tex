@@ -1,3 +1,41 @@
 \chapter{Architektur}
-
-\section{}
+\section{Package-Struktur}
+\begin{itemize}
+	\item{searchpp\\
+		Klasse Main - Start des Servers}
+	\item{/database/\\
+	Datenbankverbindung, Speichern und Laden der Produkte, User}
+\item{/localservice/\\
+PriceHistoryService, der im Hintergrund läuft und Preise für beobachtete Produkte lädt.}
+\item{/model\\
+Repräsentation der Produkte und User aus Datenbank und Webservices.}
+\begin{itemize}
+\item{/config/\\
+Laden der Konfigurationseinstellungen}
+\item{/json/\\
+Interfaces für die Konvertierung zu JSON}
+\item{/products/\\
+Klassen für Produkte der verschiedenen Webservices und Bewertungen von Amazon.}
+\item{/user/\\
+Klassen für die User}
+\end{itemize}
+\item{/services/\\
+Anbindung der Webservices}
+\item{/sites\\
+REST-Schnittstellen des Servers}
+\begin{itemize}
+	\item{/products/\\
+	Anfragen zum Suchen von Produkten.}
+	\item{/usr/\\
+	Anfragen zum Anmelden von Benutzern und zum Anlegen bzw. Abfragen von beobachteten Produkten.}
+\end{itemize}
+\item{/utils/\\
+Hilfsmethoden}
+\end{itemize}
+\section{Weitere Verzeichnisse}
+\begin{itemize}
+	\item{/Client/\\
+	Quellcode des Clients}
+	\item{Hauptverzeichnis des Servers\\
+	Konfigurationsdatei \textit{searchpp.conf} mit Zugangsdaten der APIs.}
+\end{itemize}
